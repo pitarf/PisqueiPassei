@@ -1,0 +1,210 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Configurações do Sistema e Metadados Dinâmicos (Diretriz Mestre)
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+// Usuário (Foco pessoal Rafael, com suporte a multi-usuário futuro)
+model User {
+  id               String            @id @default(uuid())
+  name             String            @default("Rafael")
+  email            String            @unique @default("rafael@estudos.transpetro")
+  targetScore      Int               @default(47) // Meta inicial: 47/60 pontos
+  dailyStudyHours  Float             @default(2.5)
+  currentStreak    Int               @default(0)
+  lastStudyDate    DateTime?
+  xp               Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  
+  progress         UserTopicProgress[]
+  attempts         QuestionAttempt[]
+  simulations      Simulation[]
+  flashcardReviews FlashcardReview[]
+  studySessions    StudySession[]
+  aiConversations  AIConversation[]
+}
+
+// Disciplinas do Edital Oficial (Língua Portuguesa, Matemática, Específica Ênfase 18)
+model Subject {
+  id        String   @id @default(uuid())
+  name      String
+  category  String   // "BASICO" | "ESPECIFICO"
+  order     Int
+  topics    Topic[]
+}
+
+// Tópicos Oficiais do Edital (Ex: 1.1 Planejamento Estratégico, 3.2 Art. 28 a 91 da Lei 13.303/2016)
+model Topic {
+  id             String    @id @default(uuid())
+  subjectId      String
+  subject        Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  code           String?   // "1.1", "2.3", "3.2"
+  title          String
+  description    String?   @db.Text
+  officialSource String?   @db.Text
+  order          Int
+  
+  lessons        Lesson[]
+  questions      Question[]
+  flashcards     Flashcard[]
+  userProgress   UserTopicProgress[]
+}
+
+// Aulas Armazenadas (Cache Inteligente da IA para custo zero em acessos repetidos)
+model Lesson {
+  id          String   @id @default(uuid())
+  topicId     String
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  title       String
+  contentJson Json     // Estrutura didática em 9 etapas
+  rawMarkdown String   @db.Text
+  sourceType  String   @default("AI_GENERATED")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Banco de Questões (Separado entre IA e Cesgranrio Real)
+model Question {
+  id            String    @id @default(uuid())
+  topicId       String
+  topic         Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  statement     String    @db.Text
+  optionA       String    @db.Text
+  optionB       String    @db.Text
+  optionC       String    @db.Text
+  optionD       String    @db.Text
+  optionE       String    @db.Text
+  correctOption String    // 'A' | 'B' | 'C' | 'D' | 'E'
+  explanation   String    @db.Text
+  difficulty    String    @default("MEDIA") // "FACIL" | "MEDIA" | "DIFICIL"
+  origin        String    @default("AI_GENERATED") // "CESGRANRIO_REAL" | "AI_GENERATED"
+  examYear      Int?
+  banca         String    @default("Cesgranrio")
+  sourceRef     String?   @db.Text
+  createdAt     DateTime  @default(now())
+
+  attempts      QuestionAttempt[]
+}
+
+// Tentativas de Resolução do Usuário
+model QuestionAttempt {
+  id               String      @id @default(uuid())
+  userId           String
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId       String
+  question         Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  chosenOption     String
+  isCorrect        Boolean
+  timeSpentSeconds Int         @default(0)
+  simulationId     String?
+  simulation       Simulation? @relation(fields: [simulationId], references: [id], onDelete: SetNull)
+  createdAt        DateTime    @default(now())
+}
+
+// Progresso do Usuário por Tópico (Repetição Espaçada & Nível de Domínio)
+model UserTopicProgress {
+  id                  String    @id @default(uuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId             String
+  topic               Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  status              String    @default("NAO_INICIADO") // "NAO_INICIADO" | "EM_ESTUDO" | "EM_REVISAO" | "DOMINADO"
+  masteryScore        Float     @default(0.0) // 0 a 100%
+  totalQuestions      Int       @default(0)
+  correctAnswers      Int       @default(0)
+  lastStudiedAt       DateTime?
+  nextReviewDate      DateTime?
+  reviewIntervalDays  Int       @default(1)
+  totalTimeMinutes    Int       @default(0)
+  difficultyLevel     String    @default("NORMAL")
+  notes               String?   @db.Text
+  updatedAt           DateTime  @updatedAt
+
+  @@unique([userId, topicId])
+}
+
+// Simulados Oficiais (Configuração de 60 questões: 10 Port, 10 Mat, 40 Específicas)
+model Simulation {
+  id              String            @id @default(uuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           String            // Ex: "Simulado Cesgranrio 01"
+  score           Float
+  totalQuestions  Int               @default(60)
+  correctAnswers  Int
+  durationSeconds Int
+  completedAt     DateTime          @default(now())
+  detailsJson     Json              // Distribuição de notas por matéria, tempo médio, pontos fracos
+
+  attempts        QuestionAttempt[]
+}
+
+// Flashcards
+model Flashcard {
+  id        String            @id @default(uuid())
+  topicId   String
+  topic     Topic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  front     String            @db.Text
+  back      String            @db.Text
+  createdAt DateTime          @default(now())
+
+  reviews   FlashcardReview[]
+}
+
+// Avaliações de Flashcards (Fácil, Médio, Difícil) com Repetição Espaçada
+model FlashcardReview {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flashcardId    String
+  flashcard      Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+  rating         String    // "FACIL" | "MEDIO" | "DIFICIL"
+  nextReviewDate DateTime
+  intervalDays   Int       @default(1)
+  reviewedAt     DateTime  @default(now())
+}
+
+// Sessões de Estudo & Gamificação (XP, Sequência de Dias)
+model StudySession {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId         String?
+  durationMinutes Int
+  sessionType     String   // "AULA" | "QUESTOES" | "FLASHCARDS" | "SIMULADO"
+  xpEarned        Int      @default(0)
+  createdAt       DateTime @default(now())
+}
+
+// Chat e Sessões com o Professor IA
+model AIConversation {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String      @default("Dúvida Cesgranrio")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  messages  AIMessage[]
+}
+
+model AIMessage {
+  id             String         @id @default(uuid())
+  conversationId String
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String         // "user" | "assistant" | "system"
+  content        String         @db.Text
+  createdAt      DateTime       @default(now())
+}

@@ -1,0 +1,373 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { toast } from "sonner";
+import {
+  HelpCircle,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  ArrowRight,
+  RotateCcw,
+  Sparkles,
+  Bot,
+  Award,
+} from "lucide-react";
+
+interface Question {
+  id: string;
+  statement: string;
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+  optionE: string;
+  correctOption: string;
+  explanation: string;
+  origin: string;
+  difficulty: string;
+  topic?: {
+    title: string;
+    code?: string | null;
+    subject?: { name: string };
+  };
+}
+
+interface QuestionSessionProps {
+  initialQuestions: Question[];
+  title: string;
+  modeDescription?: string;
+}
+
+export const QuestionSession: React.FC<QuestionSessionProps> = ({
+  initialQuestions,
+  title,
+  modeDescription,
+}) => {
+  const [questions] = useState<Question[]>(initialQuestions);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [lastResult, setLastResult] = useState<{
+    isCorrect: boolean;
+    explanation: string;
+    correctOption: string;
+  } | null>(null);
+
+  // Estatísticas da sessão
+  const [sessionResults, setSessionResults] = useState<
+    { questionId: string; isCorrect: boolean }[]
+  >([]);
+  const [isFinished, setIsFinished] = useState(false);
+  const [timerSeconds, setTimerSeconds] = useState(0);
+
+  useEffect(() => {
+    let interval: any;
+    if (!isFinished) {
+      interval = setInterval(() => {
+        setTimerSeconds((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isFinished]);
+
+  const currentQuestion = questions[currentIndex];
+
+  const handleSelectOption = (opt: string) => {
+    if (!isAnswered && !isSubmitting) {
+      setSelectedOption(opt);
+    }
+  };
+
+  const handleSubmitAnswer = async () => {
+    if (!selectedOption) {
+      toast.info("Selecione uma alternativa de A a E para responder.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/questions/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionId: currentQuestion.id,
+          chosenOption: selectedOption,
+          timeSpentSeconds: timerSeconds,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao registrar resposta.");
+
+      setIsAnswered(true);
+      setLastResult({
+        isCorrect: data.isCorrect,
+        explanation: data.explanation || currentQuestion.explanation,
+        correctOption: data.correctOption || currentQuestion.correctOption,
+      });
+
+      setSessionResults((prev) => [
+        ...prev,
+        { questionId: currentQuestion.id, isCorrect: data.isCorrect },
+      ]);
+
+      if (data.isCorrect) {
+        toast.success("Resposta Correta! (+10 XP)");
+      } else {
+        toast.error(`Incorreto! A alternativa certa é a ${data.correctOption}.`);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Falha na comunicação com o servidor.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleNextQuestion = () => {
+    if (currentIndex + 1 < questions.length) {
+      setCurrentIndex((prev) => prev + 1);
+      setSelectedOption(null);
+      setIsAnswered(false);
+      setLastResult(null);
+    } else {
+      setIsFinished(true);
+    }
+  };
+
+  // Tela de Relatório Final da Bateria
+  if (isFinished) {
+    const total = sessionResults.length;
+    const correctCount = sessionResults.filter((r) => r.isCorrect).length;
+    const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+    return (
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 text-center space-y-5 max-w-xl mx-auto shadow-xl">
+        <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mx-auto">
+          <Award className="w-8 h-8" />
+        </div>
+
+        <div>
+          <h2 className="text-xl sm:text-2xl font-black text-white">
+            Treino Concluído!
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Seu desempenho foi registrado no histórico e o nível de domínio dos assuntos foi recalculado.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 bg-slate-800/80 p-4 rounded-xl border border-slate-700/60">
+          <div>
+            <p className="text-[11px] text-slate-400">Total Respondido</p>
+            <p className="text-xl font-bold text-white">{total}</p>
+          </div>
+          <div>
+            <p className="text-[11px] text-slate-400">Acertos</p>
+            <p className="text-xl font-bold text-emerald-400">{correctCount}</p>
+          </div>
+          <div>
+            <p className="text-[11px] text-slate-400">Aproveitamento</p>
+            <p className="text-xl font-bold text-sky-400">{accuracy}%</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center gap-3 pt-3">
+          <Link
+            href="/questoes"
+            className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors"
+          >
+            Nova Bateria
+          </Link>
+          <Link
+            href="/"
+            className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md transition-colors"
+          >
+            Voltar ao Início
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentQuestion) {
+    return (
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-3">
+        <p className="text-sm text-slate-300">Nenhuma questão encontrada para este filtro.</p>
+        <Link
+          href="/questoes"
+          className="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold inline-block"
+        >
+          Voltar para Filtros
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5 max-w-3xl mx-auto">
+      {/* Barra de Topo da Questão */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between shadow-sm">
+        <div>
+          <span className="text-xs font-bold text-emerald-400">
+            {title}
+          </span>
+          <p className="text-xs text-slate-400">
+            Questão <span className="text-white font-bold">{currentIndex + 1}</span> de{" "}
+            <span className="text-slate-200">{questions.length}</span>
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 bg-slate-800 px-3 py-1.5 rounded-full text-xs text-slate-300 border border-slate-700">
+            <Clock className="w-3.5 h-3.5 text-amber-400" />
+            <span>
+              {Math.floor(timerSeconds / 60)}:
+              {String(timerSeconds % 60).padStart(2, "0")}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Card da Questão */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-7 space-y-5 shadow-md">
+        {/* Identificação e Origem */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2 flex-wrap">
+            {currentQuestion.topic?.subject?.name && (
+              <span className="text-xs font-medium text-slate-400">
+                {currentQuestion.topic.subject.name}
+              </span>
+            )}
+            {currentQuestion.topic?.title && (
+              <span className="px-2 py-0.5 text-[11px] bg-slate-800 text-slate-300 rounded border border-slate-700 truncate max-w-xs">
+                {currentQuestion.topic.title}
+              </span>
+            )}
+          </div>
+
+          <span className="text-[10px] bg-slate-800/80 text-slate-400 border border-slate-700/60 px-2 py-0.5 rounded">
+            {currentQuestion.origin === "CESGRANRIO_REAL"
+              ? "Cesgranrio Oficial"
+              : "Questão gerada por IA, baseada no conteúdo do edital"}
+          </span>
+        </div>
+
+        {/* Enunciado */}
+        <p className="text-sm sm:text-base text-slate-100 font-medium leading-relaxed whitespace-pre-line">
+          {currentQuestion.statement}
+        </p>
+
+        {/* Alternativas A a E */}
+        <div className="space-y-2 pt-2">
+          {["A", "B", "C", "D", "E"].map((opt) => {
+            const optKey = `option${opt}` as keyof Question;
+            const optText = currentQuestion[optKey] as string;
+            if (!optText) return null;
+
+            const isSelected = selectedOption === opt;
+            const isCorrectAnswer = currentQuestion.correctOption === opt;
+
+            let btnClass =
+              "w-full text-left p-3 sm:p-3.5 rounded-xl text-xs sm:text-sm font-medium border transition-all flex items-start gap-3 ";
+
+            if (isAnswered) {
+              if (isCorrectAnswer) {
+                btnClass += "bg-emerald-500/20 border-emerald-500 text-emerald-300";
+              } else if (isSelected) {
+                btnClass += "bg-rose-500/20 border-rose-500 text-rose-300";
+              } else {
+                btnClass += "bg-slate-800/50 border-slate-800 text-slate-500 opacity-60";
+              }
+            } else {
+              if (isSelected) {
+                btnClass +=
+                  "bg-emerald-500/15 border-emerald-500 text-emerald-200 shadow-sm";
+              } else {
+                btnClass +=
+                  "bg-slate-800/70 hover:bg-slate-800 border-slate-700/80 text-slate-200 hover:border-slate-600";
+              }
+            }
+
+            return (
+              <button
+                key={opt}
+                onClick={() => handleSelectOption(opt)}
+                disabled={isAnswered || isSubmitting}
+                className={btnClass}
+              >
+                <span
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                    isSelected
+                      ? "bg-emerald-500 text-slate-950"
+                      : "bg-slate-700 text-slate-300"
+                  }`}
+                >
+                  {opt}
+                </span>
+                <span className="leading-snug pt-0.5">{optText}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Botão de Resposta / Próxima */}
+        <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+          <Link
+            href={`/professor?pergunta=Explique a questão: ${encodeURIComponent(
+              currentQuestion.statement.slice(0, 150)
+            )}`}
+            className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1.5 transition-colors"
+          >
+            <Bot className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Tirar dúvida com Professor IA</span>
+          </Link>
+
+          {!isAnswered ? (
+            <button
+              onClick={handleSubmitAnswer}
+              disabled={!selectedOption || isSubmitting}
+              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95 flex items-center gap-1.5"
+            >
+              <span>Responder</span>
+              <CheckCircle2 className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              onClick={handleNextQuestion}
+              className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95 flex items-center gap-1.5"
+            >
+              <span>
+                {currentIndex + 1 < questions.length
+                  ? "Próxima Questão"
+                  : "Finalizar Bateria"}
+              </span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Justificativa e Explicação Pedagógica */}
+        {isAnswered && lastResult && (
+          <div className="mt-4 p-4 rounded-xl bg-slate-850 border border-slate-700/80 space-y-2">
+            <div className="flex items-center gap-2">
+              {lastResult.isCorrect ? (
+                <span className="text-emerald-400 font-bold text-xs flex items-center gap-1">
+                  <CheckCircle2 className="w-4 h-4" /> Resposta Correta!
+                </span>
+              ) : (
+                <span className="text-rose-400 font-bold text-xs flex items-center gap-1">
+                  <XCircle className="w-4 h-4" /> Alternativa Correta: {lastResult.correctOption}
+                </span>
+              )}
+            </div>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+              {lastResult.explanation}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
