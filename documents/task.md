@@ -2,10 +2,10 @@
 
 ## 📋 Status do Projeto
 
-- **Fase Atual:** MVP Concluído & Validado
+- **Fase Atual:** MVP funcional + biblioteca normativa em expansão
 - **Alvo:** Concurso TRANSPETRO 2026.3 - Nível Técnico - Ênfase 18: Suprimento de Bens e Serviços
 - **Banca:** Fundação Cesgranrio
-- **Data Prevista da Prova:** 06/12/2026
+- **Data da Prova:** 06/12/2026
 - **Meta Inicial:** 47/60 pontos (78,3%)
 
 ---
@@ -16,14 +16,13 @@
 - [ ] Módulo de upload de apostilas e PDFs de terceiros com OCR e indexador de chunks RAG
 - [ ] Modo Ranking e comunidade de estudos
 - [ ] Aplicativo móvel compilado nativo (PWA já ativo)
-
----
+- [ ] Ingestão automatizada e versionada da legislação oficial restante
+- [ ] Banco de questões reais Cesgranrio com fonte/ano/prova individualizados
 
 ## ⏳ Fazendo
 
 - [x] Testes de build de produção e verificação de integridade
-
----
+- [x] Estrutura inicial da biblioteca normativa para RAG
 
 ## ✅ Concluído
 
@@ -35,7 +34,7 @@
 - [x] Execução de sincronização do banco de dados relacional PostgreSQL
 - [x] Script de Seed com 100% da taxonomia oficial do edital (6 matérias, 49 tópicos) e usuário Rafael
 - [x] Componentes de Layout Mobile-First (AppHeader, BottomNav, SidebarNav)
-- [x] Dashboard Principal (Contador de dias para 29/11/2026, meta 47/60, ações rápidas, pontos fracos)
+- [x] Dashboard Principal (contador regressivo para 06/12/2026, meta 47/60, ações rápidas, pontos fracos)
 - [x] Edital Verticalizado com níveis de domínio (0 a 100%), status e badges normativos
 - [x] Motor de Aulas por IA estruturada em 9 passos com cache em banco de dados para custo zero
 - [x] Gerador de Questões (10, 20, 40, 60) e Treino de Pontos Fracos (aproveitamento < 70%)
@@ -47,6 +46,6 @@
 - [x] Compilação estática e validação com `npm run build` (0 erros)
 - [x] Elaboração dos Manuais: `MANUAL_DEV.md`, `MANUAL_USER.md`, `CHANGELOG.md`
 - [x] Criação do acervo oficial do edital (`documents/edital/edital-2026.3.md` e `documents/edital/retificacao-edital-2026.3.md`) para RAG
-- [x] Criação do texto integral oficial do Decreto nº 2.745/1998 para RAG (`documents/legislacao/decreto-2745-1998.md`)
-- [x] Criação do texto integral oficial da Lei nº 13.303/2016 para RAG (`documents/legislacao/lei-13303-2016.md`)
-- [x] Criação dos arts. 42 a 49 da Lei Complementar nº 123/2006, conteúdo prioritário do edital, para RAG (`documents/legislacao/lei-123-2006.md`)
+- [x] Criação do acervo do Decreto nº 2.745/1998 para RAG
+- [x] Criação do acervo dos arts. 42 a 49 da LC nº 123/2006 para RAG
+- [x] Criação da entrada da Lei nº 14.133/2021, marcada como pendente de transcrição integral validada antes de ser considerada fonte normativa completa
