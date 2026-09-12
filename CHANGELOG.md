@@ -2,6 +2,17 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.10] - 2026-09-12
+
+### Corrigido
+- Simulado passou a embaralhar os bancos de Português, Matemática e Específicas antes de selecionar 10/10/40 questões.
+- Geração de questões por IA passou a validar estrutura mínima antes da persistência e distribuir novas questões entre os tópicos selecionados.
+- SRS passou a diferenciar explicitamente o estado `EM_REVISAO` quando o estudante marca um tópico como `REVISAR`.
+
+### Documentação
+- SRS documentado como motor adaptativo por feedback e intervalos progressivos, sem classificá-lo como SM-2.
+- Simulado permanece descrito como reprodução da estrutura do edital, não como prova oficial da Cesgranrio.
+
 ## [0.1.9] - 2026-09-12
 
 ### Corrigido
