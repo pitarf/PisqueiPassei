@@ -9,15 +9,17 @@ Você é o Professor IA especialista no Processo Seletivo da TRANSPETRO 2026.3, 
 
 REGRAS:
 1. O edital e as fontes oficiais locais recuperadas pelo RAG são a base prioritária.
-2. Diferencie sempre [CONTEÚDO PREVISTO NO EDITAL] de [INFORMAÇÃO COMPLEMENTAR].
-3. Em legislação, nunca invente artigos, prazos, modalidades, requisitos ou redações. Se a fonte recuperada não sustentar uma afirmação, diga isso claramente.
-4. Não trate conteúdo gerado por IA como texto oficial de lei.
-5. Questões inéditas devem ser identificadas como "Questão gerada por IA, baseada no conteúdo do edital.".
-6. Destaque pegadinhas e situações-problema compatíveis com a Cesgranrio, sem afirmar que uma questão inédita foi aplicada pela banca.
+2. O edital responde o que estudar; legislação validada sustenta detalhes normativos.
+3. Diferencie sempre [CONTEÚDO PREVISTO NO EDITAL] de [INFORMAÇÃO COMPLEMENTAR].
+4. Em legislação, nunca invente artigos, prazos, modalidades, requisitos ou redações. Se a fonte local estiver marcada como status=pointer, trate-a somente como referência de localização/escopo, não como texto integral da norma.
+5. Não trate conteúdo gerado por IA como texto oficial de lei.
+6. Questões inéditas devem ser identificadas como "Questão gerada por IA, baseada no conteúdo do edital.".
+7. Destaque pegadinhas e situações-problema compatíveis com a Cesgranrio, sem afirmar que uma questão inédita foi aplicada pela banca.
+8. Se o RAG não sustentar um detalhe jurídico, diga que ele precisa ser conferido na fonte oficial e não complete a lacuna por memória.
 `;
 
-function groundedContext(query: string) {
-  return `\n\n=== CONTEXTO RAG LOCAL ===\n${getRagContext(query)}\n=== FIM DO CONTEXTO RAG ===\n`;
+function groundedContext(query: string, subjectName?: string, officialSource?: string | null) {
+  return `\n\n=== CONTEXTO RAG LOCAL ===\n${getRagContext(query, { subjectName, officialSource })}\n=== FIM DO CONTEXTO RAG ===\n`;
 }
 
 export async function generateStructuredLesson(topicTitle: string, subjectName: string, officialSource?: string | null) {
@@ -27,8 +29,8 @@ export async function generateStructuredLesson(topicTitle: string, subjectName: 
     generationConfig: { temperature: 0.2, responseMimeType: "application/json" },
   });
 
-  const rag = groundedContext(`${subjectName} ${topicTitle} ${officialSource || ""}`);
-  const prompt = `Gere uma aula completa e prática para o tópico:\nDisciplina: "${subjectName}"\nTópico: "${topicTitle}"\n${officialSource ? `Base oficial: "${officialSource}"` : ""}\n${rag}\n\nUse o RAG como fonte primária. Retorne JSON com: title e sections contendo step1_whatYouNeedToLearn, step2_simpleExplanation, step3_fundamentalConcepts, step4_examples, step5_cesgranrioTraps, step6_whatToMemorize, step7_summary, step8_flashcards (array de front/back) e step9_practiceQuestions (array com statement, optionA-E, correctOption e explanation).`;
+  const rag = groundedContext(`${subjectName} ${topicTitle}`, subjectName, officialSource);
+  const prompt = `Gere uma aula completa e prática para o tópico:\nDisciplina: "${subjectName}"\nTópico: "${topicTitle}"\n${officialSource ? `Base oficial: "${officialSource}"` : ""}\n${rag}\n\nUse primeiro o trecho do edital para delimitar o conteúdo. Use legislação somente conforme o status da fonte. Retorne JSON com: title e sections contendo step1_whatYouNeedToLearn, step2_simpleExplanation, step3_fundamentalConcepts, step4_examples, step5_cesgranrioTraps, step6_whatToMemorize, step7_summary, step8_flashcards (array de front/back) e step9_practiceQuestions (array com statement, optionA-E, correctOption e explanation).`;
 
   const result = await model.generateContent(prompt);
   return JSON.parse(result.response.text());
@@ -41,8 +43,8 @@ export async function generateQuestionBatch(topicTitle: string, subjectName: str
     generationConfig: { temperature: 0.3, responseMimeType: "application/json" },
   });
 
-  const rag = groundedContext(`${subjectName} ${topicTitle}`);
-  const prompt = `Gere exatamente ${count} questões inéditas A-E no perfil Cesgranrio. Disciplina: "${subjectName}". Tópico: "${topicTitle}". Dificuldade: "${difficulty}". ${rag}\nRetorne {"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"${difficulty}"}]}. Não invente fundamento normativo. Identifique a origem como IA no uso da aplicação.`;
+  const rag = groundedContext(`${subjectName} ${topicTitle}`, subjectName);
+  const prompt = `Gere exatamente ${count} questões inéditas A-E no perfil Cesgranrio. Disciplina: "${subjectName}". Tópico: "${topicTitle}". Dificuldade: "${difficulty}". ${rag}\nAs questões devem testar apenas conteúdo sustentado pelo edital e pelas fontes recuperadas. Em legislação, não crie artigo ou regra que não esteja no material. Retorne {"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"${difficulty}","origin":"IA"}]}. A aplicação deve exibir a origem como questão inédita gerada por IA.`;
 
   const result = await model.generateContent(prompt);
   return JSON.parse(result.response.text());
