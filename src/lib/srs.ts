@@ -1,7 +1,7 @@
 /**
- * Motor de Repetição Espaçada (SRS) e Nível de Domínio
- * Calcula os próximos intervalos de revisão com base na curva do esquecimento
- * e no desempenho prático do estudante.
+ * Motor de Repetição Espaçada (SRS) e Nível de Domínio.
+ * Usa intervalos progressivos e feedback do estudante, com ajuste opcional
+ * pelo aproveitamento em questões. Não é uma implementação do algoritmo SM-2.
  */
 
 export interface SRSFeedbackInput {
@@ -18,9 +18,6 @@ export interface SRSResult {
   newStatus: "NAO_INICIADO" | "EM_ESTUDO" | "EM_REVISAO" | "DOMINADO";
 }
 
-/**
- * Calcula o próximo agendamento de estudo e atualização de domínio
- */
 export function calculateNextSRS({
   currentIntervalDays,
   currentMasteryScore,
@@ -35,29 +32,20 @@ export function calculateNextSRS({
       nextIntervalDays = 1;
       masteryDelta = -15;
       break;
-
     case "REVISAR":
       nextIntervalDays = Math.max(1, Math.round(currentIntervalDays * 1.5));
       masteryDelta = 5;
       break;
-
     case "ENTENDI":
-      if (currentIntervalDays <= 1) {
-        nextIntervalDays = 3;
-      } else if (currentIntervalDays === 3) {
-        nextIntervalDays = 7;
-      } else if (currentIntervalDays <= 7) {
-        nextIntervalDays = 15;
-      } else if (currentIntervalDays <= 15) {
-        nextIntervalDays = 30;
-      } else {
-        nextIntervalDays = 60;
-      }
+      if (currentIntervalDays <= 1) nextIntervalDays = 3;
+      else if (currentIntervalDays === 3) nextIntervalDays = 7;
+      else if (currentIntervalDays <= 7) nextIntervalDays = 15;
+      else if (currentIntervalDays <= 15) nextIntervalDays = 30;
+      else nextIntervalDays = 60;
       masteryDelta = 15;
       break;
   }
 
-  // Se houver percentual de acertos de questões, ponderar no cálculo
   if (accuracyPercentage !== undefined) {
     if (accuracyPercentage < 50) {
       nextIntervalDays = 1;
@@ -67,24 +55,14 @@ export function calculateNextSRS({
     }
   }
 
-  // Manter o domínio entre 0 e 100
   const newMasteryScore = Math.max(0, Math.min(100, currentMasteryScore + masteryDelta));
-
-  // Definir status com base no score e histórico
-  let newStatus: "NAO_INICIADO" | "EM_ESTUDO" | "EM_REVISAO" | "DOMINADO" = "EM_ESTUDO";
-  if (newMasteryScore >= 85) {
-    newStatus = "DOMINADO";
-  } else if (newMasteryScore > 0) {
-    newStatus = "EM_ESTUDO";
-  }
+  let newStatus: SRSResult["newStatus"] = "EM_ESTUDO";
+  if (newMasteryScore >= 85) newStatus = "DOMINADO";
+  else if (feedback === "REVISAR") newStatus = "EM_REVISAO";
+  else if (newMasteryScore <= 0) newStatus = "NAO_INICIADO";
 
   const nextReviewDate = new Date();
   nextReviewDate.setDate(nextReviewDate.getDate() + nextIntervalDays);
 
-  return {
-    nextIntervalDays,
-    nextReviewDate,
-    newMasteryScore,
-    newStatus,
-  };
+  return { nextIntervalDays, nextReviewDate, newMasteryScore, newStatus };
 }
