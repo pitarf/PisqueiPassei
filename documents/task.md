@@ -47,3 +47,6 @@
 - [x] Compilação estática e validação com `npm run build` (0 erros)
 - [x] Elaboração dos Manuais: `MANUAL_DEV.md`, `MANUAL_USER.md`, `CHANGELOG.md`
 - [x] Criação do acervo oficial do edital (`documents/edital/edital-2026.3.md` e `documents/edital/retificacao-edital-2026.3.md`) para RAG
+- [x] Criação do texto integral oficial do Decreto nº 2.745/1998 para RAG (`documents/legislacao/decreto-2745-1998.md`)
+- [x] Criação do texto integral oficial da Lei nº 13.303/2016 para RAG (`documents/legislacao/lei-13303-2016.md`)
+- [x] Criação dos arts. 42 a 49 da Lei Complementar nº 123/2006, conteúdo prioritário do edital, para RAG (`documents/legislacao/lei-123-2006.md`)
