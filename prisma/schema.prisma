@@ -1,13 +1,76 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// Banco de Questões (Separado entre IA e Cesgranrio Real)
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Configurações do Sistema e Metadados Dinâmicos (Diretriz Mestre)
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+// Usuário (Foco pessoal Rafael, com suporte a multi-usuário futuro)
+model User {
+  id               String            @id @default(uuid())
+  name             String            @default("Rafael")
+  email            String            @unique @default("rafael@estudos.transpetro")
+  targetScore      Int               @default(47)
+  dailyStudyHours  Float             @default(2.5)
+  currentStreak    Int               @default(0)
+  lastStudyDate    DateTime?
+  xp               Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  progress         UserTopicProgress[]
+  attempts         QuestionAttempt[]
+  simulations      Simulation[]
+  flashcardReviews FlashcardReview[]
+  studySessions    StudySession[]
+  aiConversations  AIConversation[]
+}
+
+model Subject {
+  id        String   @id @default(uuid())
+  name      String
+  category  String
+  order     Int
+  topics    Topic[]
+}
+
+model Topic {
+  id             String    @id @default(uuid())
+  subjectId      String
+  subject        Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  code           String?
+  title          String
+  description    String?   @db.Text
+  officialSource String?   @db.Text
+  order          Int
+  lessons        Lesson[]
+  questions      Question[]
+  flashcards     Flashcard[]
+  userProgress   UserTopicProgress[]
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  topicId     String
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  title       String
+  contentJson Json
+  rawMarkdown String   @db.Text
+  sourceType  String   @default("AI_GENERATED")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Banco de Questões. Questões reais e geradas por IA devem ter origem explícita.
 model Question {
   id            String    @id @default(uuid())
   topicId       String
@@ -26,11 +89,9 @@ model Question {
   banca         String    @default("IA (perfil Cesgranrio)")
   sourceRef     String?   @db.Text
   createdAt     DateTime  @default(now())
-
   attempts      QuestionAttempt[]
 }
 
-// Tentativas de Resolução do Usuário
 model QuestionAttempt {
   id               String      @id @default(uuid())
   userId           String
@@ -45,7 +106,6 @@ model QuestionAttempt {
   createdAt        DateTime    @default(now())
 }
 
-// Progresso do Usuário por Tópico (Repetição Espaçada & Nível de Domínio)
 model UserTopicProgress {
   id                  String    @id @default(uuid())
   userId              String
@@ -63,11 +123,9 @@ model UserTopicProgress {
   difficultyLevel     String    @default("NORMAL")
   notes               String?   @db.Text
   updatedAt           DateTime  @updatedAt
-
   @@unique([userId, topicId])
 }
 
-// Simulados Oficiais (Configuração de 60 questões: 10 Port, 10 Mat, 40 Específicas)
 model Simulation {
   id              String            @id @default(uuid())
   userId          String
@@ -80,4 +138,56 @@ model Simulation {
   completedAt     DateTime          @default(now())
   detailsJson     Json
   attempts        QuestionAttempt[]
+}
+
+model Flashcard {
+  id        String            @id @default(uuid())
+  topicId   String
+  topic     Topic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  front     String            @db.Text
+  back      String            @db.Text
+  createdAt DateTime          @default(now())
+  reviews   FlashcardReview[]
+}
+
+model FlashcardReview {
+  id             String    @id @default(uuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flashcardId    String
+  flashcard      Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+  rating         String
+  nextReviewDate DateTime
+  intervalDays   Int       @default(1)
+  reviewedAt     DateTime  @default(now())
+}
+
+model StudySession {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topicId         String?
+  durationMinutes Int
+  sessionType     String
+  xpEarned        Int      @default(0)
+  createdAt       DateTime @default(now())
+}
+
+model AIConversation {
+  id        String      @id @default(uuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String      @default("Dúvida Cesgranrio")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  messages  AIMessage[]
+}
+
+model AIMessage {
+  id             String         @id @default(uuid())
+  conversationId String
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String
+  content        String         @db.Text
+  createdAt      DateTime       @default(now())
 }
