@@ -7,7 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Configurações do Sistema e Metadados Dinâmicos (Diretriz Mestre)
 model SystemSetting {
   id        String   @id @default(uuid())
   key       String   @unique
@@ -15,7 +14,6 @@ model SystemSetting {
   updatedAt DateTime @updatedAt
 }
 
-// Usuário (Foco pessoal Rafael, com suporte a multi-usuário futuro)
 model User {
   id               String            @id @default(uuid())
   name             String            @default("Rafael")
@@ -70,7 +68,6 @@ model Lesson {
   updatedAt   DateTime @updatedAt
 }
 
-// Banco de Questões. Questões reais e geradas por IA devem ter origem explícita.
 model Question {
   id            String    @id @default(uuid())
   topicId       String
@@ -129,9 +126,9 @@ model UserTopicProgress {
 model Simulation {
   id              String            @id @default(uuid())
   userId          String
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   title           String
-  score           Float
+  score            Float
   totalQuestions  Int               @default(60)
   correctAnswers  Int
   durationSeconds Int
@@ -165,7 +162,7 @@ model FlashcardReview {
 model StudySession {
   id              String   @id @default(uuid())
   userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   topicId         String?
   durationMinutes Int
   sessionType     String
