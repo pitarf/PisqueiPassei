@@ -2,6 +2,14 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento, em conformidade com as Diretrizes Mestres de Desenvolvimento.
 
+## [0.1.6] - 2026-09-12
+
+### Adicionado
+- **Base Legislativa Oficial para RAG:**
+  - Inclusão dos arts. 42 a 49 da Lei Complementar nº 123/2006 em `documents/legislacao/lei-123-2006.md`.
+  - Conteúdo preservado conforme a fonte oficial do Portal da Legislação, com redação vigente e indicações de alterações, revogações e remissões relevantes.
+  - Documento vinculado ao conteúdo prioritário da Ênfase 18 - Suprimento de Bens e Serviços.
+
 ## [0.1.2] - 2026-09-11
 
 ### Adicionado
