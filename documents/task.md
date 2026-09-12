@@ -2,15 +2,15 @@
 
 ## 📋 Status do Projeto
 
-- **Fase Atual:** MVP funcional + RAG orientado por fontes oficiais
+- **Fase Atual:** MVP funcional auditado + RAG orientado por fontes oficiais
 - **Alvo:** Concurso TRANSPETRO 2026.3 - Nível Técnico - Ênfase 18: Suprimento de Bens e Serviços
 - **Banca:** Fundação Cesgranrio
 - **Data da Prova:** 06/12/2026
-- **Meta Inicial:** 47/60 pontos (78,3%)
+- **Meta pessoal inicial:** 47/60 pontos (78,3%). Não é critério oficial de eliminação.
 
 ---
 
-## 📌 Pendentes (Fases Futuras)
+## 📌 Pendentes por dependência externa ou expansão de produto
 
 - [ ] Validar transcrição integral e versionada do Decreto nº 2.745/1998
 - [ ] Validar transcrição integral e versionada dos arts. 28 a 91 da Lei nº 13.303/2016
@@ -29,29 +29,36 @@
 - [x] Limite de contexto enviado à IA para reduzir ruído e custo
 - [x] Cache em memória dos arquivos Markdown do RAG
 - [x] Proveniência explícita para questões inéditas geradas por IA
+- [x] Auditoria das regras do simulado, respostas, progresso e SRS
 - [ ] Suíte automatizada de testes para RAG, regras de prova e rotas críticas
 
-## ✅ Concluído
+## ✅ Concluído no MVP
 
-- [x] Análise aprofundada do edital oficial e requisitos do usuário
-- [x] Criação do plano de arquitetura e implementação (`implementation_plan.md`)
-- [x] Inicialização do projeto Next.js 15 com TypeScript e Tailwind CSS
-- [x] Configuração do Docker Compose com PostgreSQL e volumes persistentes (`postgres-data`)
-- [x] Modelagem do Prisma ORM (`schema.prisma`) com transações seguras
-- [x] Execução de sincronização do banco de dados relacional PostgreSQL
-- [x] Script de Seed com 100% da taxonomia oficial do edital (6 matérias, 49 tópicos) e usuário Rafael
-- [x] Componentes de Layout Mobile-First (AppHeader, BottomNav, SidebarNav)
-- [x] Dashboard Principal (contador regressivo para 06/12/2026, meta 47/60, ações rápidas, pontos fracos)
-- [x] Edital Verticalizado com níveis de domínio (0 a 100%), status e badges normativos
-- [x] Motor de Aulas por IA estruturada em 9 passos com cache em banco de dados
-- [x] Gerador de Questões (10, 20, 40, 60) e Treino de Pontos Fracos (aproveitamento < 70%)
-- [x] Simulado Oficial Cesgranrio (60 questões com cronômetro de 4h, grade de respostas e diagnóstico de eliminação)
-- [x] Sistema de Flashcards e Motor de Repetição Espaçada (SRS - SM-2 adaptativo)
+- [x] Análise do edital oficial e requisitos do usuário
+- [x] Arquitetura Next.js, TypeScript, Tailwind, PostgreSQL e Prisma
+- [x] Docker Compose com PostgreSQL e volume persistente
+- [x] Taxonomia do edital com 6 disciplinas e 49 tópicos
+- [x] Dashboard com contador para 06/12/2026, meta pessoal 47/60, ações rápidas e pontos fracos
+- [x] Edital Verticalizado com domínio, status e badges normativos
+- [x] Aulas IA estruturadas em 9 etapas com cache em banco
+- [x] Gerador de questões e treino de pontos fracos
+- [x] Simulado estruturado em 60 questões, 10 Português, 10 Matemática e 40 Específicas, com cronômetro de 4 horas
+- [x] Validação no servidor da distribuição do simulado e dos 60 IDs antes do resultado
+- [x] Diagnóstico com os critérios de eliminação previstos e separação da meta pessoal
+- [x] Registro de todas as 60 tentativas do simulado, inclusive não respondidas, e atualização do progresso por tópico
+- [x] Respostas individuais com validação de alternativa e tempo
+- [x] Flashcards com agenda de revisão por vencimento e avaliações Fácil/Médio/Difícil
 - [x] Professor IA contextualizado com histórico, notas e pontos fracos
-- [x] Dashboard de Desempenho e Estatísticas por disciplina
-- [x] Painel de Configurações para alteração de metas, horas diárias e exportação de backup JSON
-- [x] Compilação estática e validação com `npm run build` (0 erros em validação anterior)
-- [x] Elaboração dos Manuais: `MANUAL_DEV.md`, `MANUAL_USER.md`, `CHANGELOG.md`
-- [x] Acervo oficial do edital (`documents/edital/edital-2026.3.md` e `documents/edital/retificacao-edital-2026.3.md`) para RAG
-- [x] Registro das fontes oficiais do Decreto nº 2.745/1998, Lei nº 13.303/2016 e Lei nº 14.133/2021 como ponteiros, sem tratá-las como transcrições integrais
-- [x] Acervo validado dos arts. 42 a 49 da LC nº 123/2006 para RAG
+- [x] Proteção da conversa do Professor IA contra acesso por ID de outro usuário
+- [x] Dashboard de desempenho e estatísticas
+- [x] Configurações com metas, horas diárias e backup JSON
+- [x] Edital e retificações oficiais no RAG
+- [x] LC nº 123/2006, arts. 42 a 49, validada no acervo local
+
+## ⚠️ Limitações importantes
+
+- O banco atual trabalha com questões inéditas geradas por IA. Elas devem permanecer identificadas como IA, mesmo quando seguem o perfil Cesgranrio.
+- O simulado reproduz a estrutura e os critérios do edital, mas não representa uma prova oficial aplicada pela Cesgranrio.
+- Decreto 2.745/1998, Lei 13.303/2016 e Lei 14.133/2021 estão registrados como ponteiros oficiais, não como transcrições integrais validadas.
+- A autenticação ainda é de usuário único de desenvolvimento, portanto o MVP não está pronto para comercialização multiusuário.
+- A última compilação registrada foi bem-sucedida, mas não há pipeline CI automatizado neste repositório para comprovar cada commit automaticamente.
