@@ -2,165 +2,86 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { evaluateSimulation } from "@/lib/exam";
 
-/**
- * Endpoint para obter questões de um simulado completo de 60 questões
- * ou registrar a conclusão e diagnóstico pós-prova.
- */
+const EXAM_TOTAL = 60;
+const PORT_TOTAL = 10;
+const MATH_TOTAL = 10;
+const SPECIFIC_TOTAL = 40;
+
 export async function GET() {
   try {
-    // 1. Buscar questões de Língua Portuguesa (10)
-    const portSubject = await prisma.subject.findFirst({
-      where: { name: "Língua Portuguesa" },
-    });
-    const portQuestions = await prisma.question.findMany({
-      where: portSubject ? { topic: { subjectId: portSubject.id } } : {},
-      take: 10,
-      include: { topic: { include: { subject: true } } },
-    });
-
-    // 2. Buscar questões de Matemática (10)
-    const mathSubject = await prisma.subject.findFirst({
-      where: { name: "Matemática" },
-    });
-    const mathQuestions = await prisma.question.findMany({
-      where: mathSubject ? { topic: { subjectId: mathSubject.id } } : {},
-      take: 10,
-      include: { topic: { include: { subject: true } } },
-    });
-
-    // 3. Buscar questões de Conhecimentos Específicos (40)
-    const specificSubjects = await prisma.subject.findMany({
-      where: { category: "ESPECIFICO" },
-      select: { id: true },
-    });
-    const specificSubjectIds = specificSubjects.map((s) => s.id);
-    const specificQuestions = await prisma.question.findMany({
-      where: { topic: { subjectId: { in: specificSubjectIds } } },
-      take: 40,
-      include: { topic: { include: { subject: true } } },
-    });
-
-    // Agrupar questões
-    const allQuestions = [...portQuestions, ...mathQuestions, ...specificQuestions];
-
-    return NextResponse.json({
-      total: allQuestions.length,
-      questions: allQuestions,
-      distribution: {
-        portuguese: portQuestions.length,
-        math: mathQuestions.length,
-        specific: specificQuestions.length,
-      },
-    });
+    const [portSubject, mathSubject, specificSubjects] = await Promise.all([
+      prisma.subject.findFirst({ where: { name: "Língua Portuguesa" } }),
+      prisma.subject.findFirst({ where: { name: "Matemática" } }),
+      prisma.subject.findMany({ where: { category: "ESPECIFICO" }, select: { id: true } }),
+    ]);
+    const specificIds = specificSubjects.map((s) => s.id);
+    const [portQuestions, mathQuestions, specificQuestions] = await Promise.all([
+      portSubject ? prisma.question.findMany({ where: { topic: { subjectId: portSubject.id } }, take: PORT_TOTAL, orderBy: { createdAt: "desc" }, include: { topic: { include: { subject: true } } } }) : [],
+      mathSubject ? prisma.question.findMany({ where: { topic: { subjectId: mathSubject.id } }, take: MATH_TOTAL, orderBy: { createdAt: "desc" }, include: { topic: { include: { subject: true } } } }) : [],
+      prisma.question.findMany({ where: { topic: { subjectId: { in: specificIds } } }, take: SPECIFIC_TOTAL, orderBy: { createdAt: "desc" }, include: { topic: { include: { subject: true } } } }),
+    ]);
+    const questions = [...portQuestions, ...mathQuestions, ...specificQuestions];
+    return NextResponse.json({ total: questions.length, questions, distribution: { portuguese: portQuestions.length, math: mathQuestions.length, specific: specificQuestions.length } });
   } catch (error) {
     console.error("Erro ao carregar simulado:", error);
-    return NextResponse.json(
-      { error: "Erro ao gerar questões para o simulado oficial." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao gerar questões para o simulado." }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const {
-      title = "Simulado Cesgranrio Oficial",
-      durationSeconds,
-      answers, // Record<questionId, chosenOption>
-    } = await req.json();
-
-    const user = await prisma.user.findFirst({
-      where: { email: "rafael@estudos.transpetro" },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
+    const { title = "Simulado Transpetro 2026.3", durationSeconds, answers } = await req.json();
+    const duration = Number(durationSeconds);
+    if (!Number.isFinite(duration) || duration < 0 || duration > 4 * 60 * 60) {
+      return NextResponse.json({ error: "Tempo de prova inválido." }, { status: 400 });
+    }
+    if (!answers || typeof answers !== "object" || Array.isArray(answers)) {
+      return NextResponse.json({ error: "Folha de respostas inválida." }, { status: 400 });
     }
 
-    const questionIds = Object.keys(answers || {});
+    const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
+    if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
+
+    const questionIds = Object.keys(answers);
+    if (questionIds.length > EXAM_TOTAL) {
+      return NextResponse.json({ error: "A folha de respostas contém mais de 60 questões." }, { status: 400 });
+    }
+
     const questions = await prisma.question.findMany({
       where: { id: { in: questionIds } },
       include: { topic: { include: { subject: true } } },
     });
+    if (questions.length !== questionIds.length) {
+      return NextResponse.json({ error: "Uma ou mais questões do simulado não foram encontradas." }, { status: 400 });
+    }
 
     let portCorrect = 0;
     let mathCorrect = 0;
     let specificCorrect = 0;
-    const attemptsToCreate: any[] = [];
-
-    for (const q of questions) {
-      const chosen = answers[q.id];
-      const isCorrect = chosen === q.correctOption;
-
+    const attemptsToCreate = questions.map((q) => {
+      const chosen = typeof answers[q.id] === "string" ? answers[q.id] : "";
+      const isCorrect = chosen !== "" && chosen === q.correctOption;
       if (isCorrect) {
         if (q.topic.subject.name === "Língua Portuguesa") portCorrect++;
         else if (q.topic.subject.name === "Matemática") mathCorrect++;
         else specificCorrect++;
       }
-
-      attemptsToCreate.push({
-        userId: user.id,
-        questionId: q.id,
-        chosenOption: chosen,
-        isCorrect,
-        timeSpentSeconds: Math.round(durationSeconds / (questions.length || 1)),
-      });
-    }
-
-    // Avaliação conforme regras oficiais da Cesgranrio
-    const diagnostic = evaluateSimulation({
-      portugueseCorrect: portCorrect,
-      mathCorrect,
-      specificCorrect,
-      targetScore: user.targetScore || 47,
+      return { userId: user.id, questionId: q.id, chosenOption: chosen, isCorrect, timeSpentSeconds: Math.round(duration / EXAM_TOTAL) };
     });
 
-    // Salvar simulado no banco via transação (Diretriz Mestre)
+    const diagnostic = evaluateSimulation({ portugueseCorrect: portCorrect, mathCorrect, specificCorrect, targetScore: user.targetScore || 47 });
     const savedSimulation = await prisma.$transaction(async (tx) => {
       const sim = await tx.simulation.create({
-        data: {
-          userId: user.id,
-          title,
-          score: diagnostic.totalScore,
-          totalQuestions: diagnostic.maxScore,
-          correctAnswers: diagnostic.totalScore,
-          durationSeconds,
-          detailsJson: diagnostic as any,
-        },
+        data: { userId: user.id, title, score: diagnostic.totalScore, totalQuestions: EXAM_TOTAL, correctAnswers: diagnostic.totalScore, durationSeconds: Math.round(duration), detailsJson: { ...diagnostic, submittedQuestions: questions.length, unansweredQuestions: EXAM_TOTAL - questions.length } as any },
       });
-
-      // Salvar tentativas vinculadas ao simulado
-      for (const att of attemptsToCreate) {
-        await tx.questionAttempt.create({
-          data: {
-            ...att,
-            simulationId: sim.id,
-          },
-        });
-      }
-
-      // Conceder XP
-      await tx.user.update({
-        where: { id: user.id },
-        data: {
-          xp: { increment: 150 + diagnostic.totalScore * 5 },
-          lastStudyDate: new Date(),
-        },
-      });
-
+      if (attemptsToCreate.length) await tx.questionAttempt.createMany({ data: attemptsToCreate.map((att) => ({ ...att, simulationId: sim.id })) });
+      await tx.user.update({ where: { id: user.id }, data: { xp: { increment: 150 + diagnostic.totalScore * 5 }, lastStudyDate: new Date() } });
       return sim;
     });
 
-    return NextResponse.json({
-      success: true,
-      simulation: savedSimulation,
-      diagnostic,
-    });
+    return NextResponse.json({ success: true, simulation: savedSimulation, diagnostic });
   } catch (error) {
     console.error("Erro ao salvar simulado:", error);
-    return NextResponse.json(
-      { error: "Falha ao registrar simulado no banco de dados." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Falha ao registrar simulado no banco de dados." }, { status: 500 });
   }
 }
