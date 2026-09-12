@@ -21,11 +21,7 @@ function loadFiles() {
   const files = collectMarkdownFiles(DOCUMENTS_DIR);
   const signature = files.map((file) => `${file}:${fs.statSync(file).mtimeMs}`).join("|");
   if (fileCache?.signature === signature) return fileCache.files;
-
-  fileCache = {
-    signature,
-    files: files.map((file) => ({ path: file, content: fs.readFileSync(file, "utf8") })),
-  };
+  fileCache = { signature, files: files.map((file) => ({ path: file, content: fs.readFileSync(file, "utf8") })) };
   return fileCache.files;
 }
 
@@ -70,13 +66,8 @@ export function getRagContext(
       const rank = preferredRank.get(relative);
       const score = source
         ? scoreDocument(content, query, source) + (rank === undefined ? 0 : (preferred.length - rank) * 8)
-        : scoreDocument(content, query, {
-            path: relative,
-            type: "reference",
-            priority: 10,
-            aliases: [],
-          });
-      return { file, relative, content, source, score };
+        : 10;
+      return { relative, content, source, score };
     })
     .filter((item) => item.score > 10)
     .sort((a, b) => b.score - a.score)
@@ -93,6 +84,5 @@ export function getRagContext(
     if (context.length + block.length > MAX_CONTEXT_CHARS) break;
     context += block;
   }
-
   return context || "Nenhum documento local relevante foi encontrado para esta consulta.";
 }
