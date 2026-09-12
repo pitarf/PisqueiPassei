@@ -27,6 +27,8 @@
 - [x] Registro de fontes normativas oficiais e status de validação
 - [x] RAG com prioridade por fonte e assunto
 - [x] Limite de contexto enviado à IA para reduzir ruído e custo
+- [x] Cache em memória dos arquivos Markdown do RAG
+- [x] Proveniência explícita para questões inéditas geradas por IA
 - [ ] Suíte automatizada de testes para RAG, regras de prova e rotas críticas
 
 ## ✅ Concluído
@@ -51,7 +53,5 @@
 - [x] Compilação estática e validação com `npm run build` (0 erros em validação anterior)
 - [x] Elaboração dos Manuais: `MANUAL_DEV.md`, `MANUAL_USER.md`, `CHANGELOG.md`
 - [x] Acervo oficial do edital (`documents/edital/edital-2026.3.md` e `documents/edital/retificacao-edital-2026.3.md`) para RAG
-- [x] Entrada oficial do Decreto nº 2.745/1998 para RAG, explicitamente marcada como ponteiro até validação integral
+- [x] Registro das fontes oficiais do Decreto nº 2.745/1998, Lei nº 13.303/2016 e Lei nº 14.133/2021 como ponteiros, sem tratá-las como transcrições integrais
 - [x] Acervo validado dos arts. 42 a 49 da LC nº 123/2006 para RAG
-- [x] Entrada da Lei nº 14.133/2021, marcada como ponteiro até transcrição integral validada
-- [x] Entrada da Lei nº 13.303/2016, marcada como ponteiro até transcrição integral validada
