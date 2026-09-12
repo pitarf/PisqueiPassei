@@ -2,6 +2,26 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.8] - 2026-09-12
+
+### Adicionado
+- **Registro de fontes do RAG:** `src/lib/rag-sources.ts` centraliza fontes oficiais, aliases, prioridade e status de validação.
+- **Lei nº 13.303/2016:** entrada oficial adicionada como ponteiro até validação integral dos arts. 28 a 91.
+- **Decreto nº 2.745/1998:** entrada oficial adicionada como ponteiro até validação integral.
+
+### Alterado
+- RAG passou a priorizar fontes pelo assunto, disciplina e base oficial do tópico.
+- Contexto enviado ao Gemini passou a ter limite global de tamanho para reduzir ruído e custo.
+- RAG passou a reutilizar conteúdo carregado em memória enquanto os arquivos não forem modificados.
+- Professor IA e geradores de aula/questões receberam regras mais rígidas para distinguir fonte oficial validada de ponteiro e conteúdo complementar.
+- Questões inéditas geradas pela IA passam a retornar `origin: "IA"`.
+- Roadmap corrigido para refletir o status real do acervo normativo.
+
+### Segurança de conteúdo
+- Fontes normativas marcadas como `pointer` não são tratadas como transcrição integral.
+- O modelo não deve preencher lacunas jurídicas com memória quando o RAG não sustentar a informação.
+- Questões inéditas continuam separadas das questões reais da Cesgranrio.
+
 ## [0.1.7] - 2026-09-12
 
 ### Adicionado
