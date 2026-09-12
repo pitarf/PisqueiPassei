@@ -1,101 +1,49 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-/**
- * Endpoint para listar flashcards para revisão ou registrar avaliação (Fácil, Médio, Difícil)
- */
-export async function GET(req: NextRequest) {
+const RATINGS = ["FACIL", "MEDIO", "DIFICIL"] as const;
+
+export async function GET() {
   try {
-    const user = await prisma.user.findFirst({
-      where: { email: "rafael@estudos.transpetro" },
-    });
+    const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
+    if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
 
-    if (!user) {
-      return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
-    }
-
-    // Buscar todos os flashcards ou cards vinculados aos tópicos
     const flashcards = await prisma.flashcard.findMany({
-      include: {
-        topic: { include: { subject: true } },
-        reviews: {
-          where: { userId: user.id },
-          orderBy: { reviewedAt: "desc" },
-          take: 1,
-        },
-      },
+      include: { topic: { include: { subject: true } }, reviews: { where: { userId: user.id }, orderBy: { reviewedAt: "desc" }, take: 1 } },
       take: 50,
       orderBy: { createdAt: "desc" },
     });
-
     return NextResponse.json({ flashcards });
   } catch (error) {
     console.error("Erro ao buscar flashcards:", error);
-    return NextResponse.json(
-      { error: "Erro ao carregar flashcards de revisão." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao carregar flashcards de revisão." }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const { flashcardId, rating } = await req.json();
-
-    if (!flashcardId || !rating) {
-      return NextResponse.json(
-        { error: "Parâmetros 'flashcardId' e 'rating' são obrigatórios." },
-        { status: 400 }
-      );
+    if (typeof flashcardId !== "string" || !flashcardId || !RATINGS.includes(rating)) {
+      return NextResponse.json({ error: "Flashcard e avaliação válidos são obrigatórios." }, { status: 400 });
     }
 
-    const user = await prisma.user.findFirst({
-      where: { email: "rafael@estudos.transpetro" },
-    });
+    const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
+    if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
+    const flashcard = await prisma.flashcard.findUnique({ where: { id: flashcardId } });
+    if (!flashcard) return NextResponse.json({ error: "Flashcard não encontrado." }, { status: 404 });
 
-    if (!user) {
-      return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
-    }
-
-    // Calcular próximo intervalo
-    let intervalDays = 1;
-    if (rating === "FACIL") {
-      intervalDays = 7;
-    } else if (rating === "MEDIO") {
-      intervalDays = 3;
-    } else {
-      intervalDays = 1; // DIFICIL volta para amanhã
-    }
-
+    const intervalDays = rating === "FACIL" ? 7 : rating === "MEDIO" ? 3 : 1;
     const nextReviewDate = new Date();
     nextReviewDate.setDate(nextReviewDate.getDate() + intervalDays);
 
-    // Salvar avaliação no banco
-    const review = await prisma.flashcardReview.create({
-      data: {
-        userId: user.id,
-        flashcardId,
-        rating,
-        intervalDays,
-        nextReviewDate,
-      },
+    const review = await prisma.$transaction(async (tx) => {
+      const created = await tx.flashcardReview.create({ data: { userId: user.id, flashcardId, rating, intervalDays, nextReviewDate } });
+      await tx.user.update({ where: { id: user.id }, data: { xp: { increment: 5 }, lastStudyDate: new Date() } });
+      return created;
     });
-
-    // Conceder XP
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        xp: { increment: 5 },
-        lastStudyDate: new Date(),
-      },
-    });
-
     return NextResponse.json({ success: true, review });
   } catch (error) {
     console.error("Erro ao salvar avaliação de flashcard:", error);
-    return NextResponse.json(
-      { error: "Erro ao atualizar revisão espaçada do flashcard." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erro ao atualizar revisão espaçada do flashcard." }, { status: 500 });
   }
 }
