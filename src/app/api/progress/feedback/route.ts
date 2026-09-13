@@ -38,6 +38,8 @@ export async function POST(req: NextRequest) {
     });
 
     const xpEarned = feedback === "ENTENDI" ? 50 : 25;
+    const studyMinutes = duration > 0 ? Math.max(1, Math.round(duration)) : 0;
+
     const updated = await prisma.$transaction(async (tx) => {
       const progress = await tx.userTopicProgress.upsert({
         where: { userId_topicId: { userId: user.id, topicId } },
@@ -47,6 +49,7 @@ export async function POST(req: NextRequest) {
           reviewIntervalDays: srsResult.nextIntervalDays,
           nextReviewDate: srsResult.nextReviewDate,
           lastStudiedAt: new Date(),
+          ...(studyMinutes > 0 ? { totalTimeMinutes: { increment: studyMinutes } } : {}),
         },
         create: {
           userId: user.id,
@@ -56,20 +59,22 @@ export async function POST(req: NextRequest) {
           reviewIntervalDays: srsResult.nextIntervalDays,
           nextReviewDate: srsResult.nextReviewDate,
           lastStudiedAt: new Date(),
+          totalTimeMinutes: studyMinutes,
         },
       });
 
-      if (duration > 0) {
+      if (studyMinutes > 0) {
         await tx.studySession.create({
           data: {
             userId: user.id,
             topicId,
-            durationMinutes: Math.round(duration),
+            durationMinutes: studyMinutes,
             sessionType: "AULA",
             xpEarned,
           },
         });
       }
+
       await tx.user.update({
         where: { id: user.id },
         data: { xp: { increment: xpEarned }, lastStudyDate: new Date() },
