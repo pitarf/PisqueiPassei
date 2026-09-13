@@ -19,18 +19,52 @@ export async function POST(req: NextRequest) {
     if (!question) return NextResponse.json({ error: "Questão não encontrada." }, { status: 404 });
 
     const isCorrect = question.correctOption === chosenOption;
+    const studyMinutes = Math.round(time / 60);
+
     await prisma.$transaction(async (tx) => {
-      await tx.questionAttempt.create({ data: { userId: user.id, questionId, chosenOption, isCorrect, timeSpentSeconds: Math.round(time) } });
-      const progress = await tx.userTopicProgress.findUnique({ where: { userId_topicId: { userId: user.id, topicId: question.topicId } } });
+      await tx.questionAttempt.create({
+        data: {
+          userId: user.id,
+          questionId,
+          chosenOption,
+          isCorrect,
+          timeSpentSeconds: Math.round(time),
+        },
+      });
+
+      const progress = await tx.userTopicProgress.findUnique({
+        where: { userId_topicId: { userId: user.id, topicId: question.topicId } },
+      });
       const total = (progress?.totalQuestions || 0) + 1;
       const correct = (progress?.correctAnswers || 0) + (isCorrect ? 1 : 0);
       const mastery = Math.round((correct / total) * 100);
+
       await tx.userTopicProgress.upsert({
         where: { userId_topicId: { userId: user.id, topicId: question.topicId } },
-        update: { totalQuestions: total, correctAnswers: correct, masteryScore: mastery, status: mastery >= 85 ? "DOMINADO" : "EM_ESTUDO", lastStudiedAt: new Date() },
-        create: { userId: user.id, topicId: question.topicId, totalQuestions: 1, correctAnswers: isCorrect ? 1 : 0, masteryScore: isCorrect ? 100 : 0, status: "EM_ESTUDO", lastStudiedAt: new Date() },
+        update: {
+          totalQuestions: total,
+          correctAnswers: correct,
+          masteryScore: mastery,
+          status: mastery >= 85 ? "DOMINADO" : "EM_ESTUDO",
+          lastStudiedAt: new Date(),
+          ...(studyMinutes > 0 ? { totalTimeMinutes: { increment: studyMinutes } } : {}),
+        },
+        create: {
+          userId: user.id,
+          topicId: question.topicId,
+          totalQuestions: 1,
+          correctAnswers: isCorrect ? 1 : 0,
+          masteryScore: isCorrect ? 100 : 0,
+          status: "EM_ESTUDO",
+          lastStudiedAt: new Date(),
+          totalTimeMinutes: studyMinutes,
+        },
       });
-      await tx.user.update({ where: { id: user.id }, data: { xp: { increment: isCorrect ? 10 : 2 }, lastStudyDate: new Date() } });
+
+      await tx.user.update({
+        where: { id: user.id },
+        data: { xp: { increment: isCorrect ? 10 : 2 }, lastStudyDate: new Date() },
+      });
     });
 
     return NextResponse.json({ success: true, isCorrect, correctOption: question.correctOption, explanation: question.explanation });
