@@ -2,6 +2,18 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.12] - 2026-09-12
+
+### Corrigido
+- API do simulado passou a validar os tempos individuais recebidos para cada questão antes de persistir as tentativas.
+- Seleção aleatória do simulado e das baterias usa Fisher-Yates.
+- Treino de erros passou a priorizar questões que o estudante realmente errou, usando os tópicos dessas tentativas para completar a bateria quando necessário.
+- Bateria por dificuldade deixou de misturar questões de outra dificuldade quando o banco ainda não possui quantidade suficiente da dificuldade solicitada.
+
+### Qualidade
+- Adicionado script `typecheck` com TypeScript.
+- Adicionado GitHub Actions para executar `prisma generate` e `typecheck` em pushes e pull requests para `main`.
+
 ## [0.1.11] - 2026-09-13
 
 ### Corrigido
