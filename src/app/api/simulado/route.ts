@@ -9,7 +9,12 @@ const SPECIFIC_TOTAL = 40;
 const EXAM_SECONDS = 4 * 60 * 60;
 
 function shuffle<T>(items: T[]) {
-  return [...items].sort(() => Math.random() - 0.5);
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
 }
 
 async function loadExamQuestions() {
@@ -48,6 +53,14 @@ export async function POST(req: NextRequest) {
     if (!answers || typeof answers !== "object" || Array.isArray(answers)) return NextResponse.json({ error: "Folha de respostas inválida." }, { status: 400 });
     if (!Array.isArray(questionIds) || questionIds.length !== EXAM_TOTAL || new Set(questionIds).size !== EXAM_TOTAL) return NextResponse.json({ error: "O simulado precisa conter exatamente 60 questões." }, { status: 400 });
     if (questionTimes !== undefined && (!questionTimes || typeof questionTimes !== "object" || Array.isArray(questionTimes))) return NextResponse.json({ error: "Tempos das questões inválidos." }, { status: 400 });
+
+    if (questionTimes) {
+      for (const [questionId, rawTime] of Object.entries(questionTimes)) {
+        if (!questionIds.includes(questionId) || typeof rawTime !== "number" || !Number.isFinite(rawTime) || rawTime < 0 || rawTime > EXAM_SECONDS) {
+          return NextResponse.json({ error: "Tempo de uma ou mais questões é inválido." }, { status: 400 });
+        }
+      }
+    }
 
     const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
     if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
