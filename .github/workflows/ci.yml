@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  typecheck:
+  quality:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -28,3 +28,6 @@ jobs:
 
       - name: TypeScript check
         run: npm run typecheck
+
+      - name: Unit tests
+        run: npm test
