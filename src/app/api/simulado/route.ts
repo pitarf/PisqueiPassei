@@ -42,11 +42,12 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { title = "Simulado Transpetro 2026.3", durationSeconds, answers, questionIds } = await req.json();
+    const { title = "Simulado Transpetro 2026.3", durationSeconds, answers, questionIds, questionTimes } = await req.json();
     const duration = Number(durationSeconds);
     if (!Number.isFinite(duration) || duration < 0 || duration > EXAM_SECONDS) return NextResponse.json({ error: "Tempo de prova inválido." }, { status: 400 });
     if (!answers || typeof answers !== "object" || Array.isArray(answers)) return NextResponse.json({ error: "Folha de respostas inválida." }, { status: 400 });
     if (!Array.isArray(questionIds) || questionIds.length !== EXAM_TOTAL || new Set(questionIds).size !== EXAM_TOTAL) return NextResponse.json({ error: "O simulado precisa conter exatamente 60 questões." }, { status: 400 });
+    if (questionTimes !== undefined && (!questionTimes || typeof questionTimes !== "object" || Array.isArray(questionTimes))) return NextResponse.json({ error: "Tempos das questões inválidos." }, { status: 400 });
 
     const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
     if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
@@ -63,7 +64,6 @@ export async function POST(req: NextRequest) {
     if (distribution.portuguese !== PORT_TOTAL || distribution.math !== MATH_TOTAL || distribution.specific !== SPECIFIC_TOTAL) return NextResponse.json({ error: "A distribuição do simulado deve ser 10 Português, 10 Matemática e 40 Específicas." }, { status: 400 });
 
     let portCorrect = 0, mathCorrect = 0, specificCorrect = 0;
-    const perQuestionTime = Math.floor(duration / EXAM_TOTAL);
     const topicCounts = new Map<string, { total: number; correct: number }>();
     const attemptsToCreate = orderedQuestions.map((q) => {
       const raw = answers[q.id];
@@ -78,7 +78,9 @@ export async function POST(req: NextRequest) {
       current.total++;
       if (isCorrect) current.correct++;
       topicCounts.set(q.topicId, current);
-      return { userId: user.id, questionId: q.id, chosenOption: chosen, isCorrect, timeSpentSeconds: perQuestionTime };
+      const rawTime = questionTimes?.[q.id];
+      const timeSpentSeconds = typeof rawTime === "number" && Number.isFinite(rawTime) ? Math.max(0, Math.min(EXAM_SECONDS, Math.floor(rawTime))) : 0;
+      return { userId: user.id, questionId: q.id, chosenOption: chosen, isCorrect, timeSpentSeconds };
     });
 
     const diagnostic = evaluateSimulation({ portugueseCorrect: portCorrect, mathCorrect, specificCorrect, targetScore: user.targetScore || 47 });
