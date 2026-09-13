@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import {
@@ -38,9 +38,19 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
   const [lesson, setLesson] = useState(initialLesson);
   const [loading, setLoading] = useState(!initialLesson);
   const [feedbackSending, setFeedbackSending] = useState(false);
+  const [feedbackSent, setFeedbackSent] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("todas");
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
   const [showAnswer, setShowAnswer] = useState<Record<number, boolean>>({});
+  const startedAtRef = useRef(Date.now());
+
+  useEffect(() => {
+    startedAtRef.current = Date.now();
+    setFeedbackSent(false);
+    setFeedbackSending(false);
+    setSelectedAnswers({});
+    setShowAnswer({});
+  }, [topic.id, initialLesson]);
 
   // Carregar ou gerar aula se não existir
   const handleGenerate = async (force: boolean = false) => {
@@ -56,6 +66,10 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
       if (!res.ok) throw new Error(data.error || "Erro ao carregar aula.");
 
       setLesson(data.lesson);
+      startedAtRef.current = Date.now();
+      setFeedbackSent(false);
+      setSelectedAnswers({});
+      setShowAnswer({});
       toast.success(
         data.cached
           ? "Aula carregada instantaneamente do cache local!"
@@ -68,18 +82,31 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
     }
   };
 
-  // Enviar feedback de domínio (SRS)
+  // Enviar feedback de domínio (SRS) com duração real da sessão
   const handleFeedback = async (feedbackType: "NAO_ENTENDI" | "REVISAR" | "ENTENDI") => {
+    if (feedbackSending || feedbackSent) return;
+
     setFeedbackSending(true);
+    const durationMinutes = Math.min(
+      180,
+      Math.max(0, Math.round((Date.now() - startedAtRef.current) / 60000))
+    );
+
     try {
       const res = await fetch("/api/progress/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topicId: topic.id, feedback: feedbackType }),
+        body: JSON.stringify({
+          topicId: topic.id,
+          feedback: feedbackType,
+          durationMinutes,
+        }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Erro ao salvar progresso.");
+
+      setFeedbackSent(true);
 
       if (feedbackType === "ENTENDI") {
         toast.success("Excelente! Domínio atualizado (+15%) e próxima revisão agendada.");
@@ -437,21 +464,21 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 onClick={() => handleFeedback("NAO_ENTENDI")}
-                disabled={feedbackSending}
+                disabled={feedbackSending || feedbackSent}
                 className="flex-1 sm:flex-initial px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-bold text-xs transition-all active:scale-95"
               >
                 Não entendi
               </button>
               <button
                 onClick={() => handleFeedback("REVISAR")}
-                disabled={feedbackSending}
+                disabled={feedbackSending || feedbackSent}
                 className="flex-1 sm:flex-initial px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-bold text-xs transition-all active:scale-95"
               >
                 Preciso revisar
               </button>
               <button
                 onClick={() => handleFeedback("ENTENDI")}
-                disabled={feedbackSending}
+                disabled={feedbackSending || feedbackSent}
                 className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-all active:scale-95 shadow-md shadow-emerald-500/20"
               >
                 Entendi!
