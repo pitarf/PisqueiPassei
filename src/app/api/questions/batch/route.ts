@@ -4,18 +4,26 @@ import { generateQuestionBatch } from "@/lib/gemini";
 
 const OPTIONS = new Set(["A", "B", "C", "D", "E"]);
 const DIFFICULTIES = new Set(["FACIL", "MEDIA", "DIFICIL"]);
+const MODES = new Set(["normal", "erros"]);
 
 function normalize(text: string) {
-  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim();
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function validQuestion(q: any) {
-  const fields = ["optionA", "optionB", "optionC", "optionD", "optionE", "explanation"];
-  return q &&
-    typeof q.statement === "string" && q.statement.trim().length >= 20 &&
-    fields.every((k) => typeof q[k] === "string" && q[k].trim().length > 0) &&
-    OPTIONS.has(q.correctOption) &&
-    DIFFICULTIES.has(q.difficulty);
+  const optionKeys = ["optionA", "optionB", "optionC", "optionD", "optionE"];
+  const fields = [...optionKeys, "explanation"];
+  if (!q || typeof q.statement !== "string" || q.statement.trim().length < 20) return false;
+  if (!fields.every((k) => typeof q[k] === "string" && q[k].trim().length > 0)) return false;
+  if (!OPTIONS.has(q.correctOption) || !DIFFICULTIES.has(q.difficulty)) return false;
+  const uniqueOptions = new Set(optionKeys.map((key) => normalize(q[key])));
+  return uniqueOptions.size === optionKeys.length;
 }
 
 function shuffle<T>(items: T[]) {
@@ -30,9 +38,14 @@ function shuffle<T>(items: T[]) {
 export async function POST(req: NextRequest) {
   try {
     const { subjectId, topicId, mode = "normal", count = 10, difficulty = "MEDIA" } = await req.json();
+    if (typeof mode !== "string" || !MODES.has(mode)) {
+      return NextResponse.json({ error: "Modo de questões inválido." }, { status: 400 });
+    }
+
     const requestedDifficulty = String(difficulty).toUpperCase();
     const safeDifficulty = DIFFICULTIES.has(requestedDifficulty) ? requestedDifficulty : "MEDIA";
-    const safeCount = Math.min(Math.max(Number(count) || 10, 1), 60);
+    const parsedCount = Number(count);
+    const safeCount = Number.isFinite(parsedCount) ? Math.min(Math.max(Math.floor(parsedCount), 1), 60) : 10;
 
     const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
     if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
@@ -71,15 +84,9 @@ export async function POST(req: NextRequest) {
     }
 
     const where = targetTopicIds.length ? { topicId: { in: targetTopicIds } } : {};
-    const allExisting = await prisma.question.findMany({
-      where,
-      include: { topic: { include: { subject: true } } },
-    });
-
+    const allExisting = await prisma.question.findMany({ where, include: { topic: { include: { subject: true } } } });
     const compatibleExisting = allExisting.filter((q) => q.difficulty === safeDifficulty);
-    const errorPool = mode === "erros"
-      ? compatibleExisting.filter((q) => errorQuestionIds.includes(q.id))
-      : [];
+    const errorPool = mode === "erros" ? compatibleExisting.filter((q) => errorQuestionIds.includes(q.id)) : [];
     const pool = mode === "erros" ? errorPool : compatibleExisting;
 
     if (pool.length >= safeCount) {
