@@ -38,14 +38,27 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
 
     let targetTopicIds: string[] = [];
+    let errorQuestionIds: string[] = [];
+
     if (mode === "erros") {
-      const weak = await prisma.userTopicProgress.findMany({
-        where: { userId: user.id, masteryScore: { lt: 70 } },
-        orderBy: { masteryScore: "asc" },
-        take: 5,
-        select: { topicId: true },
+      const wrongAttempts = await prisma.questionAttempt.findMany({
+        where: { userId: user.id, isCorrect: false },
+        orderBy: { createdAt: "desc" },
+        select: { questionId: true, question: { select: { topicId: true } } },
+        take: 100,
       });
-      targetTopicIds = weak.map((p) => p.topicId);
+      errorQuestionIds = [...new Set(wrongAttempts.map((attempt) => attempt.questionId))];
+      targetTopicIds = [...new Set(wrongAttempts.map((attempt) => attempt.question.topicId))].slice(0, 5);
+
+      if (!targetTopicIds.length) {
+        const weak = await prisma.userTopicProgress.findMany({
+          where: { userId: user.id, masteryScore: { lt: 70 } },
+          orderBy: { masteryScore: "asc" },
+          take: 5,
+          select: { topicId: true },
+        });
+        targetTopicIds = weak.map((p) => p.topicId);
+      }
       if (!targetTopicIds.length) {
         const fallback = await prisma.topic.findMany({ take: 5, orderBy: { order: "asc" }, select: { id: true } });
         targetTopicIds = fallback.map((t) => t.id);
@@ -64,10 +77,13 @@ export async function POST(req: NextRequest) {
     });
 
     const compatibleExisting = allExisting.filter((q) => q.difficulty === safeDifficulty);
-    const fallbackExisting = safeDifficulty === "MEDIA" ? allExisting : [];
-    const pool = compatibleExisting.length >= safeCount ? compatibleExisting : fallbackExisting;
+    const errorPool = mode === "erros"
+      ? compatibleExisting.filter((q) => errorQuestionIds.includes(q.id))
+      : [];
+    const pool = mode === "erros" ? errorPool : compatibleExisting;
+
     if (pool.length >= safeCount) {
-      return NextResponse.json({ questions: shuffle(pool).slice(0, safeCount), generated: 0 });
+      return NextResponse.json({ questions: shuffle(pool).slice(0, safeCount), generated: 0, requestedDifficulty: safeDifficulty });
     }
 
     const selected = shuffle(pool);
@@ -75,7 +91,7 @@ export async function POST(req: NextRequest) {
     const topics = targetTopicIds.length
       ? await prisma.topic.findMany({ where: { id: { in: targetTopicIds } }, include: { subject: true }, orderBy: { order: "asc" } })
       : await prisma.topic.findMany({ include: { subject: true }, orderBy: { order: "asc" }, take: 1 });
-    if (!topics.length) return NextResponse.json({ questions: selected });
+    if (!topics.length) return NextResponse.json({ questions: selected, generated: 0, requestedDifficulty: safeDifficulty });
 
     let remaining = safeCount - selected.length;
     const created: any[] = [];
@@ -87,7 +103,7 @@ export async function POST(req: NextRequest) {
       const batchSeen = new Set<string>();
       const valid = (generated.questions || []).filter(validQuestion).filter((q: any) => {
         const key = normalize(q.statement);
-        if (existingStatements.has(key) || batchSeen.has(key)) return false;
+        if (q.difficulty !== safeDifficulty || existingStatements.has(key) || batchSeen.has(key)) return false;
         batchSeen.add(key);
         return true;
       });
