@@ -2,12 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { askProfessorAI } from "@/lib/gemini";
 
+const MAX_MESSAGE_LENGTH = 4000;
+const MAX_HISTORY_MESSAGES = 30;
+
 /** Endpoint para conversa com o Professor IA. */
 export async function POST(req: NextRequest) {
   try {
     const { message, conversationId } = await req.json();
-    if (typeof message !== "string" || !message.trim()) {
+    const cleanMessage = typeof message === "string" ? message.trim() : "";
+    if (!cleanMessage) {
       return NextResponse.json({ error: "A mensagem não pode ser vazia." }, { status: 400 });
+    }
+    if (cleanMessage.length > MAX_MESSAGE_LENGTH) {
+      return NextResponse.json({ error: `A mensagem deve ter no máximo ${MAX_MESSAGE_LENGTH} caracteres.` }, { status: 400 });
+    }
+    if (conversationId !== undefined && (typeof conversationId !== "string" || !conversationId.trim())) {
+      return NextResponse.json({ error: "Conversa inválida." }, { status: 400 });
     }
 
     const user = await prisma.user.findFirst({
@@ -26,6 +36,8 @@ export async function POST(req: NextRequest) {
 
     const weakPoints = user.progress
       .filter((p) => p.status !== "NAO_INICIADO" && p.masteryScore < 70)
+      .sort((a, b) => a.masteryScore - b.masteryScore)
+      .slice(0, 10)
       .map((p) => `${p.topic.title} (${Math.round(p.masteryScore)}%)`);
     const recentErrors = user.attempts.map(
       (a) => `${a.question.topic.title}: errou opção ${a.chosenOption} (correta era ${a.question.correctOption})`
@@ -33,36 +45,36 @@ export async function POST(req: NextRequest) {
     const totalMastery = user.progress.reduce((acc, p) => acc + p.masteryScore, 0);
     const averageMastery = user.progress.length ? totalMastery / user.progress.length : 0;
 
-    // Nunca aceitar uma conversa de outro usuário.
     let conv = conversationId
       ? await prisma.aIConversation.findFirst({
           where: { id: conversationId, userId: user.id },
-          include: { messages: { orderBy: { createdAt: "asc" } } },
+          include: { messages: { orderBy: { createdAt: "asc" }, take: MAX_HISTORY_MESSAGES } },
         })
       : null;
 
     if (!conv) {
       conv = await prisma.aIConversation.create({
-        data: { userId: user.id, title: message.trim().slice(0, 40) + "..." },
+        data: { userId: user.id, title: cleanMessage.slice(0, 40) + (cleanMessage.length > 40 ? "..." : "") },
         include: { messages: true },
       });
     }
 
+    const history = conv.messages.map((m) => ({ role: m.role, content: m.content }));
     await prisma.aIMessage.create({
-      data: { conversationId: conv.id, role: "user", content: message.trim() },
+      data: { conversationId: conv.id, role: "user", content: cleanMessage },
     });
 
     const aiResponse = await askProfessorAI(
-      message.trim(),
+      cleanMessage,
       { studentName: user.name, currentMastery: averageMastery, weakPoints, recentErrors },
-      conv.messages.map((m) => ({ role: m.role, content: m.content }))
+      history
     );
 
     const assistantMessage = await prisma.aIMessage.create({
-      data: { conversationId: conv.id, role: "assistant", content: aiResponse },
+      data: { conversationId: conv.id, role: "assistant", content: aiResponse.trim() },
     });
 
-    return NextResponse.json({ conversationId: conv.id, response: aiResponse, messageId: assistantMessage.id });
+    return NextResponse.json({ conversationId: conv.id, response: aiResponse.trim(), messageId: assistantMessage.id });
   } catch (error) {
     console.error("Erro no chat do Professor IA:", error);
     return NextResponse.json({ error: "Erro ao se comunicar com o Professor IA. Tente novamente." }, { status: 500 });
