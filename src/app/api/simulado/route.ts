@@ -38,6 +38,13 @@ async function loadExamQuestions() {
 export async function GET() {
   try {
     const { questions, distribution } = await loadExamQuestions();
+    if (questions.length !== EXAM_TOTAL) {
+      return NextResponse.json({
+        error: "Banco de questões insuficiente para montar o simulado completo.",
+        required: { portuguese: PORT_TOTAL, math: MATH_TOTAL, specific: SPECIFIC_TOTAL },
+        available: distribution,
+      }, { status: 503 });
+    }
     return NextResponse.json({ total: questions.length, questions, distribution });
   } catch (error) {
     console.error("Erro ao carregar simulado:", error);
@@ -105,8 +112,14 @@ export async function POST(req: NextRequest) {
         const total = (progress?.totalQuestions || 0) + counts.total;
         const correct = (progress?.correctAnswers || 0) + counts.correct;
         const mastery = Math.round((correct / total) * 100);
-        await tx.userTopicProgress.upsert({ where: { userId_topicId: { userId: user.id, topicId } }, update: { totalQuestions: total, correctAnswers: correct, masteryScore: mastery, status: mastery >= 85 ? "DOMINADO" : "EM_ESTUDO", lastStudiedAt: new Date() }, create: { userId: user.id, topicId, totalQuestions: counts.total, correctAnswers: counts.correct, masteryScore: mastery, status: "EM_ESTUDO", lastStudiedAt: new Date() } });
+        const topicTimeMinutes = attemptsToCreate.filter((attempt) => questionMap.get(attempt.questionId)?.topicId === topicId).reduce((sum, attempt) => sum + Math.round(attempt.timeSpentSeconds / 60), 0);
+        await tx.userTopicProgress.upsert({
+          where: { userId_topicId: { userId: user.id, topicId } },
+          update: { totalQuestions: total, correctAnswers: correct, masteryScore: mastery, status: mastery >= 85 ? "DOMINADO" : "EM_ESTUDO", lastStudiedAt: new Date(), ...(topicTimeMinutes > 0 ? { totalTimeMinutes: { increment: topicTimeMinutes } } : {}) },
+          create: { userId: user.id, topicId, totalQuestions: counts.total, correctAnswers: counts.correct, masteryScore: mastery, status: "EM_ESTUDO", lastStudiedAt: new Date(), totalTimeMinutes: topicTimeMinutes },
+        });
       }
+      await tx.studySession.create({ data: { userId: user.id, topicId: null, durationMinutes: Math.max(1, Math.round(duration / 60)), sessionType: "SIMULADO", xpEarned: 150 + diagnostic.totalScore * 5 } });
       await tx.user.update({ where: { id: user.id }, data: { xp: { increment: 150 + diagnostic.totalScore * 5 }, lastStudyDate: new Date() } });
       return sim;
     });
