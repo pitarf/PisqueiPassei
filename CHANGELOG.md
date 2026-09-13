@@ -2,6 +2,18 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.11] - 2026-09-13
+
+### Corrigido
+- Simulado passou a registrar o tempo real gasto em cada questão, em vez de distribuir artificialmente o tempo total entre os 60 itens.
+- Bateria de questões passou a usar embaralhamento Fisher-Yates para seleção mais uniforme.
+- Dificuldade solicitada passou a ser normalizada e validada entre `FACIL`, `MEDIA` e `DIFICIL`.
+- Questões inéditas geradas por IA passaram a ser rejeitadas quando repetem o enunciado de uma questão existente ou de outra questão do mesmo lote.
+- Geração de questões passou a exigir dificuldade válida antes da persistência.
+
+### Transparência
+- Questões geradas por IA continuam identificadas como inéditas e não são apresentadas como questões oficiais da Cesgranrio.
+
 ## [0.1.10] - 2026-09-12
 
 ### Corrigido
