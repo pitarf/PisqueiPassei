@@ -30,6 +30,7 @@
 - [x] Cache em memória dos arquivos Markdown do RAG
 - [x] Proveniência explícita para questões inéditas geradas por IA
 - [x] Auditoria das regras do simulado, respostas, progresso e SRS
+- [x] Pipeline CI para Prisma Generate + TypeScript
 - [ ] Suíte automatizada de testes para RAG, regras de prova e rotas críticas
 
 ## ✅ Concluído no MVP
@@ -47,6 +48,7 @@
 - [x] Diagnóstico com os critérios de eliminação previstos e separação da meta pessoal
 - [x] Registro de todas as 60 tentativas do simulado, inclusive não respondidas, e atualização do progresso por tópico
 - [x] Respostas individuais com validação de alternativa e tempo
+- [x] Tempo real individual das questões do simulado enviado e validado no servidor
 - [x] Flashcards com agenda de revisão por vencimento e avaliações Fácil/Médio/Difícil
 - [x] Professor IA contextualizado com histórico, notas e pontos fracos
 - [x] Proteção da conversa do Professor IA contra acesso por ID de outro usuário
@@ -61,4 +63,4 @@
 - O simulado reproduz a estrutura e os critérios do edital, mas não representa uma prova oficial aplicada pela Cesgranrio.
 - Decreto 2.745/1998, Lei 13.303/2016 e Lei 14.133/2021 estão registrados como ponteiros oficiais, não como transcrições integrais validadas.
 - A autenticação ainda é de usuário único de desenvolvimento, portanto o MVP não está pronto para comercialização multiusuário.
-- A última compilação registrada foi bem-sucedida, mas não há pipeline CI automatizado neste repositório para comprovar cada commit automaticamente.
+- O pipeline CI valida geração do Prisma e TypeScript, mas não executa o build completo nem testes de integração que dependem do banco.
