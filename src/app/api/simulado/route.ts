@@ -7,6 +7,7 @@ const PORT_TOTAL = 10;
 const MATH_TOTAL = 10;
 const SPECIFIC_TOTAL = 40;
 const EXAM_SECONDS = 4 * 60 * 60;
+const DUPLICATE_WINDOW_MS = 15_000;
 
 function shuffle<T>(items: T[]) {
   const result = [...items];
@@ -32,7 +33,10 @@ async function loadExamQuestions() {
   const portQuestions = shuffle(portPool).slice(0, PORT_TOTAL);
   const mathQuestions = shuffle(mathPool).slice(0, MATH_TOTAL);
   const specificQuestions = shuffle(specificPool).slice(0, SPECIFIC_TOTAL);
-  return { questions: [...portQuestions, ...mathQuestions, ...specificQuestions], distribution: { portuguese: portQuestions.length, math: mathQuestions.length, specific: specificQuestions.length } };
+  return {
+    questions: [...portQuestions, ...mathQuestions, ...specificQuestions],
+    distribution: { portuguese: portQuestions.length, math: mathQuestions.length, specific: specificQuestions.length },
+  };
 }
 
 export async function GET() {
@@ -58,7 +62,7 @@ export async function POST(req: NextRequest) {
     const duration = Number(durationSeconds);
     if (!Number.isFinite(duration) || duration < 0 || duration > EXAM_SECONDS) return NextResponse.json({ error: "Tempo de prova inválido." }, { status: 400 });
     if (!answers || typeof answers !== "object" || Array.isArray(answers)) return NextResponse.json({ error: "Folha de respostas inválida." }, { status: 400 });
-    if (!Array.isArray(questionIds) || questionIds.length !== EXAM_TOTAL || new Set(questionIds).size !== EXAM_TOTAL) return NextResponse.json({ error: "O simulado precisa conter exatamente 60 questões." }, { status: 400 });
+    if (!Array.isArray(questionIds) || questionIds.length !== EXAM_TOTAL || new Set(questionIds).size !== EXAM_TOTAL || questionIds.some((id) => typeof id !== "string" || !id)) return NextResponse.json({ error: "O simulado precisa conter exatamente 60 questões válidas." }, { status: 400 });
     if (questionTimes !== undefined && (!questionTimes || typeof questionTimes !== "object" || Array.isArray(questionTimes))) return NextResponse.json({ error: "Tempos das questões inválidos." }, { status: 400 });
 
     if (questionTimes) {
@@ -104,8 +108,45 @@ export async function POST(req: NextRequest) {
     });
 
     const diagnostic = evaluateSimulation({ portugueseCorrect: portCorrect, mathCorrect, specificCorrect, targetScore: user.targetScore || 47 });
+    const normalizedQuestionIds = [...questionIds].sort();
     const savedSimulation = await prisma.$transaction(async (tx) => {
-      const sim = await tx.simulation.create({ data: { userId: user.id, title, score: diagnostic.totalScore, totalQuestions: EXAM_TOTAL, correctAnswers: diagnostic.totalScore, durationSeconds: Math.round(duration), detailsJson: { ...diagnostic, distribution, submittedQuestions: EXAM_TOTAL, unansweredQuestions: attemptsToCreate.filter((a) => !a.chosenOption).length } as any } });
+      // Reenvios idênticos em uma janela curta não podem gerar outra prova, tentativas e XP.
+      const recentSimulations = await tx.simulation.findMany({
+        where: {
+          userId: user.id,
+          title,
+          completedAt: { gte: new Date(Date.now() - DUPLICATE_WINDOW_MS) },
+        },
+        orderBy: { completedAt: "desc" },
+        take: 5,
+      });
+      for (const existing of recentSimulations) {
+        const details = existing.detailsJson as { submittedQuestionIds?: unknown };
+        if (Array.isArray(details?.submittedQuestionIds)) {
+          const existingIds = details.submittedQuestionIds.filter((id): id is string => typeof id === "string").sort();
+          if (existingIds.length === EXAM_TOTAL && existingIds.every((id, index) => id === normalizedQuestionIds[index])) {
+            return existing;
+          }
+        }
+      }
+
+      const sim = await tx.simulation.create({
+        data: {
+          userId: user.id,
+          title,
+          score: diagnostic.totalScore,
+          totalQuestions: EXAM_TOTAL,
+          correctAnswers: diagnostic.totalScore,
+          durationSeconds: Math.round(duration),
+          detailsJson: {
+            ...diagnostic,
+            distribution,
+            submittedQuestions: EXAM_TOTAL,
+            submittedQuestionIds: normalizedQuestionIds,
+            unansweredQuestions: attemptsToCreate.filter((a) => !a.chosenOption).length,
+          } as any,
+        },
+      });
       await tx.questionAttempt.createMany({ data: attemptsToCreate.map((att) => ({ ...att, simulationId: sim.id })) });
       for (const [topicId, counts] of topicCounts) {
         const progress = await tx.userTopicProgress.findUnique({ where: { userId_topicId: { userId: user.id, topicId } } });
@@ -123,7 +164,7 @@ export async function POST(req: NextRequest) {
       await tx.user.update({ where: { id: user.id }, data: { xp: { increment: 150 + diagnostic.totalScore * 5 }, lastStudyDate: new Date() } });
       return sim;
     });
-    return NextResponse.json({ success: true, simulation: savedSimulation, diagnostic });
+    return NextResponse.json({ success: true, duplicate: savedSimulation.detailsJson && typeof savedSimulation.detailsJson === "object" && "submittedQuestionIds" in savedSimulation.detailsJson, simulation: savedSimulation, diagnostic });
   } catch (error) {
     console.error("Erro ao salvar simulado:", error);
     return NextResponse.json({ error: "Falha ao registrar simulado no banco de dados." }, { status: 500 });
