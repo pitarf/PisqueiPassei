@@ -23,6 +23,11 @@ export interface ExamDiagnostic {
   recommendations: string[];
 }
 
+function clampInteger(value: number, min: number, max: number) {
+  if (!Number.isFinite(value)) return min;
+  return Math.max(min, Math.min(max, Math.trunc(value)));
+}
+
 export function evaluateSimulation({
   portugueseCorrect,
   mathCorrect,
@@ -39,16 +44,21 @@ export function evaluateSimulation({
   const specificTotal = 40;
   const maxScore = 60;
 
-  const totalScore = portugueseCorrect + mathCorrect + specificCorrect;
+  const port = clampInteger(portugueseCorrect, 0, portugueseTotal);
+  const math = clampInteger(mathCorrect, 0, mathTotal);
+  const specific = clampInteger(specificCorrect, 0, specificTotal);
+  const target = clampInteger(targetScore, 0, maxScore);
+
+  const totalScore = port + math + specific;
   const percentage = (totalScore / maxScore) * 100;
-  const pointsToTarget = totalScore - targetScore;
-  const isAboveTarget = totalScore >= targetScore;
+  const pointsToTarget = totalScore - target;
+  const isAboveTarget = totalScore >= target;
 
   const eliminationReasons: string[] = [];
 
   // Critérios de eliminação: menos de 50% em conhecimentos gerais,
   // menos de 50% em conhecimentos específicos, ou nota zero em Português/Matemática.
-  const generalCorrect = portugueseCorrect + mathCorrect;
+  const generalCorrect = port + math;
   const generalTotal = portugueseTotal + mathTotal;
 
   if (generalCorrect < generalTotal * 0.5) {
@@ -56,49 +66,49 @@ export function evaluateSimulation({
       `Eliminado: aproveitamento inferior a 50% em Conhecimentos Gerais (${generalCorrect}/${generalTotal}).`
     );
   }
-  if (specificCorrect < specificTotal * 0.5) {
+  if (specific < specificTotal * 0.5) {
     eliminationReasons.push(
-      `Eliminado: aproveitamento inferior a 50% em Conhecimentos Específicos (${specificCorrect}/${specificTotal}).`
+      `Eliminado: aproveitamento inferior a 50% em Conhecimentos Específicos (${specific}/${specificTotal}).`
     );
   }
-  if (portugueseCorrect === 0) {
+  if (port === 0) {
     eliminationReasons.push("Eliminado: obteve nota ZERO em Língua Portuguesa.");
   }
-  if (mathCorrect === 0) {
+  if (math === 0) {
     eliminationReasons.push("Eliminado: obteve nota ZERO em Matemática.");
   }
 
   const isEliminated = eliminationReasons.length > 0;
 
   const recommendations: string[] = [];
-  if (specificCorrect < 32) {
+  if (specific < 32) {
     recommendations.push("Priorize Conhecimentos Específicos, que correspondem a 40 das 60 questões.");
   }
-  if (mathCorrect < 7) {
+  if (math < 7) {
     recommendations.push("Intensifique o treino de Matemática nos tópicos em que apresentou menor desempenho.");
   }
-  if (portugueseCorrect < 8) {
+  if (port < 8) {
     recommendations.push("Treine interpretação e os demais tópicos de Língua Portuguesa previstos no edital.");
   }
   if (isAboveTarget && !isEliminated) {
-    recommendations.push("Você atingiu a meta de 47/60 e superou os critérios mínimos de eliminação. Mantenha as revisões.");
+    recommendations.push(`Você atingiu a meta de ${target}/60 e superou os critérios mínimos de eliminação. Mantenha as revisões.`);
   }
 
   return {
     totalScore,
     maxScore,
     percentage,
-    targetScore,
+    targetScore: target,
     pointsToTarget,
     isAboveTarget,
     isEliminated,
     eliminationReasons,
     breakdown: {
-      portugueseScore: portugueseCorrect,
+      portugueseScore: port,
       portugueseTotal,
-      mathScore: mathCorrect,
+      mathScore: math,
       mathTotal,
-      specificScore: specificCorrect,
+      specificScore: specific,
       specificTotal,
     },
     recommendations,
