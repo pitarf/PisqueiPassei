@@ -109,8 +109,7 @@ export async function POST(req: NextRequest) {
 
     const diagnostic = evaluateSimulation({ portugueseCorrect: portCorrect, mathCorrect, specificCorrect, targetScore: user.targetScore || 47 });
     const normalizedQuestionIds = [...questionIds].sort();
-    const savedSimulation = await prisma.$transaction(async (tx) => {
-      // Reenvios idênticos em uma janela curta não podem gerar outra prova, tentativas e XP.
+    const result = await prisma.$transaction(async (tx) => {
       const recentSimulations = await tx.simulation.findMany({
         where: {
           userId: user.id,
@@ -125,7 +124,7 @@ export async function POST(req: NextRequest) {
         if (Array.isArray(details?.submittedQuestionIds)) {
           const existingIds = details.submittedQuestionIds.filter((id): id is string => typeof id === "string").sort();
           if (existingIds.length === EXAM_TOTAL && existingIds.every((id, index) => id === normalizedQuestionIds[index])) {
-            return existing;
+            return { simulation: existing, duplicate: true };
           }
         }
       }
@@ -162,9 +161,9 @@ export async function POST(req: NextRequest) {
       }
       await tx.studySession.create({ data: { userId: user.id, topicId: null, durationMinutes: Math.max(1, Math.round(duration / 60)), sessionType: "SIMULADO", xpEarned: 150 + diagnostic.totalScore * 5 } });
       await tx.user.update({ where: { id: user.id }, data: { xp: { increment: 150 + diagnostic.totalScore * 5 }, lastStudyDate: new Date() } });
-      return sim;
+      return { simulation: sim, duplicate: false };
     });
-    return NextResponse.json({ success: true, duplicate: savedSimulation.detailsJson && typeof savedSimulation.detailsJson === "object" && "submittedQuestionIds" in savedSimulation.detailsJson, simulation: savedSimulation, diagnostic });
+    return NextResponse.json({ success: true, duplicate: result.duplicate, simulation: result.simulation, diagnostic });
   } catch (error) {
     console.error("Erro ao salvar simulado:", error);
     return NextResponse.json({ error: "Falha ao registrar simulado no banco de dados." }, { status: 500 });
