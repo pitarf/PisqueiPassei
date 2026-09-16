@@ -2,6 +2,22 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.15] - 2026-09-16
+
+### Treino e desempenho
+- Baterias por tópico ou disciplina passaram a embaralhar o banco disponível antes de selecionar as questões, reduzindo repetição da mesma ordem entre sessões.
+- Bateria mista mantém aproximadamente 1/3 de Conhecimentos Gerais e 2/3 de Conhecimentos Específicos, com os blocos intercalados.
+- Painel de desempenho passou a exibir a quantidade de erros por disciplina.
+- Tópicos abaixo de 70% passaram a mostrar também o número de erros e questões respondidas quando houver dados.
+
+### Progressão de estudo
+- Criado motor de sequência diária de estudos (`src/lib/streak.ts`) usando o fuso `America/Sao_Paulo`.
+- Respostas de questões, revisões de flashcards e conclusão de simulados atualizam a sequência sem contar duas vezes o mesmo dia.
+- Dashboard passou a exibir a sequência atual de dias de estudo.
+
+### Qualidade de código
+- GitHub Actions passou a executar também o build de produção, além de gerar o Prisma Client e executar o typecheck.
+
 ## [0.1.14] - 2026-09-15
 
 ### Treino e transparência
