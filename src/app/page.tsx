@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 import { Target, ArrowRight, RotateCcw, AlertTriangle, Award, BookOpen, CheckCircle2, Clock, Sparkles, Flame } from "lucide-react";
 
 export const revalidate = 0;
@@ -38,4 +39,4 @@ export default async function DashboardPage() {
   </div>;
 }
 function Metric({ icon, label, value, suffix, detail }: { icon: React.ReactNode; label: string; value: React.ReactNode; suffix: string; detail: string }) { return <div className="bg-slate-800/80 border border-slate-700/60 rounded-xl p-3.5"><p className="text-xs text-slate-400 font-medium flex items-center gap-1">{icon}{label}</p><div className="mt-1 flex items-baseline gap-1"><span className="text-2xl font-black text-white">{value}</span>{suffix && <span className="text-xs text-slate-400">{suffix}</span>}</div><p className="text-[11px] text-slate-400 mt-1">{detail}</p></div>; }
-function BarChart2Icon(props: React.SVGProps<SVGSVGElement>) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="18" y1="20" y2="10" /><line x1="12" x2="12" y1="20" x2="12" y2="4" /><line x1="6" x2="6" y1="20" x2="6" y2="14" /></svg>; }
+function BarChart2Icon(props: React.SVGProps<SVGSVGElement>) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="18" y1="20" y2="10" /><line x1="12" x2="12" y1="20" x2="12" y2="4" /><line x1="6" x2="6" y1="20" y2="6" /></svg>; }
