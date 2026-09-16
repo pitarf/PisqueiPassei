@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { evaluateSimulation } from "@/lib/exam";
+import { updateStudyStreak } from "@/lib/streak";
 
 const EXAM_TOTAL = 60;
 const PORT_TOTAL = 10;
@@ -90,6 +91,7 @@ export async function POST(req: NextRequest) {
         await tx.userTopicProgress.upsert({ where: { userId_topicId: { userId: user.id, topicId } }, update: { totalQuestions: total, correctAnswers: correct, masteryScore: mastery, status: mastery >= 85 ? "DOMINADO" : "EM_ESTUDO", lastStudiedAt: new Date(), ...(topicTimeMinutes > 0 ? { totalTimeMinutes: { increment: topicTimeMinutes } } : {}) }, create: { userId: user.id, topicId, totalQuestions: counts.total, correctAnswers: counts.correct, masteryScore: mastery, status: "EM_ESTUDO", lastStudiedAt: new Date(), totalTimeMinutes: topicTimeMinutes } });
       }
       await tx.studySession.create({ data: { userId: user.id, topicId: null, durationMinutes: Math.max(1, Math.round(duration / 60)), sessionType: "SIMULADO", xpEarned: 150 + diagnostic.totalScore * 5 } });
+      await updateStudyStreak(tx, user.id, new Date());
       await tx.user.update({ where: { id: user.id }, data: { xp: { increment: 150 + diagnostic.totalScore * 5 }, lastStudyDate: new Date() } });
       return { simulation: sim, duplicate: false };
     });
