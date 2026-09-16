@@ -10,9 +10,11 @@ function isNonEmptyString(value: unknown) { return typeof value === "string" && 
 function validateLesson(data: any) {
   if (!data || typeof data !== "object" || !isNonEmptyString(data.title) || !data.sections || typeof data.sections !== "object") throw new Error("A IA retornou uma aula em formato inválido.");
   for (const key of REQUIRED_SECTIONS) if (data.sections[key] === undefined || data.sections[key] === null) throw new Error(`A aula gerada não contém a seção obrigatória: ${key}.`);
-  const flashcards = Array.isArray(data.sections.step8_flashcards) ? data.sections.step8_flashcards : [];
+  if (!Array.isArray(data.sections.step8_flashcards)) throw new Error("A aula gerada contém flashcards em formato inválido.");
+  const flashcards = data.sections.step8_flashcards;
   for (const card of flashcards) if (!isNonEmptyString(card?.front) || !isNonEmptyString(card?.back)) throw new Error("A aula contém flashcard inválido.");
-  const questions = Array.isArray(data.sections.step9_practiceQuestions) ? data.sections.step9_practiceQuestions : [];
+  if (!Array.isArray(data.sections.step9_practiceQuestions)) throw new Error("A aula gerada contém questões de fixação em formato inválido.");
+  const questions = data.sections.step9_practiceQuestions;
   const seenStatements = new Set<string>();
   for (const question of questions) {
     const options = ["optionA", "optionB", "optionC", "optionD", "optionE"];
@@ -41,8 +43,15 @@ export async function POST(req: NextRequest) {
 
     const lessonData = validateLesson(await generateStructuredLesson(topic.title, topic.subject.name, topic.officialSource));
     const savedLesson = await prisma.$transaction(async (tx) => {
+      // Revalida dentro da transação para evitar duas requisições concorrentes salvando aulas do mesmo tópico.
+      const concurrentLesson = await tx.lesson.findFirst({
+        where: { topicId: topic.id, createdAt: { gte: new Date(Date.now() - GENERATION_WINDOW_MS) } },
+        orderBy: { createdAt: "desc" },
+      });
+      if (concurrentLesson) return concurrentLesson;
+
       const newLesson = await tx.lesson.create({ data: { topicId: topic.id, title: lessonData.title.trim() || topic.title, contentJson: lessonData.sections, rawMarkdown: JSON.stringify(lessonData.sections), sourceType: "AI_GENERATED" } });
-      const flashcards = Array.isArray(lessonData.sections.step8_flashcards) ? lessonData.sections.step8_flashcards : [];
+      const flashcards = lessonData.sections.step8_flashcards;
       const existingCards = await tx.flashcard.findMany({ where: { topicId: topic.id }, select: { front: true } });
       const cardKeys = new Set(existingCards.map((card) => card.front.trim().toLocaleLowerCase().replace(/\s+/g, " ")));
       for (const card of flashcards) {
@@ -50,7 +59,7 @@ export async function POST(req: NextRequest) {
         const key = front.toLocaleLowerCase().replace(/\s+/g, " ");
         if (!cardKeys.has(key)) { await tx.flashcard.create({ data: { topicId: topic.id, front, back: card.back.trim() } }); cardKeys.add(key); }
       }
-      const practiceQuestions = Array.isArray(lessonData.sections.step9_practiceQuestions) ? lessonData.sections.step9_practiceQuestions : [];
+      const practiceQuestions = lessonData.sections.step9_practiceQuestions;
       const existingQuestions = await tx.question.findMany({ where: { topicId: topic.id }, select: { statement: true } });
       const questionKeys = new Set(existingQuestions.map((q) => q.statement.trim().toLocaleLowerCase().replace(/\s+/g, " ")));
       for (const q of practiceQuestions) {
@@ -62,7 +71,7 @@ export async function POST(req: NextRequest) {
       }
       return newLesson;
     });
-    return NextResponse.json({ cached: false, lesson: savedLesson });
+    return NextResponse.json({ cached: savedLesson.createdAt.getTime() < Date.now() - 1_000, lesson: savedLesson });
   } catch (error) {
     console.error("Erro na geração ou busca de aula:", error);
     return NextResponse.json({ error: error instanceof Error ? error.message : "Falha ao gerar aula didática com IA." }, { status: 500 });
