@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculateNextSRS } from "@/lib/srs";
+import { updateStudyStreak } from "@/lib/streak";
 
 const VALID_FEEDBACK = new Set(["ENTENDI", "REVISAR", "NAO_ENTENDI"]);
 const MAX_STUDY_MINUTES = 180;
@@ -99,6 +100,9 @@ export async function POST(req: NextRequest) {
           },
         });
       }
+
+      // Feedback de aula também conta como estudo para a sequência diária.
+      await updateStudyStreak(tx, user.id, now);
 
       await tx.user.update({
         where: { id: user.id },
