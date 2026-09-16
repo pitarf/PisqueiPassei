@@ -126,7 +126,7 @@ model UserTopicProgress {
 
 model Simulation {
   id              String            @id @default(uuid())
-  idempotencyKey   String            @unique
+  idempotencyKey   String?           @unique
   userId          String
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   title           String
