@@ -53,46 +53,25 @@ export function evaluateSimulation({
   const percentage = (totalScore / maxScore) * 100;
   const pointsToTarget = totalScore - target;
   const isAboveTarget = totalScore >= target;
-
   const eliminationReasons: string[] = [];
-
-  // Critérios de eliminação: menos de 50% em conhecimentos gerais,
-  // menos de 50% em conhecimentos específicos, ou nota zero em Português/Matemática.
   const generalCorrect = port + math;
   const generalTotal = portugueseTotal + mathTotal;
 
   if (generalCorrect < generalTotal * 0.5) {
-    eliminationReasons.push(
-      `Eliminado: aproveitamento inferior a 50% em Conhecimentos Gerais (${generalCorrect}/${generalTotal}).`
-    );
+    eliminationReasons.push(`Eliminado: aproveitamento inferior a 50% em Conhecimentos Gerais (${generalCorrect}/${generalTotal}).`);
   }
   if (specific < specificTotal * 0.5) {
-    eliminationReasons.push(
-      `Eliminado: aproveitamento inferior a 50% em Conhecimentos Específicos (${specific}/${specificTotal}).`
-    );
+    eliminationReasons.push(`Eliminado: aproveitamento inferior a 50% em Conhecimentos Específicos (${specific}/${specificTotal}).`);
   }
-  if (port === 0) {
-    eliminationReasons.push("Eliminado: obteve nota ZERO em Língua Portuguesa.");
-  }
-  if (math === 0) {
-    eliminationReasons.push("Eliminado: obteve nota ZERO em Matemática.");
-  }
+  if (port === 0) eliminationReasons.push("Eliminado: obteve nota ZERO em Língua Portuguesa.");
+  if (math === 0) eliminationReasons.push("Eliminado: obteve nota ZERO em Matemática.");
 
   const isEliminated = eliminationReasons.length > 0;
-
   const recommendations: string[] = [];
-  if (specific < 32) {
-    recommendations.push("Priorize Conhecimentos Específicos, que correspondem a 40 das 60 questões.");
-  }
-  if (math < 7) {
-    recommendations.push("Intensifique o treino de Matemática nos tópicos em que apresentou menor desempenho.");
-  }
-  if (port < 8) {
-    recommendations.push("Treine interpretação e os demais tópicos de Língua Portuguesa previstos no edital.");
-  }
-  if (isAboveTarget && !isEliminated) {
-    recommendations.push(`Você atingiu a meta de ${target}/60 e superou os critérios mínimos de eliminação. Mantenha as revisões.`);
-  }
+  if (specific < 32) recommendations.push("Priorize Conhecimentos Específicos, que correspondem a 40 das 60 questões.");
+  if (math < 7) recommendations.push("Intensifique o treino de Matemática nos tópicos em que apresentou menor desempenho.");
+  if (port < 8) recommendations.push("Treine interpretação e os demais tópicos de Língua Portuguesa previstos no edital.");
+  if (isAboveTarget && !isEliminated) recommendations.push(`Você atingiu a meta de ${target}/60 e superou os critérios mínimos de eliminação. Mantenha as revisões.`);
 
   return {
     totalScore,
