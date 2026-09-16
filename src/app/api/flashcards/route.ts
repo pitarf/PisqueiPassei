@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { applySrsFeedback } from "@/lib/srs";
+import { calculateNextSRS } from "@/lib/srs";
 
 const RATINGS = ["FACIL", "MEDIO", "DIFICIL"] as const;
 const RESPONSE_LIMIT = 50;
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     if (typeof flashcardId !== "string" || !flashcardId.trim() || !RATINGS.includes(rating)) return NextResponse.json({ error: "Flashcard e avaliação válidos são obrigatórios." }, { status: 400 });
     const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
     if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
-    const flashcard = await prisma.flashcard.findUnique({ where: { id: flashcardId }, select: { id: true, topicId: true } });
+    const flashcard = await prisma.flashcard.findUnique({ where: { id: flashcardId }, select: { id: true } });
     if (!flashcard) return NextResponse.json({ error: "Flashcard não encontrado." }, { status: 404 });
 
     const now = new Date();
@@ -37,11 +37,11 @@ export async function POST(req: NextRequest) {
       const previous = await tx.flashcardReview.findFirst({ where: { userId: user.id, flashcardId }, orderBy: { reviewedAt: "desc" } });
       const currentInterval = previous?.intervalDays ?? 0;
       const feedback = rating === "DIFICIL" ? "NAO_ENTENDI" : rating === "MEDIO" ? "REVISAR" : "ENTENDI";
-      const srs = applySrsFeedback({ feedback, currentIntervalDays: currentInterval });
+      const srs = calculateNextSRS({ currentIntervalDays: currentInterval, currentMasteryScore: 0, feedback });
       const nextReviewDate = new Date(now);
-      nextReviewDate.setDate(nextReviewDate.getDate() + srs.intervalDays);
+      nextReviewDate.setDate(nextReviewDate.getDate() + srs.nextIntervalDays);
 
-      const review = await tx.flashcardReview.create({ data: { userId: user.id, flashcardId, rating, intervalDays: srs.intervalDays, nextReviewDate } });
+      const review = await tx.flashcardReview.create({ data: { userId: user.id, flashcardId, rating, intervalDays: srs.nextIntervalDays, nextReviewDate } });
       await tx.user.update({ where: { id: user.id }, data: { xp: { increment: 5 }, lastStudyDate: now } });
       return { review, duplicate: false };
     });
