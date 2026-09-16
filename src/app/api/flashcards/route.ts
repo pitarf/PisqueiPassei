@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculateNextSRS } from "@/lib/srs";
+import { updateStudyStreak } from "@/lib/streak";
 
 const RATINGS = ["FACIL", "MEDIO", "DIFICIL"] as const;
 const RESPONSE_LIMIT = 50;
@@ -42,6 +43,7 @@ export async function POST(req: NextRequest) {
       nextReviewDate.setDate(nextReviewDate.getDate() + srs.nextIntervalDays);
 
       const review = await tx.flashcardReview.create({ data: { userId: user.id, flashcardId, rating, intervalDays: srs.nextIntervalDays, nextReviewDate } });
+      await updateStudyStreak(tx, user.id, now);
       await tx.user.update({ where: { id: user.id }, data: { xp: { increment: 5 }, lastStudyDate: now } });
       return { review, duplicate: false };
     });
