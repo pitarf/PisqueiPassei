@@ -29,6 +29,7 @@ export default async function DesempenhoPage() {
   const recentAccuracy = accuracy(recentTraining);
   const globalAccuracy = accuracy(training);
   const simAccuracy = accuracy(simulationAttempts);
+  const allProgress = subjects.flatMap((s) => s.topics.map((t) => t.userProgress[0]?.masteryScore ?? 0));
   const mastered = user?.progress.filter((p) => p.status === "DOMINADO").length ?? 0;
   const studied = user?.progress.filter((p) => p.status !== "NAO_INICIADO").length ?? 0;
   const weak = [...(user?.progress ?? [])].filter((p) => p.status !== "NAO_INICIADO" && p.masteryScore < 70).sort((a, b) => a.masteryScore - b.masteryScore).slice(0, 6);
@@ -43,7 +44,7 @@ export default async function DesempenhoPage() {
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <Metric icon={<CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />} label="Treino" value={`${training.filter(a => a.isCorrect).length}/${training.length}`} detail={`${globalAccuracy}% de aproveitamento`} />
       <Metric icon={<Award className="w-3.5 h-3.5 text-amber-400" />} label="Simulados" value={`${simulationAttempts.filter(a => a.isCorrect).length}/${simulationAttempts.length}`} detail={`${simAccuracy}% nas questões vinculadas`} />
-      <Metric icon={<TrendingUp className="w-3.5 h-3.5 text-sky-400" />} label="Domínio médio" value={`${user?.progress.length ? Math.round(user.progress.reduce((s,p)=>s+p.masteryScore,0)/user.progress.length) : 0}%`} detail={`${mastered} tópicos dominados`} />
+      <Metric icon={<TrendingUp className="w-3.5 h-3.5 text-sky-400" />} label="Domínio médio" value={`${allProgress.length ? Math.round(allProgress.reduce((s, p) => s + p, 0) / allProgress.length) : 0}%`} detail={`${mastered} tópicos dominados`} />
       <Metric icon={<Clock className="w-3.5 h-3.5 text-amber-400" />} label="Tempo focado" value={`${(totalMinutes/60).toFixed(1)}h`} detail={`${studied} tópicos com estudo registrado`} />
     </div>
 
@@ -55,7 +56,8 @@ export default async function DesempenhoPage() {
           const subjectAttempts = training.filter(a => topicIds.has(a.question.topicId));
           const subjectErrors = subjectAttempts.filter(a => !a.isCorrect).length;
           const progresses = subject.topics.flatMap(t => t.userProgress);
-          const mastery = progresses.length ? Math.round(progresses.reduce((s,p)=>s+p.masteryScore,0)/progresses.length) : 0;
+          const masteryValues = subject.topics.map(t => t.userProgress[0]?.masteryScore ?? 0);
+          const mastery = masteryValues.length ? Math.round(masteryValues.reduce((s, p) => s + p, 0) / masteryValues.length) : 0;
           const acc = accuracy(subjectAttempts);
           const studiedCount = progresses.filter(p => p.status !== "NAO_INICIADO").length;
           return <div key={subject.id} className="bg-slate-800/70 border border-slate-700/60 rounded-xl p-4">
