@@ -7,26 +7,21 @@ import type{ExamDiagnostic}from"@/lib/exam";
 
 export const SimulationExam=({questions}:{questions:any[]})=>{
  const [index,setIndex]=useState(0),[answers,setAnswers]=useState<Record<string,string>>({}),[flags,setFlags]=useState<Record<string,boolean>>({}),[left,setLeft]=useState(14400),[submitted,setSubmitted]=useState(false),[sending,setSending]=useState(false),[diagnostic,setDiagnostic]=useState<ExamDiagnostic|null>(null);
- const answersRef=useRef(answers),leftRef=useRef(left),submittedRef=useRef(false),sendingRef=useRef(false),questionStartedAtRef=useRef(Date.now()),questionTimesRef=useRef<Record<string,number>>({});
+ const answersRef=useRef(answers),leftRef=useRef(left),submittedRef=useRef(false),sendingRef=useRef(false),questionStartedAtRef=useRef(Date.now()),questionTimesRef=useRef<Record<string,number>>({}),submissionKeyRef=useRef("");
  answersRef.current=answers;leftRef.current=left;submittedRef.current=submitted;sendingRef.current=sending;
  const q=questions[index];
- const recordCurrentQuestionTime=()=>{
-  const current=q;
-  if(!current)return;
-  const elapsed=Math.max(0,Math.floor((Date.now()-questionStartedAtRef.current)/1000));
-  questionTimesRef.current[current.id]=(questionTimesRef.current[current.id]||0)+elapsed;
-  questionStartedAtRef.current=Date.now();
- };
+ const recordCurrentQuestionTime=()=>{const current=q;if(!current)return;const elapsed=Math.max(0,Math.floor((Date.now()-questionStartedAtRef.current)/1000));questionTimesRef.current[current.id]=(questionTimesRef.current[current.id]||0)+elapsed;questionStartedAtRef.current=Date.now();};
  const submit=async(force=false)=>{
   if(sendingRef.current||submittedRef.current)return;
   recordCurrentQuestionTime();
   const currentAnswers=answersRef.current,currentLeft=leftRef.current,answered=Object.keys(currentAnswers).length;
   if(!force&&answered<60&&currentLeft>60&&!window.confirm(`Você respondeu ${answered} de 60 questões. Deseja finalizar?`))return;
+  if(!submissionKeyRef.current)submissionKeyRef.current=crypto.randomUUID();
   sendingRef.current=true;setSending(true);
   try{
-   const res=await fetch("/api/simulado",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:`Simulado Transpetro 2026.3 #${new Date().toLocaleDateString("pt-BR")}`,durationSeconds:14400-currentLeft,answers:currentAnswers,questionIds:questions.map(x=>x.id),questionTimes:questionTimesRef.current})});
+   const res=await fetch("/api/simulado",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:`Simulado Transpetro 2026.3 #${new Date().toLocaleDateString("pt-BR")}`,durationSeconds:14400-currentLeft,answers:currentAnswers,questionIds:questions.map(x=>x.id),questionTimes:questionTimesRef.current,idempotencyKey:submissionKeyRef.current})});
    const data=await res.json();if(!res.ok)throw new Error(data.error||"Erro ao salvar simulado.");
-   submittedRef.current=true;setDiagnostic(data.diagnostic);setSubmitted(true);toast.success("Simulado concluído!");
+   submittedRef.current=true;setDiagnostic(data.diagnostic);setSubmitted(true);toast.success(data.duplicate?"Resultado recuperado sem duplicar o simulado.":"Simulado concluído!");
   }catch(e:any){toast.error(e.message||"Falha ao enviar simulado.");}finally{sendingRef.current=false;setSending(false);}
  };
  useEffect(()=>{if(submitted)return;const t=setInterval(()=>setLeft(v=>{if(v<=1){clearInterval(t);leftRef.current=0;void submit(true);return 0}const next=v-1;leftRef.current=next;return next}),1000);return()=>clearInterval(t)},[submitted]);
