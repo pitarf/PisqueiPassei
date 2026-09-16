@@ -9,9 +9,9 @@ export type RagSource = {
 };
 
 /**
- * Prioridade editorial do RAG. A fonte do edital define o que cai;
+ * Prioridade editorial do RAG. A fonte do edital define o escopo;
  * fontes normativas oficiais sustentam detalhes jurídicos. Referências
- * marcadas como pointer não devem ser tratadas como transcrição integral.
+ * pedagógicas organizam o estudo, mas não substituem fontes oficiais.
  */
 export const RAG_SOURCES: RagSource[] = [
   {
@@ -33,6 +33,55 @@ export const RAG_SOURCES: RagSource[] = [
     type: "official",
     priority: 92,
     aliases: ["ênfase 18", "enfase 18", "suprimento de bens e serviços", "suprimento de bens e servicos", "suprimento", "bens e serviços", "bens e servicos", "polos de trabalho", "atribuições", "atribuicoes"],
+    status: "validated",
+  },
+  {
+    path: "documents/estudo/mapa-conteudo.md",
+    type: "reference",
+    priority: 72,
+    aliases: ["mapa de conteúdo", "mapa de conteudo", "programa oficial", "49 tópicos", "49 topicos", "conteúdo programático", "conteudo programatico"],
+    status: "validated",
+  },
+  {
+    path: "documents/estudo/portugues.md",
+    type: "reference",
+    priority: 68,
+    aliases: ["português", "portugues", "compreensão de textos", "coesão", "coesao", "ortografia", "crase", "pontuação", "pontuacao", "significação das palavras", "significacao das palavras"],
+    status: "validated",
+  },
+  {
+    path: "documents/estudo/matematica.md",
+    type: "reference",
+    priority: 68,
+    aliases: ["matemática", "matematica", "conjuntos numéricos", "conjuntos numericos", "funções", "funcoes", "equações", "equacoes", "probabilidade", "estatística", "estatistica", "juros", "geometria"],
+    status: "validated",
+  },
+  {
+    path: "documents/estudo/administracao-logistica.md",
+    type: "reference",
+    priority: 68,
+    aliases: ["administração e logística", "administracao e logistica", "planejamento estratégico", "planejamento estrategico", "qualidade", "gestão por processos", "gestao por processos", "atendimento ao cliente", "kpis"],
+    status: "validated",
+  },
+  {
+    path: "documents/estudo/cadeia-suprimentos.md",
+    type: "reference",
+    priority: 68,
+    aliases: ["cadeia de suprimentos", "supply chain", "compras", "estoques", "almoxarifados", "negociação", "negociacao", "fornecedores", "transportes", "cargas", "sustentabilidade", "logística 4.0", "logistica 4.0"],
+    status: "validated",
+  },
+  {
+    path: "documents/estudo/contabilidade-informatica.md",
+    type: "reference",
+    priority: 68,
+    aliases: ["contabilidade e informática", "contabilidade e informatica", "receita", "despesa", "custos", "nota fiscal", "excel", "word", "powerpoint", "office 365"],
+    status: "validated",
+  },
+  {
+    path: "documents/estudo/legislacao-matriz.md",
+    type: "reference",
+    priority: 70,
+    aliases: ["matriz de legislação", "matriz de legislacao", "decreto 2745", "lei 13303", "lei 123", "lei 14133", "rlct", "lgpd"],
     status: "validated",
   },
   {
@@ -63,14 +112,28 @@ export const RAG_SOURCES: RagSource[] = [
     aliases: ["decreto 2745", "decreto 2.745", "regulamento do procedimento licitatório simplificado", "regulamento do procedimento licitatorio simplificado", "petrobras", "transpetro"],
     status: "validated",
   },
+  {
+    path: "documents/legislacao/regulamento-licitacoes-contratos-transpetro.md",
+    type: "official",
+    priority: 84,
+    aliases: ["regulamento de licitações e contratos da transpetro", "regulamento de licitacoes e contratos da transpetro", "rlct", "di-0tp-00027-b", "revisão 3", "revisao 3"],
+    status: "pointer",
+  },
+  {
+    path: "documents/legislacao/lgpd-13709-2018.md",
+    type: "official",
+    priority: 84,
+    aliases: ["lgpd", "lei 13709", "lei 13.709", "proteção de dados", "protecao de dados", "dados pessoais", "contratações públicas", "contratacoes publicas"],
+    status: "pointer",
+  },
 ];
 
 const SUBJECT_ALIASES: Record<string, string[]> = {
-  "Português": ["português", "portugues", "interpretação", "interpretacao", "gramática", "gramatica", "texto"],
-  "Matemática": ["matemática", "matematica", "porcentagem", "razão", "razao", "proporção", "proporcao", "estatística", "estatistica", "probabilidade"],
-  "Noções de Administração e Logística": ["administração", "administracao", "qualidade", "processos", "cliente", "kpi", "indicadores"],
+  "Português": ["português", "portugues", "compreensão", "compreensao", "ortografia", "coesão", "coesao", "crase", "pontuação", "pontuacao", "significação", "significacao"],
+  "Matemática": ["matemática", "matematica", "conjuntos", "razão", "razao", "proporção", "proporcao", "funções", "funcoes", "equações", "equacoes", "combinatória", "combinatoria", "probabilidade", "estatística", "estatistica", "juros", "geometria"],
+  "Noções de Administração e Logística": ["administração", "administracao", "planejamento", "qualidade", "processos", "cliente", "kpi", "indicadores"],
   "Logística e Cadeia de Suprimentos": ["logística", "logistica", "supply chain", "compras", "estoques", "almoxarifado", "negociação", "negociacao", "fornecedores", "transporte", "cargas", "contratos", "sustentabilidade", "logística 4.0", "logistica 4.0"],
-  "Legislação": ["legislação", "legislacao", "lei", "decreto", "licitação", "licitacao", "contratação", "contratacao", "lgpd", "estatais"],
+  "Legislação": ["legislação", "legislacao", "lei", "decreto", "licitação", "licitacao", "contratação", "contratacao", "lgpd", "estatais", "rlct"],
   "Noções de Contabilidade e Informática": ["contabilidade", "receita", "despesa", "custos", "resultado", "nota fiscal", "tributário", "tributario", "excel", "word", "powerpoint", "office 365", "informática", "informatica"],
 };
 
