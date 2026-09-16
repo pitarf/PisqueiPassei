@@ -2,6 +2,17 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.17] - 2026-09-16
+
+### Banco de questões
+- Baterias de treino passaram a informar claramente quando o filtro solicitado possui menos questões disponíveis do que o tamanho pedido.
+- Filtros sem questões passaram a apresentar uma mensagem específica, evitando que a tela pareça ter iniciado uma bateria vazia.
+- Mantida a regra de não inventar questões oficiais para completar artificialmente uma bateria.
+
+### Qualidade e CI
+- CI de produção validado no GitHub Actions para o commit de integração do gstack: Prisma Generate, TypeScript e build de produção concluídos com sucesso.
+- Roadmap atualizado para refletir que o build de produção já faz parte da validação contínua.
+
 ## [0.1.16] - 2026-09-16
 
 ### Ferramentas e Metodologia de Desenvolvimento (gstack)
