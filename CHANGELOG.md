@@ -2,6 +2,24 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.18] - 2026-09-16
+
+### Dashboard e métricas
+- Contagem regressiva da prova passou a considerar apenas a data oficial `06/12/2026`, sem inventar horário de início da prova.
+- Domínio Global passou a considerar todos os tópicos do edital, atribuindo 0% aos tópicos ainda sem progresso, evitando uma média artificialmente alta baseada somente nos assuntos já estudados.
+- O mesmo critério foi aplicado ao domínio exibido por disciplina.
+
+### Progresso e sequência
+- Feedback cognitivo das aulas passou a atualizar a sequência diária pelo mesmo motor usado em questões, flashcards e simulados.
+- Mantida a proteção contra reenvios imediatos para evitar duplicação de XP, tempo e progresso.
+
+### Geração de conteúdo
+- Geração de aulas passou a revalidar dentro da transação se outro processo já salvou uma aula recente do mesmo tópico, reduzindo duplicações em chamadas concorrentes.
+- Flashcards e questões de fixação continuam com validação estrutural antes da persistência.
+
+### Qualidade
+- CI de produção validado no GitHub Actions após as alterações de documentação anteriores.
+
 ## [0.1.17] - 2026-09-16
 
 ### Banco de questões
@@ -16,8 +34,8 @@ Todas as alterações notáveis deste projeto são registradas neste documento.
 ## [0.1.16] - 2026-09-16
 
 ### Ferramentas e Metodologia de Desenvolvimento (gstack)
-- Integração da software factory **gstack** (Garry Tan / Y Combinator) em modo equipe (`team-mode`), com instalação do runtime Bun, Playwright headless browser e registro de hooks em `.claude/hooks/check-gstack.sh`.
-- Padronização do fluxo com skills especializadas de planejamento (`/office-hours`, `/plan-eng-review`), qualidade e revisão (`/review`, `/qa`), diagnóstico (`/investigate`) e liberação (`/ship`).
+- Integração da software factory **gstack** em modo equipe (`team-mode`), com runtime Bun, Playwright headless browser e registro de hooks em `.claude/hooks/check-gstack.sh`.
+- Padronização do fluxo com skills especializadas de planejamento, qualidade, diagnóstico e liberação.
 
 ### RAG e Legislação Oficial
 - Integração completa da Ênfase 18 (`documents/edital/enfase-18.md`) às fontes validadas do RAG (`src/lib/rag-sources.ts`).
