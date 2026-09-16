@@ -33,8 +33,15 @@ function scoreDocument(content: string, query: string, source: RagSource) {
   const normalizedContent = normalize(content);
   const normalizedQuery = normalize(query);
   const terms = normalizedQuery.split(/[^a-z0-9]+/).filter((term) => term.length >= 4);
+  const matchedTerms = terms.filter((term) => normalizedContent.includes(term));
   const termScore = terms.reduce((score, term) => score + Math.min(normalizedContent.split(term).length - 1, 5), 0);
   const aliasScore = source.aliases.reduce((score, alias) => score + (normalizedQuery.includes(normalize(alias)) ? 30 : 0), 0);
+
+  if (aliasScore === 0) {
+    if (matchedTerms.length === 0) return 0;
+    if (matchedTerms.length < terms.length) return 0;
+  }
+
   return source.priority + termScore + aliasScore;
 }
 
@@ -64,12 +71,20 @@ export function getRagContext(
       const relative = path.relative(process.cwd(), file).replaceAll(path.sep, "/");
       const source = sourceForFile(relative);
       const rank = preferredRank.get(relative);
-      const score = source
-        ? scoreDocument(content, query, source) + (rank === undefined ? 0 : (preferred.length - rank) * 8)
-        : 10;
-      return { relative, content, source, score };
+      const docScore = source
+        ? scoreDocument(content, query, source)
+        : scoreDocument(content, query, {
+            path: relative,
+            type: "reference",
+            priority: 10,
+            aliases: [],
+          });
+      const score = docScore > 0
+        ? docScore + (rank === undefined ? 0 : (preferred.length - rank) * 8)
+        : 0;
+      return { file, relative, content, source, score };
     })
-    .filter((item) => item.score > 10)
+    .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, maxDocuments);
 

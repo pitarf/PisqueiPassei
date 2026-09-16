@@ -2,6 +2,18 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.16] - 2026-09-16
+
+### Ferramentas e Metodologia de Desenvolvimento (gstack)
+- Integração da software factory **gstack** (Garry Tan / Y Combinator) em modo equipe (`team-mode`), com instalação do runtime Bun, Playwright headless browser e registro de hooks em `.claude/hooks/check-gstack.sh`.
+- Padronização do fluxo com skills especializadas de planejamento (`/office-hours`, `/plan-eng-review`), qualidade e revisão (`/review`, `/qa`), diagnóstico (`/investigate`) e liberação (`/ship`).
+
+### RAG e Legislação Oficial
+- Integração completa da Ênfase 18 (`documents/edital/enfase-18.md`) às fontes validadas do RAG (`src/lib/rag-sources.ts`).
+- Transcrição integral oficial do Decreto nº 2.745/1998 e da Lei nº 13.303/2016 integradas e validadas na base legislativa local.
+- Arts. 42 a 49 da Lei Complementar nº 123/2006 integrados e sincronizados.
+- Critério de pontuação do RAG (`src/lib/rag.ts`) ajustado para exigir correspondência estrita de termos quando a busca não contém aliases diretos, eliminando falsos positivos em buscas por palavras avulsas.
+
 ## [0.1.15] - 2026-09-16
 
 ### Treino e desempenho

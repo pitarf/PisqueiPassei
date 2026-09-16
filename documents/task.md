@@ -12,8 +12,6 @@
 
 ## 📌 Pendentes por dependência externa ou expansão de produto
 
-- [ ] Validar transcrição integral e versionada do Decreto nº 2.745/1998
-- [ ] Validar transcrição integral e versionada dos arts. 28 a 91 da Lei nº 13.303/2016
 - [ ] Validar transcrição integral da Lei nº 14.133/2021 necessária ao escopo do edital
 - [ ] Ingestão automatizada e versionada das fontes normativas oficiais
 - [ ] Banco de questões reais Cesgranrio com fonte/ano/prova individualizados
@@ -25,13 +23,17 @@
 ## ⏳ Em evolução
 
 - [x] Registro de fontes normativas oficiais e status de validação
+- [x] Transcrição integral e oficial do Decreto nº 2.745/1998 em documents/legislacao/
+- [x] Transcrição integral e oficial da Lei nº 13.303/2016 em documents/legislacao/
+- [x] Estruturação da Ênfase 18 - Suprimento em documents/edital/enfase-18.md
 - [x] RAG com prioridade por fonte e assunto
 - [x] Limite de contexto enviado à IA para reduzir ruído e custo
 - [x] Cache em memória dos arquivos Markdown do RAG
 - [x] Proveniência explícita para questões inéditas geradas por IA
 - [x] Auditoria das regras do simulado, respostas, progresso e SRS
 - [x] Pipeline CI para Prisma Generate + TypeScript
-- [ ] Suíte automatizada de testes para RAG, regras de prova e rotas críticas
+- [x] Suíte automatizada de testes para RAG, regras de prova e SRS (10 testes passando)
+- [x] Integração da Software Factory gstack (Garry Tan) em modo equipe com hook de verificação e browser headless
 
 ## ✅ Concluído no MVP
 

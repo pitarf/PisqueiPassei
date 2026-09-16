@@ -29,6 +29,13 @@ export const RAG_SOURCES: RagSource[] = [
     status: "validated",
   },
   {
+    path: "documents/edital/enfase-18.md",
+    type: "official",
+    priority: 92,
+    aliases: ["ênfase 18", "enfase 18", "suprimento de bens e serviços", "suprimento de bens e servicos", "suprimento", "bens e serviços", "bens e servicos", "polos de trabalho", "atribuições", "atribuicoes"],
+    status: "validated",
+  },
+  {
     path: "documents/legislacao/lei-123-2006.md",
     type: "official",
     priority: 90,
@@ -45,16 +52,16 @@ export const RAG_SOURCES: RagSource[] = [
   {
     path: "documents/legislacao/lei-13303-2016.md",
     type: "official",
-    priority: 80,
+    priority: 85,
     aliases: ["lei 13303", "lei 13.303", "estatais", "empresa pública", "empresa publica", "sociedade de economia mista", "licitações e contratos de estatais", "licitacoes e contratos de estatais"],
-    status: "pointer",
+    status: "validated",
   },
   {
     path: "documents/legislacao/decreto-2745-1998.md",
     type: "official",
-    priority: 80,
+    priority: 85,
     aliases: ["decreto 2745", "decreto 2.745", "regulamento do procedimento licitatório simplificado", "regulamento do procedimento licitatorio simplificado", "petrobras", "transpetro"],
-    status: "pointer",
+    status: "validated",
   },
 ];
 
