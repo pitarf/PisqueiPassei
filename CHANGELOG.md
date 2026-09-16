@@ -2,6 +2,20 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.13] - 2026-09-15
+
+### Corrigido
+- Diagnóstico do simulado passou a limitar e normalizar os acertos recebidos antes de calcular a pontuação.
+- Feedback cognitivo da aula passou a proteger reenvios imediatos contra duplicação de XP e tempo de estudo.
+- Submissões idênticas do simulado passaram a ser reconhecidas em uma janela curta, evitando duplicação de tentativas, sessão e XP.
+- Flashcards deixaram de limitar o cálculo de vencimentos aos 100 cards mais recentes.
+- Avaliações duplicadas de flashcards em janela curta não geram XP ou uma nova revisão.
+- Backup completo passou a utilizar as relações existentes no schema Prisma para progresso, tentativas, simulados, revisões, sessões e conversas.
+
+### Transparência e qualidade
+- Questões inéditas continuam identificadas como geradas por IA e não são apresentadas como questões aplicadas pela Cesgranrio.
+- Fontes legislativas classificadas como `pointer` continuam explicitamente tratadas como referências de escopo, não como transcrições integrais validadas.
+
 ## [0.1.12] - 2026-09-12
 
 ### Corrigido
