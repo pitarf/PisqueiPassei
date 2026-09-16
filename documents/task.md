@@ -2,7 +2,7 @@
 
 ## 📋 Status do Projeto
 
-- **Fase Atual:** MVP funcional auditado + RAG orientado por fontes oficiais
+- **Fase Atual:** MVP funcional auditado + hardening contínuo + RAG orientado por fontes oficiais
 - **Alvo:** Concurso TRANSPETRO 2026.3 - Nível Técnico - Ênfase 18: Suprimento de Bens e Serviços
 - **Banca:** Fundação Cesgranrio
 - **Data da Prova:** 06/12/2026
@@ -31,9 +31,18 @@
 - [x] Cache em memória dos arquivos Markdown do RAG
 - [x] Proveniência explícita para questões inéditas geradas por IA
 - [x] Auditoria das regras do simulado, respostas, progresso e SRS
-- [x] Pipeline CI para Prisma Generate + TypeScript
+- [x] Pipeline CI com Prisma Generate + TypeScript + build de produção
 - [x] Suíte automatizada de testes para RAG, regras de prova e SRS (10 testes passando)
 - [x] Integração da Software Factory gstack (Garry Tan) em modo equipe com hook de verificação e browser headless
+- [x] Validação do build de produção no GitHub Actions com DATABASE_URL de CI
+
+## 🛠️ Próxima frente de hardening
+
+- [ ] Tornar submissões de respostas e simulados verdadeiramente idempotentes sob concorrência
+- [ ] Melhorar o diagnóstico de disponibilidade do banco de questões antes de iniciar uma bateria
+- [ ] Validar e endurecer os contratos JSON produzidos pela IA antes da persistência
+- [ ] Revisar UX de cronômetro, saída e recuperação de sessão em baterias e simulados
+- [ ] Revisar desempenho das consultas de desempenho, flashcards e banco de questões
 
 ## ✅ Concluído no MVP
 
@@ -65,4 +74,4 @@
 - O simulado reproduz a estrutura e os critérios do edital, mas não representa uma prova oficial aplicada pela Cesgranrio.
 - Decreto 2.745/1998, Lei 13.303/2016 e Lei 14.133/2021 estão registrados como ponteiros oficiais, não como transcrições integrais validadas.
 - A autenticação ainda é de usuário único de desenvolvimento, portanto o MVP não está pronto para comercialização multiusuário.
-- O pipeline CI valida geração do Prisma e TypeScript, mas não executa o build completo nem testes de integração que dependem do banco.
+- O CI atual executa geração do Prisma, typecheck e build de produção; testes de integração que dependem de um banco real continuam fora do pipeline.
