@@ -23,7 +23,6 @@ export const FlashcardSession: React.FC<FlashcardSessionProps> = ({ cards }) => 
     return () => window.clearInterval(timer);
   }, [startedAt, isFinished]);
 
-  const currentCard = cards[currentIndex];
   const handleRating = async (rating: "FACIL" | "MEDIO" | "DIFICIL") => {
     if (!currentCard || isSubmitting) return;
     setIsSubmitting(true);
@@ -32,12 +31,14 @@ export const FlashcardSession: React.FC<FlashcardSessionProps> = ({ cards }) => 
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Erro ao registrar revisão do card.");
       if (!data.duplicate) setReviewedCount((prev) => prev + 1);
-      if (!data.duplicate) toast.success(rating === "FACIL" ? "Card dominado! Próxima revisão programada." : rating === "MEDIO" ? "Revisão registrada. O próximo intervalo foi ajustado." : "Card marcado para revisão mais próxima.");
+      if (!data.duplicate) toast.success(rating === "FACIL" ? "Revisão fácil registrada. Próximo intervalo ampliado." : rating === "MEDIO" ? "Revisão registrada. O próximo intervalo foi ajustado." : "Revisão difícil registrada. O próximo intervalo será mais curto.");
       if (currentIndex + 1 < cards.length) { setIsFlipped(false); setCurrentIndex((prev) => prev + 1); setStartedAt(Date.now()); setElapsedSeconds(0); }
       else setIsFinished(true);
     } catch (err: any) { toast.error(err.message || "Falha ao registrar avaliação."); }
     finally { setIsSubmitting(false); }
   };
+
+  const currentCard = cards[currentIndex];
 
   if (cards.length === 0 || isFinished) {
     const minutes = Math.max(1, Math.round(elapsedSeconds / 60));
