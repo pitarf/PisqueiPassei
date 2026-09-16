@@ -1,4 +1,5 @@
 import React from "react";
+import { prisma } from "@/lib/prisma";
 import { BarChart2, TrendingUp, Award, Clock, CheckCircle2, Target } from "lucide-react";
 import Link from "next/link";
 
