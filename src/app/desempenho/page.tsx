@@ -1,5 +1,4 @@
 import React from "react";
-import { prisma } from "@/lib/prisma";
 import { BarChart2, TrendingUp, Award, Clock, CheckCircle2, Target } from "lucide-react";
 import Link from "next/link";
 
@@ -53,6 +52,7 @@ export default async function DesempenhoPage() {
         {subjects.map((subject) => {
           const topicIds = new Set(subject.topics.map(t => t.id));
           const subjectAttempts = training.filter(a => topicIds.has(a.question.topicId));
+          const subjectErrors = subjectAttempts.filter(a => !a.isCorrect).length;
           const progresses = subject.topics.flatMap(t => t.userProgress);
           const mastery = progresses.length ? Math.round(progresses.reduce((s,p)=>s+p.masteryScore,0)/progresses.length) : 0;
           const acc = accuracy(subjectAttempts);
@@ -60,7 +60,7 @@ export default async function DesempenhoPage() {
           return <div key={subject.id} className="bg-slate-800/70 border border-slate-700/60 rounded-xl p-4">
             <div className="flex items-start justify-between gap-3"><div><h3 className="text-sm font-bold text-white">{subject.name}</h3><p className="text-[11px] text-slate-400 mt-0.5">{studiedCount}/{subject.topics.length} tópicos estudados</p></div><span className="text-sm font-black text-sky-300">{mastery}% domínio</span></div>
             <div className="mt-3 h-2 bg-slate-700 rounded-full overflow-hidden"><div className="h-full bg-emerald-400 rounded-full" style={{width:`${mastery}%`}} /></div>
-            <div className="grid grid-cols-2 gap-2 mt-3 text-[11px]"><div className="bg-slate-900/60 rounded-lg p-2"><span className="text-slate-500">Questões</span><br/><b className="text-slate-200">{subjectAttempts.length}</b></div><div className="bg-slate-900/60 rounded-lg p-2"><span className="text-slate-500">Aproveitamento</span><br/><b className="text-slate-200">{subjectAttempts.length ? `${acc}%` : "Sem dados"}</b></div></div>
+            <div className="grid grid-cols-3 gap-2 mt-3 text-[11px]"><div className="bg-slate-900/60 rounded-lg p-2"><span className="text-slate-500">Questões</span><br/><b className="text-slate-200">{subjectAttempts.length}</b></div><div className="bg-slate-900/60 rounded-lg p-2"><span className="text-slate-500">Acerto</span><br/><b className="text-slate-200">{subjectAttempts.length ? `${acc}%` : "Sem dados"}</b></div><div className="bg-slate-900/60 rounded-lg p-2"><span className="text-slate-500">Erros</span><br/><b className="text-rose-300">{subjectErrors}</b></div></div>
           </div>;
         })}
       </div>
@@ -74,7 +74,7 @@ export default async function DesempenhoPage() {
 
     <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm">
       <div className="flex items-center justify-between gap-3"><div><h2 className="text-base font-bold text-white flex items-center gap-2"><Target className="w-4 h-4 text-rose-400" />Pontos para revisar</h2><p className="text-xs text-slate-400 mt-0.5">Tópicos com domínio abaixo de 70%, conforme o indicador interno.</p></div><Link href="/questoes?modo=erros" className="text-xs font-semibold text-rose-300">Treinar erros</Link></div>
-      {weak.length ? <div className="grid sm:grid-cols-2 gap-2 mt-4">{weak.map(p => <Link key={p.id} href={`/aula/${p.topicId}`} className="bg-slate-800/70 border border-slate-700/60 rounded-xl p-3 hover:border-rose-500/40 transition-colors"><div className="flex items-center justify-between gap-2"><span className="text-xs font-semibold text-slate-200 truncate">{p.topic.code ? `${p.topic.code} ` : ""}{p.topic.title}</span><span className="text-xs font-black text-rose-300">{Math.round(p.masteryScore)}%</span></div><div className="text-[10px] text-slate-500 mt-1">Abrir aula e revisar</div></Link>)}</div> : <p className="text-xs text-slate-400 mt-4">Ainda não há tópicos estudados abaixo de 70%.</p>}
+      {weak.length ? <div className="grid sm:grid-cols-2 gap-2 mt-4">{weak.map(p => { const topicAttempts = training.filter(a => a.question.topicId === p.topicId); const topicErrors = topicAttempts.filter(a => !a.isCorrect).length; return <Link key={p.id} href={`/aula/${p.topicId}`} className="bg-slate-800/70 border border-slate-700/60 rounded-xl p-3 hover:border-rose-500/40 transition-colors"><div className="flex items-center justify-between gap-2"><span className="text-xs font-semibold text-slate-200 truncate">{p.topic.code ? `${p.topic.code} ` : ""}{p.topic.title}</span><span className="text-xs font-black text-rose-300">{Math.round(p.masteryScore)}%</span></div><div className="text-[10px] text-slate-500 mt-1">{topicAttempts.length ? `${topicErrors} erro(s) em ${topicAttempts.length} questão(ões)` : "Sem questões respondidas neste tópico"}</div></Link>; })}</div> : <p className="text-xs text-slate-400 mt-4">Ainda não há tópicos estudados abaixo de 70%.</p>}
     </section>
 
     <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm">
