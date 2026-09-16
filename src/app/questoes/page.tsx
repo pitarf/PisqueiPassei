@@ -7,6 +7,15 @@ import { AlertTriangle, Sparkles, Filter } from "lucide-react";
 interface QuestoesPageProps { searchParams: Promise<{ modo?: string; topicId?: string; subjectId?: string; count?: string; }>; }
 export const revalidate = 0;
 
+function shuffle<T>(items: T[]) {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 export default async function QuestoesPage({ searchParams }: QuestoesPageProps) {
   const { modo, topicId, subjectId, count } = await searchParams;
   const countNum = Math.max(1, Math.min(60, parseInt(count || "10", 10) || 10));
@@ -20,25 +29,29 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
       const wrongAttempts = user ? await prisma.questionAttempt.findMany({ where: { userId: user.id, isCorrect: false }, orderBy: { createdAt: "desc" }, select: { questionId: true }, take: 100 }) : [];
       const wrongIds = [...new Set(wrongAttempts.map((attempt) => attempt.questionId))];
       if (wrongIds.length > 0) {
-        questions = await prisma.question.findMany({ where: { id: { in: wrongIds } }, include: { topic: { include: { subject: true } } }, take: countNum });
+        const wrongPool = await prisma.question.findMany({ where: { id: { in: wrongIds } }, include: { topic: { include: { subject: true } } } });
         const order = new Map(wrongIds.map((id, index) => [id, index]));
-        questions.sort((a, b) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999));
+        wrongPool.sort((a, b) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999));
+        questions = wrongPool.slice(0, countNum);
       } else if (user) {
         const weakTopics = await prisma.userTopicProgress.findMany({ where: { userId: user.id, masteryScore: { lt: 70 } }, orderBy: { masteryScore: "asc" }, take: 10, select: { topicId: true } });
         const topicIds = weakTopics.map((item) => item.topicId);
-        if (topicIds.length > 0) questions = await prisma.question.findMany({ where: { topicId: { in: topicIds } }, include: { topic: { include: { subject: true } } }, take: countNum, orderBy: { createdAt: "desc" } });
+        if (topicIds.length > 0) {
+          const weakPool = await prisma.question.findMany({ where: { topicId: { in: topicIds } }, include: { topic: { include: { subject: true } } } });
+          questions = shuffle(weakPool).slice(0, countNum);
+        }
       }
     } else if (modo === "geral" && !topicId && !subjectId) {
-      // A bateria mista precisa conter os dois blocos. Mantemos uma divisão
-      // aproximada do formato da prova, 1/3 geral e 2/3 específica.
+      // A bateria mista precisa conter os dois blocos. A divisão aproximada
+      // acompanha a estrutura da prova: 1/3 geral e 2/3 específica.
       const generalCount = Math.max(1, Math.round(countNum / 3));
       const specificCount = countNum - generalCount;
-      const [generalQuestions, specificQuestions] = await Promise.all([
-        prisma.question.findMany({ where: { topic: { subject: { category: "GERAL" } } }, include: { topic: { include: { subject: true } } }, take: generalCount, orderBy: { createdAt: "desc" } }),
-        prisma.question.findMany({ where: { topic: { subject: { category: "ESPECIFICO" } } }, include: { topic: { include: { subject: true } } }, take: specificCount, orderBy: { createdAt: "desc" } }),
+      const [generalPool, specificPool] = await Promise.all([
+        prisma.question.findMany({ where: { topic: { subject: { category: "GERAL" } } }, include: { topic: { include: { subject: true } } } }),
+        prisma.question.findMany({ where: { topic: { subject: { category: "ESPECIFICO" } } }, include: { topic: { include: { subject: true } } } }),
       ]);
-      questions = [...generalQuestions, ...specificQuestions];
-      // Intercala os blocos para não concentrar uma disciplina em sequência.
+      const generalQuestions = shuffle(generalPool).slice(0, generalCount);
+      const specificQuestions = shuffle(specificPool).slice(0, specificCount);
       const mixed: any[] = [];
       const maxLength = Math.max(generalQuestions.length, specificQuestions.length);
       for (let i = 0; i < maxLength; i += 1) {
@@ -50,7 +63,8 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
       let whereClause: any = {};
       if (topicId) whereClause = { topicId };
       else if (subjectId) whereClause = { topic: { subjectId } };
-      questions = await prisma.question.findMany({ where: whereClause, include: { topic: { include: { subject: true } } }, take: countNum, orderBy: { createdAt: "desc" } });
+      const pool = await prisma.question.findMany({ where: whereClause, include: { topic: { include: { subject: true } } } });
+      questions = shuffle(pool).slice(0, countNum);
     }
   }
 
