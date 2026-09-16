@@ -2,6 +2,18 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.14] - 2026-09-15
+
+### Treino e transparência
+- Modo "Treinar Meus Erros" passou a priorizar questões que o estudante realmente errou, usando tópicos de menor domínio apenas quando ainda não existem erros registrados.
+- A tela de questões passou a diferenciar explicitamente questões oficiais de questões inéditas geradas por IA.
+- A dificuldade da questão passou a ficar visível durante o treino.
+- O texto da área de questões deixou de sugerir que todo o banco é composto por questões oficiais da Cesgranrio.
+
+### Robustez
+- Diagnóstico do simulado normaliza acertos e meta dentro dos limites válidos antes dos cálculos.
+- Cronômetro de cada bateria de treino é reiniciado ao avançar para a próxima questão, evitando acumular o tempo da sessão inteira em uma única resposta.
+
 ## [0.1.13] - 2026-09-15
 
 ### Corrigido
