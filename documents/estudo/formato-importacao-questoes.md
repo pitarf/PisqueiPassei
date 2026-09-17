@@ -46,3 +46,15 @@ npm run import:questions -- ./caminho/arquivo.json
 npm run audit:questions
 STRICT=1 npm run audit:questions
 ```
+
+## Formato completo com prova histórica
+
+O JSON também pode conter `exam`, com organização, processo, ano, cargo, ênfase, banca, código e fonte pública. Cada questão pode informar `questionNumber`, `sourcePage`, `questionType`, `cognitiveLevel`, `subtopic`, `verificationStatus`, `sourceUrl`, `sourceQuestion` e `notes`.
+
+O importador cria ou atualiza `HistoricalExam` e, quando `questionNumber` estiver informado, cria `HistoricalQuestion` vinculado ao tópico oficial. O texto integral de prova deve ser armazenado somente quando a origem e os direitos de uso permitirem. Para análise de padrão, prefira metadados, hash, classificação e referência, e use a geração de questões inéditas para o conteúdo derivado.
+
+Status sugeridos: `PENDENTE`, `VERIFICADA`, `REVISAR`.
+
+Tipos sugeridos: `CONCEITUAL`, `INTERPRETACAO`, `CALCULO`, `APLICACAO`, `CASO_PRATICO`, `LEGISLACAO`, `COMPARACAO`, `ANALISE_DE_CENARIO`.
+
+Níveis cognitivos sugeridos: `RECONHECER`, `COMPREENDER`, `APLICAR`, `ANALISAR`.
