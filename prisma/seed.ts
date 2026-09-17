@@ -6,6 +6,10 @@ const prisma = new PrismaClient();
  * Script de Seed Oficial - Transpetro 2026.3 (Ênfase 18)
  * Popula a taxonomia do edital sem criar subtópicos artificiais.
  * A estrutura deve permanecer alinhada ao Anexo IV do edital.
+ *
+ * Regra de integridade: tópicos obsoletos sem conteúdo podem ser removidos.
+ * Tópicos obsoletos que já possuem conteúdo/progresso não são redirecionados
+ * silenciosamente para outro tópico, pois isso altera o significado histórico.
  */
 async function main() {
   console.log("🌱 Iniciando o Seed Oficial da Transpetro 2026.3...");
@@ -58,34 +62,29 @@ async function main() {
       await prisma.userTopicProgress.upsert({ where: { userId_topicId: { userId: user.id, topicId: existingTopic.id } }, update: {}, create: { userId: user.id, topicId: existingTopic.id, status: "NAO_INICIADO", masteryScore: 0 } });
     }
 
-    // Migra e remove tópicos obsoletos que não constem na taxonomia oficial do edital
-    const validCodes = sub.topics.map((t) => t.code);
-    const obsoleteTopics = await prisma.topic.findMany({
-      where: {
-        subjectId: existingSubject.id,
-        code: { notIn: validCodes },
-      },
-    });
-    for (const obs of obsoleteTopics) {
-      // Encontra um tópico de fallback oficial da mesma disciplina para salvar o conteúdo
-      const fallbackTopic = await prisma.topic.findFirst({
-        where: { subjectId: existingSubject.id, code: { in: validCodes } },
-        orderBy: { order: "asc" },
-      });
-
-      if (fallbackTopic) {
-        await prisma.lesson.updateMany({ where: { topicId: obs.id }, data: { topicId: fallbackTopic.id } });
-        await prisma.question.updateMany({ where: { topicId: obs.id }, data: { topicId: fallbackTopic.id } });
-        await prisma.flashcard.updateMany({ where: { topicId: obs.id }, data: { topicId: fallbackTopic.id } });
-        await prisma.studySession.updateMany({ where: { topicId: obs.id }, data: { topicId: fallbackTopic.id } });
+    // Nunca remapeia conteúdo histórico para outro tópico automaticamente.
+    const validCodes = new Set(sub.topics.map((t) => t.code));
+    const obsoleteTopics = await prisma.topic.findMany({ where: { subjectId: existingSubject.id } });
+    for (const obs of obsoleteTopics.filter((topic) => !validCodes.has(topic.code || ""))) {
+      const [lessonCount, questionCount, flashcardCount, progressCount, sessionCount] = await Promise.all([
+        prisma.lesson.count({ where: { topicId: obs.id } }),
+        prisma.question.count({ where: { topicId: obs.id } }),
+        prisma.flashcard.count({ where: { topicId: obs.id } }),
+        prisma.userTopicProgress.count({ where: { topicId: obs.id } }),
+        prisma.studySession.count({ where: { topicId: obs.id } }),
+      ]);
+      const dependentRecords = lessonCount + questionCount + flashcardCount + progressCount + sessionCount;
+      if (dependentRecords > 0) {
+        throw new Error(`Tópico obsoleto com dados históricos: ${obs.code} - ${obs.title}. Conteúdo: ${dependentRecords} registro(s). Faça uma migração semântica explícita antes de executar o seed.`);
       }
-
-      await prisma.userTopicProgress.deleteMany({ where: { topicId: obs.id } });
       await prisma.topic.delete({ where: { id: obs.id } });
-      console.log(`🧹 Tópico obsoleto migrado e removido com segurança: ${obs.code} - ${obs.title}`);
+      console.log(`🧹 Tópico obsoleto sem dados removido: ${obs.code} - ${obs.title}`);
     }
   }
-  console.log(`✅ Edital carregado com sucesso! Total de ${subjectsData.length} matérias e ${totalTopics} tópicos cadastrados.`);
+
+  const finalTopicCount = await prisma.topic.count();
+  if (finalTopicCount !== 47) throw new Error(`Integridade da taxonomia inválida: esperado 47 tópicos, encontrado ${finalTopicCount}.`);
+  console.log(`✅ Edital carregado com sucesso! Total de ${subjectsData.length} matérias e ${totalTopics} tópicos oficiais cadastrados.`);
 }
 
 main().catch((e) => { console.error("❌ Erro durante o Seed:", e); process.exit(1); }).finally(async () => { await prisma.$disconnect(); });
