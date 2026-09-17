@@ -57,6 +57,20 @@ async function main() {
       else await prisma.topic.update({ where: { id: existingTopic.id }, data: topicData });
       await prisma.userTopicProgress.upsert({ where: { userId_topicId: { userId: user.id, topicId: existingTopic.id } }, update: {}, create: { userId: user.id, topicId: existingTopic.id, status: "NAO_INICIADO", masteryScore: 0 } });
     }
+
+    // Remove tópicos obsoletos que não constem na taxonomia oficial do edital
+    const validCodes = sub.topics.map((t) => t.code);
+    const obsoleteTopics = await prisma.topic.findMany({
+      where: {
+        subjectId: existingSubject.id,
+        code: { notIn: validCodes },
+      },
+    });
+    for (const obs of obsoleteTopics) {
+      await prisma.userTopicProgress.deleteMany({ where: { topicId: obs.id } });
+      await prisma.topic.delete({ where: { id: obs.id } });
+      console.log(`🧹 Tópico obsoleto removido: ${obs.code} - ${obs.title}`);
+    }
   }
   console.log(`✅ Edital carregado com sucesso! Total de ${subjectsData.length} matérias e ${totalTopics} tópicos cadastrados.`);
 }

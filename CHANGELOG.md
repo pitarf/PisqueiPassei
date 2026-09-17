@@ -2,6 +2,22 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.19] - 2026-09-17
+
+### Governança e Processo de Execução
+- Adicionado documento de diretrizes de execução mestre (`documents/fases/EXECUCAO-MESTRE-SUBAGENTES.md`), estruturando a atuação de 8 subagentes especializados, alinhamento aos 47 tópicos oficiais da Ênfase 18, checklist de critérios de pronto e matriz de validação ponta a ponta.
+
+### Banco de Dados e Taxonomia Oficial
+- Reconciliada a base de dados para refletir com exatidão os **47 tópicos oficiais** do edital (removidos os tópicos residuais 11 e 12 em Matemática).
+- `prisma/seed.ts` e script `prisma:seed` atualizados com limpeza automática de tópicos obsoletos e compatibilidade com Node 24.
+- Criado script de reconciliação e auditoria (`scripts/reconcile-topics.js` e `scripts/check-db.js`).
+
+### Testes e Qualidade
+- Suíte automatizada com 19 testes unitários e de integração nativos (`exam.test.ts`, `srs.test.ts`, `streak.test.ts`, `rag.test.ts`, `taxonomy.test.ts`) integrada via `npm test`.
+- Refatorado `src/lib/streak.ts` com a função pura `calculateStreakProgress`.
+- Smoke test automatizado (`scripts/smoke-test.js`) validando 100% das 9 rotas principais e páginas dinâmicas com HTTP 200 OK.
+- Build de produção Next.js e verificação de tipos TypeScript (`tsc --noEmit`) 100% aprovados.
+
 ## [0.1.18] - 2026-09-16
 
 ### Dashboard e métricas

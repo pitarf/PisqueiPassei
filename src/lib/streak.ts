@@ -21,20 +21,27 @@ function daysBetweenLocalDates(previous: Date, current: Date) {
   return Math.round((currentUtc - previousUtc) / 86_400_000);
 }
 
+export function calculateStreakProgress(lastStudyDate: Date | null, currentStreak: number, now: Date = new Date()) {
+  if (!lastStudyDate) {
+    return { nextStreak: 1, isNewDay: true };
+  }
+  const days = daysBetweenLocalDates(lastStudyDate, now);
+  if (days === 0) {
+    return { nextStreak: currentStreak, isNewDay: false };
+  }
+  if (days === 1) {
+    return { nextStreak: currentStreak + 1, isNewDay: true };
+  }
+  return { nextStreak: 1, isNewDay: true };
+}
+
 export async function updateStudyStreak(tx: Prisma.TransactionClient, userId: string, now: Date) {
   const user = await tx.user.findUnique({ where: { id: userId }, select: { currentStreak: true, lastStudyDate: true } }) as UserForStreak | null;
   if (!user) return 0;
 
-  if (user.lastStudyDate) {
-    const days = daysBetweenLocalDates(user.lastStudyDate, now);
-    if (days === 0) return user.currentStreak;
-    if (days === 1) {
-      const streak = user.currentStreak + 1;
-      await tx.user.update({ where: { id: userId }, data: { currentStreak: streak } });
-      return streak;
-    }
+  const { nextStreak, isNewDay } = calculateStreakProgress(user.lastStudyDate, user.currentStreak, now);
+  if (isNewDay) {
+    await tx.user.update({ where: { id: userId }, data: { currentStreak: nextStreak } });
   }
-
-  await tx.user.update({ where: { id: userId }, data: { currentStreak: 1 } });
-  return 1;
+  return nextStreak;
 }
