@@ -69,24 +69,32 @@ model Lesson {
 }
 
 model Question {
-  id            String    @id @default(uuid())
-  topicId       String
-  topic         Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  statement     String    @db.Text
-  optionA       String    @db.Text
-  optionB       String    @db.Text
-  optionC       String    @db.Text
-  optionD       String    @db.Text
-  optionE       String    @db.Text
-  correctOption String
-  explanation   String    @db.Text
-  difficulty    String    @default("MEDIA")
-  origin        String    @default("AI_GENERATED")
-  examYear      Int?
-  banca         String    @default("IA (perfil Cesgranrio)")
-  sourceRef     String?   @db.Text
-  createdAt     DateTime  @default(now())
-  attempts      QuestionAttempt[]
+  id               String    @id @default(uuid())
+  topicId          String
+  topic            Topic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  statement        String    @db.Text
+  optionA          String    @db.Text
+  optionB          String    @db.Text
+  optionC          String    @db.Text
+  optionD          String    @db.Text
+  optionE          String    @db.Text
+  correctOption    String
+  explanation      String    @db.Text
+  difficulty       String    @default("MEDIA")
+  origin           String    @default("AI_GENERATED")
+  examYear         Int?
+  banca            String    @default("IA (perfil Cesgranrio)")
+  sourceRef        String?   @db.Text
+  sourceUrl        String?
+  sourcePage       Int?
+  sourceQuestion   String?
+  questionType     String?
+  cognitiveLevel   String?
+  subtopic         String?
+  referenceIdsJson Json?
+  verificationStatus String @default("PENDENTE")
+  createdAt        DateTime  @default(now())
+  attempts         QuestionAttempt[]
 }
 
 model QuestionAttempt {
