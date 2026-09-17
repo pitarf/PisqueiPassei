@@ -121,7 +121,7 @@ Teste somente conteúdo sustentado pelo edital e pelas fontes recuperadas. Em le
 As questões são INÉDITAS e GERADAS POR IA. Nunca diga que foram aplicadas pela Cesgranrio.
 
 Retorne somente JSON no formato:
-{"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"${difficulty}","origin":"AI_GENERATED"}]}`;
+{"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"${difficulty}","origin":"AI_GENERATED","questionType":"APLICACAO","cognitiveLevel":"APLICAR","subtopic":"...","sourceRef":"Questão inédita gerada por IA, baseada no conteúdo e perfil histórico recuperado"}]}`;
   const result = await model.generateContent(prompt);
   return safeJsonParse<{ questions?: any[] }>(result.response.text(), `lote de questões de "${topicTitle}"`);
 }
