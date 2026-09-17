@@ -72,7 +72,7 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
     {!isTrainingActive || questions.length === 0 ? <div className="space-y-6">
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-md">
         <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-md">Padrão Cesgranrio</span>
-        <h1 className="text-xl sm:text-2xl font-black text-white mt-1">Prática de Questões</h1>
+        <div className="flex items-center justify-between gap-3"><div><h1 className="text-xl sm:text-2xl font-black text-white mt-1">Prática de Questões</h1></div><Link href="/questoes/historico" className="text-xs font-semibold text-sky-300 border border-sky-500/30 bg-sky-500/10 px-3 py-2 rounded-xl">Ver histórico</Link></div>
         <p className="text-xs sm:text-sm text-slate-400 mt-1 leading-relaxed">Exercite os conteúdos com questões de múltipla escolha (A a E). As questões criadas pela plataforma para complementar o edital trazem indicação clara de questão inédita.</p>
       </div>
       {isTrainingActive && <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex gap-3">
