@@ -97,6 +97,40 @@ model Question {
   attempts         QuestionAttempt[]
 }
 
+model HistoricalExam {
+  id          String   @id @default(uuid())
+  organization String
+  processName String
+  year        Int
+  role        String?
+  emphasis    String?
+  banca       String?
+  examCode    String?
+  sourceUrl   String?
+  accessedAt  DateTime?
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  questions   HistoricalQuestion[]
+}
+
+model HistoricalQuestion {
+  id             String         @id @default(uuid())
+  examId         String
+  exam           HistoricalExam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  questionNumber String
+  page           Int?
+  topicId        String?
+  topic          Topic?         @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  questionType   String?
+  cognitiveLevel String?
+  difficulty     String?
+  statementHash  String
+  verificationStatus String @default("PENDENTE")
+  notes          String?        @db.Text
+  createdAt      DateTime       @default(now())
+  @@unique([examId, questionNumber])
+}
+
 model QuestionAttempt {
   id               String      @id @default(uuid())
   idempotencyKey   String?     @unique
