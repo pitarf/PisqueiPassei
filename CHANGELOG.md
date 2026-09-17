@@ -2,6 +2,18 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.21] - 2026-09-17
+
+### Auditoria Completa de UI/UX e Correções por Subagentes Especializados
+- **Edital Verticalizado (`/edital`):** Criado o componente interativo `EditalVerticalizadoClient.tsx` com abas de filtro (*Específicas / Básicas*), busca instantânea em tempo real por título/código, filtro por status de domínio e acordeons retráteis com animação de expansão.
+- **Banco de Questões (`/questoes`):** Corrigida a consulta de categorias no Treino Misto (`category: { in: ["GERAL", "BASICO"] }`) e adicionado padding inferior de segurança contra a barra inferior mobile.
+- **Simulado Cesgranrio (`/simulado`):** Adicionados badges de identificação por área temática (*Língua Portuguesa*, *Matemática*, *Conhecimentos Específicos*) e bordas temáticas nos 60 botões do mapa de questões.
+- **Flashcards (SRS) (`/flashcards`):** Melhorado o contraste em modo escuro, feedback tátil (`active:scale-95`) e foco por teclado nos botões de autoavaliação.
+- **Professor IA (`/professor`):** Atualizado o modelo do Google Gemini em `src/lib/gemini.ts` para `gemini-3.6-flash`, resolvendo instabilidade da API.
+- **Aula por Tópico (`/aula/[topicId]`):** Implementada barra de abas didáticas no leitor de aula (`LessonViewer.tsx`) para navegação direta entre *Teoria*, *Mnemônicos*, *Flashcards* e *Questões de Fixação*.
+- **Desempenho (`/desempenho`):** Prevenção de quebra de layout em títulos longos com `min-w-0` e `truncate`.
+- **Prevenção Global de Overflow:** Adicionado `overflow-x: hidden` nas regras raiz de `globals.css`.
+
 ## [0.1.20] - 2026-09-17
 
 ### QA Visual, Testes E2E e Responsividade Mobile

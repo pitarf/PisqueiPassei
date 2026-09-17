@@ -1,0 +1,117 @@
+{
+  "timestamp": "2026-09-17T04:34:20.712Z",
+  "runs": [
+    {
+      "name": "desempenho",
+      "viewport": "mobile",
+      "url": "http://localhost:3000/desempenho",
+      "overflow": {
+        "docWidth": 390,
+        "bodyWidth": 390,
+        "scrollWidth": 390,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "consoleLogs": [],
+      "pageErrors": [],
+      "networkErrors": [],
+      "interactions": []
+    },
+    {
+      "name": "configuracoes",
+      "viewport": "mobile",
+      "url": "http://localhost:3000/configuracoes",
+      "overflow": {
+        "docWidth": 390,
+        "bodyWidth": 390,
+        "scrollWidth": 390,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "consoleLogs": [],
+      "pageErrors": [],
+      "networkErrors": [],
+      "interactions": [
+        "Filled targetScore with 50",
+        "Clicked Salvar Alterações",
+        "Exported backup file: transpetro-study-backup-2026-09-17.json"
+      ]
+    },
+    {
+      "name": "aula",
+      "viewport": "mobile",
+      "url": "http://localhost:3000/aula/75b56da9-933d-4875-ab81-68e763f14f4f",
+      "overflow": {
+        "docWidth": 390,
+        "bodyWidth": 390,
+        "scrollWidth": 390,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "consoleLogs": [],
+      "pageErrors": [],
+      "networkErrors": [],
+      "interactions": [
+        "Selected Option C",
+        "Clicked Conferir Resposta",
+        "Clicked Entendi! feedback button"
+      ]
+    },
+    {
+      "name": "desempenho",
+      "viewport": "desktop",
+      "url": "http://localhost:3000/desempenho",
+      "overflow": {
+        "docWidth": 1440,
+        "bodyWidth": 1440,
+        "scrollWidth": 1440,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "consoleLogs": [],
+      "pageErrors": [],
+      "networkErrors": [],
+      "interactions": []
+    },
+    {
+      "name": "configuracoes",
+      "viewport": "desktop",
+      "url": "http://localhost:3000/configuracoes",
+      "overflow": {
+        "docWidth": 1440,
+        "bodyWidth": 1440,
+        "scrollWidth": 1440,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "consoleLogs": [],
+      "pageErrors": [],
+      "networkErrors": [],
+      "interactions": [
+        "Filled targetScore with 50",
+        "Clicked Salvar Alterações",
+        "Exported backup file: transpetro-study-backup-2026-09-17.json"
+      ]
+    },
+    {
+      "name": "aula",
+      "viewport": "desktop",
+      "url": "http://localhost:3000/aula/75b56da9-933d-4875-ab81-68e763f14f4f",
+      "overflow": {
+        "docWidth": 1440,
+        "bodyWidth": 1440,
+        "scrollWidth": 1440,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "consoleLogs": [],
+      "pageErrors": [],
+      "networkErrors": [],
+      "interactions": [
+        "Selected Option C",
+        "Clicked Conferir Resposta",
+        "Clicked Entendi! feedback button"
+      ]
+    }
+  ]
+}

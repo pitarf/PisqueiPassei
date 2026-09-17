@@ -45,7 +45,7 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
       const generalCount = Math.max(1, Math.round(countNum / 3));
       const specificCount = countNum - generalCount;
       const [generalPool, specificPool] = await Promise.all([
-        prisma.question.findMany({ where: { topic: { subject: { category: "GERAL" } } }, include: { topic: { include: { subject: true } } } }),
+        prisma.question.findMany({ where: { topic: { subject: { category: { in: ["GERAL", "BASICO"] } } } }, include: { topic: { include: { subject: true } } } }),
         prisma.question.findMany({ where: { topic: { subject: { category: "ESPECIFICO" } } }, include: { topic: { include: { subject: true } } } }),
       ]);
       const generalQuestions = shuffle(generalPool).slice(0, generalCount);
@@ -68,7 +68,7 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
 
   const isShortBattery = isTrainingActive && questions.length > 0 && questions.length < countNum;
 
-  return <div className="space-y-6">
+  return <div className="space-y-6 pb-20 sm:pb-6">
     {!isTrainingActive || questions.length === 0 ? <div className="space-y-6">
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-md"><span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-md">Perfil de prova Cesgranrio</span><h1 className="text-xl sm:text-2xl font-black text-white mt-1">Banco de Questões & Treino de Prova</h1><p className="text-xs sm:text-sm text-slate-400 mt-1 leading-relaxed">Pratique com questões de múltipla escolha A a E no perfil definido para a preparação. Questões inéditas geradas por IA são identificadas como tais e não são questões oficiais da banca.</p></div>
       {isTrainingActive && <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex gap-3"><Info className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" /><div><p className="text-sm font-bold text-amber-300">Não há questões disponíveis para este filtro.</p><p className="text-xs text-amber-200/70 mt-1">Volte aos filtros e escolha outro tópico, disciplina ou modo de treino.</p></div></div>}

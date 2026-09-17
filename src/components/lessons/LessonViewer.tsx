@@ -125,7 +125,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
   const sections = lesson?.contentJson || {};
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-6 pb-28">
       {/* Header do Tópico */}
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-md">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -172,6 +172,31 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
         </div>
       </div>
 
+      {/* Navegação por Abas do Conteúdo da Aula */}
+      {!loading && lesson && (
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+          {[
+            { id: "todas", label: "Toda a Aula" },
+            { id: "teoria", label: "Teoria & Conceitos" },
+            { id: "mnemonicos", label: "Mnemônicos & Macetes" },
+            { id: "flashcards", label: "Flashcards" },
+            { id: "questoes", label: "Questões de Fixação" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                activeTab === tab.id
+                  ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
+                  : "bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Estado de Carregamento */}
       {loading && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-10 text-center space-y-3">
@@ -189,7 +214,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
       {!loading && lesson && (
         <div className="space-y-5">
           {/* Seção 1: O que você precisa aprender */}
-          {sections.step1_whatYouNeedToLearn && (
+          {(activeTab === "todas" || activeTab === "teoria") && sections.step1_whatYouNeedToLearn && (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
               <div className="flex items-center gap-2 text-emerald-400 mb-2">
                 <Target className="w-4 h-4" />
@@ -204,7 +229,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
           )}
 
           {/* Seção 2: Explicação Simples */}
-          {sections.step2_simpleExplanation && (
+          {(activeTab === "todas" || activeTab === "teoria") && sections.step2_simpleExplanation && (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
               <div className="flex items-center gap-2 text-amber-400 mb-2">
                 <Lightbulb className="w-4 h-4" />
@@ -219,7 +244,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
           )}
 
           {/* Seção 3: Conceitos Fundamentais */}
-          {sections.step3_fundamentalConcepts && (
+          {(activeTab === "todas" || activeTab === "teoria") && sections.step3_fundamentalConcepts && (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
               <div className="flex items-center gap-2 text-sky-400 mb-2">
                 <BookOpen className="w-4 h-4" />
@@ -234,7 +259,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
           )}
 
           {/* Seção 4: Exemplos Práticos */}
-          {sections.step4_examples && (
+          {(activeTab === "todas" || activeTab === "teoria") && sections.step4_examples && (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
               <div className="flex items-center gap-2 text-teal-400 mb-2">
                 <Building2 className="w-4 h-4" />
@@ -249,7 +274,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
           )}
 
           {/* Seção 5: Pegadinhas Clássicas da Cesgranrio */}
-          {sections.step5_cesgranrioTraps && (
+          {(activeTab === "todas" || activeTab === "teoria" || activeTab === "mnemonicos") && sections.step5_cesgranrioTraps && (
             <div className="bg-rose-950/30 border border-rose-850 rounded-2xl p-5">
               <div className="flex items-center gap-2 text-rose-400 mb-2">
                 <AlertTriangle className="w-4 h-4" />
@@ -264,7 +289,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
           )}
 
           {/* Seção 6: O que Memorizar */}
-          {sections.step6_whatToMemorize && (
+          {(activeTab === "todas" || activeTab === "mnemonicos") && sections.step6_whatToMemorize && (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
               <div className="flex items-center gap-2 text-purple-400 mb-2">
                 <Brain className="w-4 h-4" />
@@ -279,7 +304,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
           )}
 
           {/* Seção 7: Resumo Executivo */}
-          {sections.step7_summary && (
+          {(activeTab === "todas" || activeTab === "teoria" || activeTab === "mnemonicos") && sections.step7_summary && (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
               <div className="flex items-center gap-2 text-indigo-400 mb-2">
                 <ListChecks className="w-4 h-4" />
@@ -294,7 +319,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
           )}
 
           {/* Seção 8: Flashcards do Tópico */}
-          {sections.step8_flashcards && sections.step8_flashcards.length > 0 && (
+          {(activeTab === "todas" || activeTab === "flashcards") && sections.step8_flashcards && sections.step8_flashcards.length > 0 && (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2 text-amber-400">
@@ -332,7 +357,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
           )}
 
           {/* Seção 9: Questões de Fixação */}
-          {sections.step9_practiceQuestions && sections.step9_practiceQuestions.length > 0 && (
+          {(activeTab === "todas" || activeTab === "questoes") && sections.step9_practiceQuestions && sections.step9_practiceQuestions.length > 0 && (
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
               <div className="flex items-center gap-2 text-emerald-400 mb-4">
                 <HelpCircle className="w-4 h-4" />

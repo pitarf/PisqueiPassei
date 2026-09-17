@@ -1,0 +1,53 @@
+{
+  "flashcards": {
+    "desktop": {
+      "overflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "hasHorizontalOverflow": false,
+        "bodyScrollWidth": 1440,
+        "bodyClientWidth": 1440
+      },
+      "title": "TRANSPETRO STUDY 2026.3 • Ênfase 18: Suprimento de Bens e Serviços",
+      "hasCard": true,
+      "ratingButtonsVisible": true
+    },
+    "mobile": {
+      "overflow": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "hasHorizontalOverflow": false,
+        "bodyScrollWidth": 390,
+        "bodyClientWidth": 390
+      },
+      "hasCard": true,
+      "ratingButtonsVisible": true
+    }
+  },
+  "professor": {
+    "desktop": {
+      "overflow": {
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
+        "hasHorizontalOverflow": false,
+        "bodyScrollWidth": 1440,
+        "bodyClientWidth": 1440
+      },
+      "quickPromptExists": true,
+      "inputExists": true,
+      "sendButtonDisabledInitial": true
+    },
+    "mobile": {
+      "overflow": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "hasHorizontalOverflow": false,
+        "bodyScrollWidth": 390,
+        "bodyClientWidth": 390
+      },
+      "sendButtonEnabledWhenTyped": true
+    }
+  },
+  "consoleErrors": [],
+  "networkErrors": []
+}

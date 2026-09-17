@@ -1,0 +1,160 @@
+{
+  "timestamp": "2026-09-17T04:29:17.427Z",
+  "pages": [
+    {
+      "page": "Dashboard",
+      "viewport": "mobile",
+      "interactions": [
+        {
+          "element": "CONTINUAR ESTUDANDO button",
+          "visible": true,
+          "href": "/aula/f2f121b4-072c-4036-899f-93ad9c132b41"
+        }
+      ],
+      "overflow": {
+        "docWidth": 390,
+        "bodyWidth": 390,
+        "scrollWidth": 390,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": [
+          {
+            "tagName": "DIV",
+            "id": "",
+            "className": "absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer",
+            "right": 457,
+            "windowWidth": 390,
+            "overflow": 67
+          }
+        ]
+      },
+      "consoleLogs": [],
+      "pageErrors": [],
+      "networkErrors": []
+    },
+    {
+      "page": "Edital",
+      "viewport": "mobile",
+      "interactions": [
+        {
+          "tabsFound": [
+            {
+              "text": "Todas as Matérias",
+              "ariaSelected": "true"
+            },
+            {
+              "text": "Específicas (40q)",
+              "ariaSelected": "false"
+            },
+            {
+              "text": "Básicas (20q)",
+              "ariaSelected": "false"
+            }
+          ]
+        },
+        {
+          "action": "filter_tab_clicked",
+          "tab": "Específicas"
+        },
+        {
+          "action": "accordion_toggle",
+          "title": "Língua Portuguesa\nConhecimentos Básicos ",
+          "success": true
+        },
+        {
+          "action": "search_filter_tested",
+          "query": "Direito"
+        }
+      ],
+      "overflow": {
+        "docWidth": 390,
+        "bodyWidth": 390,
+        "scrollWidth": 390,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "overflowAfterInteractions": {
+        "docWidth": 390,
+        "bodyWidth": 390,
+        "scrollWidth": 390,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "consoleLogs": [],
+      "pageErrors": [],
+      "networkErrors": []
+    },
+    {
+      "page": "Dashboard",
+      "viewport": "desktop",
+      "interactions": [
+        {
+          "element": "CONTINUAR ESTUDANDO button",
+          "visible": true,
+          "href": "/aula/f2f121b4-072c-4036-899f-93ad9c132b41"
+        }
+      ],
+      "overflow": {
+        "docWidth": 1440,
+        "bodyWidth": 1440,
+        "scrollWidth": 1440,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "consoleLogs": [],
+      "pageErrors": [],
+      "networkErrors": []
+    },
+    {
+      "page": "Edital",
+      "viewport": "desktop",
+      "interactions": [
+        {
+          "tabsFound": [
+            {
+              "text": "Todas as Matérias",
+              "ariaSelected": "true"
+            },
+            {
+              "text": "Específicas (40q)",
+              "ariaSelected": "false"
+            },
+            {
+              "text": "Básicas (20q)",
+              "ariaSelected": "false"
+            }
+          ]
+        },
+        {
+          "action": "filter_tab_clicked",
+          "tab": "Específicas"
+        },
+        {
+          "action": "accordion_toggle",
+          "title": "Língua Portuguesa\nConhecimentos Básicos ",
+          "success": true
+        },
+        {
+          "action": "search_filter_tested",
+          "query": "Direito"
+        }
+      ],
+      "overflow": {
+        "docWidth": 1440,
+        "bodyWidth": 1440,
+        "scrollWidth": 1440,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "overflowAfterInteractions": {
+        "docWidth": 1440,
+        "bodyWidth": 1440,
+        "scrollWidth": 1440,
+        "hasPageOverflow": false,
+        "elementsWithOverflow": []
+      },
+      "consoleLogs": [],
+      "pageErrors": [],
+      "networkErrors": []
+    }
+  ]
+}

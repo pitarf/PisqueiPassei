@@ -37,7 +37,7 @@ export async function generateStructuredLesson(
 ) {
   requireApiKey();
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-3.6-flash",
     systemInstruction: SYSTEM_INSTRUCTION_TRANSPETRO,
     generationConfig: { temperature: 0.2, responseMimeType: "application/json" },
   });
@@ -75,7 +75,7 @@ export async function generateQuestionBatch(
 ) {
   requireApiKey();
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-3.6-flash",
     systemInstruction: SYSTEM_INSTRUCTION_TRANSPETRO,
     generationConfig: { temperature: 0.2, responseMimeType: "application/json" },
   });
@@ -108,7 +108,7 @@ export async function askProfessorAI(
   requireApiKey();
   const rag = groundedContext(userMessage);
   const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
+    model: "gemini-3.6-flash",
     systemInstruction: `${SYSTEM_INSTRUCTION_TRANSPETRO}
 Aluno: ${context.studentName}
 Média: ${context.currentMastery.toFixed(1)}%
