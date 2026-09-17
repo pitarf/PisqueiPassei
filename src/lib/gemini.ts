@@ -157,3 +157,78 @@ Aja como mentor direto e técnico. Quando responder sobre legislação, baseie-s
   const result = await model.generateContent({ contents });
   return result.response.text();
 }
+
+
+export type HistoricalQuestionPattern = {
+  statement: string;
+  topicTitle: string;
+  subjectName: string;
+  difficulty: string;
+  questionType?: string;
+  cognitiveLevel?: string;
+  explanation?: string;
+  sourceRef?: string | null;
+};
+
+export async function generateSiblingQuestionBatch(
+  pattern: HistoricalQuestionPattern,
+  variants: { difficulty: string; mode: "FACIL" | "EQUIVALENTE" | "DIFICIL" | "NOVO_CENARIO" | "DISTRATORES" }[],
+) {
+  requireApiKey();
+  const model = genAI.getGenerativeModel({
+    model: "gemini-3.6-flash",
+    systemInstruction: SYSTEM_INSTRUCTION_TRANSPETRO,
+    generationConfig: { temperature: 0.25, responseMimeType: "application/json" },
+  });
+
+  const rag = groundedContext(
+    `${pattern.subjectName} ${pattern.topicTitle} ${pattern.statement}`,
+    pattern.subjectName,
+  );
+
+  const requested = variants.map((v, index) => ({
+    index: index + 1,
+    difficulty: v.difficulty,
+    mode: v.mode,
+  }));
+
+  const prompt = `Crie questões IRMÃS ORIGINAIS a partir do padrão histórico abaixo.
+A questão de referência serve somente para identificar o conteúdo, a estrutura de cobrança e a complexidade. NÃO copie o enunciado, alternativas ou redação.
+
+Disciplina: "${pattern.subjectName}"
+Tópico oficial: "${pattern.topicTitle}"
+Dificuldade da referência: "${pattern.difficulty}"
+Tipo: "${pattern.questionType || "não informado"}"
+Nível cognitivo: "${pattern.cognitiveLevel || "não informado"}"
+Referência: "${pattern.sourceRef || "não informada"}"
+Questão de referência:
+"${pattern.statement}"
+
+Contexto oficial recuperado:
+${rag}
+
+Gere exatamente estas variações:
+${JSON.stringify(requested)}
+
+Regras:
+- Todas devem ser inéditas e originais.
+- Não atribua nenhuma delas à Cesgranrio ou a qualquer prova real.
+- Preserve o mesmo núcleo de conhecimento e tópico oficial.
+- Na versão FACIL, reduza a carga cognitiva sem trocar o conteúdo.
+- Na EQUIVALENTE, mantenha complexidade semelhante.
+- Na DIFICIL, aumente a complexidade por cenário, dados, comparação ou combinação de conceitos, sem criar conteúdo fora do edital.
+- NOVO_CENARIO deve cobrar o mesmo conhecimento em situação diferente.
+- DISTRATORES devem ser plausíveis e tecnicamente defensáveis, sem ambiguidade artificial.
+- Em legislação, use somente regras sustentadas pelo contexto recuperado.
+- Explique por que a alternativa correta está correta e por que os distratores não estão.
+
+Retorne somente:
+{"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"...","origin":"INEDITA_IA","sourceRef":"Questão irmã original baseada em padrão histórico; referência: ..."}]}
+`;
+
+  const result = await model.generateContent(prompt);
+  return safeJsonParse<{ questions?: any[] }>(
+    result.response.text(),
+    "questões irmãs baseadas em padrão histórico",
+  );
+}
