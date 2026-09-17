@@ -47,7 +47,10 @@ export async function POST(req: NextRequest) {
         topicTitle: reference.topic.title,
         subjectName: reference.topic.subject.name,
       },
-      variants,
+      variants.map((mode) => ({
+        mode,
+        difficulty: mode === "FACIL" ? "FACIL" : mode === "DIFICIL" ? "DIFICIL" : reference.difficulty,
+      })),
     );
 
     const rawList = Array.isArray(generated?.questions) ? generated.questions : [];
