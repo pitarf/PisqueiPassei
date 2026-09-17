@@ -24,6 +24,7 @@ export const SidebarNav: React.FC = () => {
     { href: "/", label: "Visão Geral", icon: Home },
     { href: "/edital", label: "Edital Verticalizado", icon: BookOpen },
     { href: "/questoes", label: "Banco de Questões", icon: HelpCircle },
+    { href: "/questoes/historico", label: "Provas Históricas", icon: BookOpen },
     { href: "/simulado", label: "Simulado Cesgranrio", icon: Award },
     { href: "/flashcards", label: "Flashcards (SRS)", icon: Layers },
     { href: "/professor", label: "Professor IA", icon: Bot },
