@@ -9,6 +9,11 @@ export interface RawAiQuestion {
   explanation?: unknown;
   difficulty?: unknown;
   origin?: unknown;
+  questionType?: unknown;
+  cognitiveLevel?: unknown;
+  subtopic?: unknown;
+  sourceRef?: unknown;
+  banca?: unknown;
 }
 
 export interface ValidatedQuestion {
@@ -24,6 +29,9 @@ export interface ValidatedQuestion {
   origin: string;
   sourceRef: string;
   banca: string;
+  questionType: string;
+  cognitiveLevel: string;
+  subtopic: string;
 }
 
 export const VALID_OPTIONS = new Set(["A", "B", "C", "D", "E"]);
@@ -106,7 +114,10 @@ export function validateAiQuestion(
       difficulty: normalizedDiff,
       origin: "AI_GENERATED",
       banca: "IA (perfil Cesgranrio)",
-      sourceRef: "Questão inédita gerada por IA, baseada no perfil de cobrança do edital.",
+      sourceRef: typeof q.sourceRef === "string" && q.sourceRef.trim() ? q.sourceRef.trim() : "Questão inédita gerada por IA, baseada no perfil de cobrança do edital.",
+      questionType: typeof q.questionType === "string" && q.questionType.trim() ? q.questionType.trim() : "APLICACAO",
+      cognitiveLevel: typeof q.cognitiveLevel === "string" && q.cognitiveLevel.trim() ? q.cognitiveLevel.trim() : "APLICAR",
+      subtopic: typeof q.subtopic === "string" && q.subtopic.trim() ? q.subtopic.trim() : "",
     },
   };
 }
