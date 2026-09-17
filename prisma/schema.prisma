@@ -52,6 +52,7 @@ model Topic {
   order          Int
   lessons        Lesson[]
   questions      Question[]
+  historicalQuestions HistoricalQuestion[]
   flashcards     Flashcard[]
   userProgress   UserTopicProgress[]
 }
