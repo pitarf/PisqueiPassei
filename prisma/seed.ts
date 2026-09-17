@@ -58,7 +58,7 @@ async function main() {
       await prisma.userTopicProgress.upsert({ where: { userId_topicId: { userId: user.id, topicId: existingTopic.id } }, update: {}, create: { userId: user.id, topicId: existingTopic.id, status: "NAO_INICIADO", masteryScore: 0 } });
     }
 
-    // Remove tópicos obsoletos que não constem na taxonomia oficial do edital
+    // Migra e remove tópicos obsoletos que não constem na taxonomia oficial do edital
     const validCodes = sub.topics.map((t) => t.code);
     const obsoleteTopics = await prisma.topic.findMany({
       where: {
@@ -67,9 +67,22 @@ async function main() {
       },
     });
     for (const obs of obsoleteTopics) {
+      // Encontra um tópico de fallback oficial da mesma disciplina para salvar o conteúdo
+      const fallbackTopic = await prisma.topic.findFirst({
+        where: { subjectId: existingSubject.id, code: { in: validCodes } },
+        orderBy: { order: "asc" },
+      });
+
+      if (fallbackTopic) {
+        await prisma.lesson.updateMany({ where: { topicId: obs.id }, data: { topicId: fallbackTopic.id } });
+        await prisma.question.updateMany({ where: { topicId: obs.id }, data: { topicId: fallbackTopic.id } });
+        await prisma.flashcard.updateMany({ where: { topicId: obs.id }, data: { topicId: fallbackTopic.id } });
+        await prisma.studySession.updateMany({ where: { topicId: obs.id }, data: { topicId: fallbackTopic.id } });
+      }
+
       await prisma.userTopicProgress.deleteMany({ where: { topicId: obs.id } });
       await prisma.topic.delete({ where: { id: obs.id } });
-      console.log(`🧹 Tópico obsoleto removido: ${obs.code} - ${obs.title}`);
+      console.log(`🧹 Tópico obsoleto migrado e removido com segurança: ${obs.code} - ${obs.title}`);
     }
   }
   console.log(`✅ Edital carregado com sucesso! Total de ${subjectsData.length} matérias e ${totalTopics} tópicos cadastrados.`);

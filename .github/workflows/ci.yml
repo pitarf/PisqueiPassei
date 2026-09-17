@@ -29,6 +29,14 @@ jobs:
       - name: TypeScript check
         run: npm run typecheck
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Run automated test suite
+        run: npm test
+
       - name: Production build
         run: npm run build
         env:

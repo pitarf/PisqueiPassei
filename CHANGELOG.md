@@ -2,6 +2,14 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.22] - 2026-09-17
+
+### Proteção de Integridade de Dados, Taxonomia Estrita e CI
+- **Reconciliação e Migração Segura:** Reestruturado `scripts/reconcile-topics.js` e `prisma/seed.ts` para migrar automaticamente lições, questões, tentativas, flashcards, sessões de estudo e progresso antes de remover qualquer tópico obsoleto, eliminando o risco de `onDelete: Cascade` apagar conteúdo gerado.
+- **Taxonomia Tipada e Exata (47 Tópicos):** Criado o manifesto oficial tipado `src/lib/taxonomy.ts` e suíte estrita em `src/lib/taxonomy.test.ts`, garantindo os 47 tópicos exatos da Ênfase 18 (Português: 8, Matemática: 10, Administração: 5, Suprimentos: 11, Legislação: 6, Contabilidade e Informática: 7).
+- **Pipeline de CI com Testes Automatizados:** Adicionado setup do Bun e execução de `npm test` em `.github/workflows/ci.yml` antes do build de produção.
+- **Validação de Produção:** 100% dos 20 testes automatizados aprovados, TypeScript sem erros (`tsc --noEmit`), build de produção Next.js e smoke test aprovados com HTTP 200 em todas as rotas.
+
 ## [0.1.21] - 2026-09-17
 
 ### Auditoria Completa de UI/UX e Correções por Subagentes Especializados

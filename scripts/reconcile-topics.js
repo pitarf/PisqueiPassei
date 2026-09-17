@@ -2,8 +2,100 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log("🔄 Iniciando reconciliação da taxonomia de tópicos oficiais...");
+/**
+ * Migra com segurança absoluta todos os dados relacionados de um tópico de origem para um tópico de destino:
+ * - Lessons
+ * - Questions (e seus QuestionAttempts)
+ * - Flashcards (e seus FlashcardReviews)
+ * - StudySessions
+ * - UserTopicProgress
+ */
+async function migrateTopicRelations(sourceTopicId, targetTopicId) {
+  return await prisma.$transaction(async (tx) => {
+    // 1. Migrar Lessons
+    const lessonsMoved = await tx.lesson.updateMany({
+      where: { topicId: sourceTopicId },
+      data: { topicId: targetTopicId },
+    });
+
+    // 2. Migrar Questions
+    const questionsMoved = await tx.question.updateMany({
+      where: { topicId: sourceTopicId },
+      data: { topicId: targetTopicId },
+    });
+
+    // 3. Migrar Flashcards
+    const flashcardsMoved = await tx.flashcard.updateMany({
+      where: { topicId: sourceTopicId },
+      data: { topicId: targetTopicId },
+    });
+
+    // 4. Migrar StudySessions
+    const sessionsMoved = await tx.studySession.updateMany({
+      where: { topicId: sourceTopicId },
+      data: { topicId: targetTopicId },
+    });
+
+    // 5. Migrar UserTopicProgress com integridade (sem violar unique userId_topicId)
+    const sourceProgresses = await tx.userTopicProgress.findMany({
+      where: { topicId: sourceTopicId },
+    });
+
+    for (const sp of sourceProgresses) {
+      const targetProgress = await tx.userTopicProgress.findUnique({
+        where: { userId_topicId: { userId: sp.userId, topicId: targetTopicId } },
+      });
+
+      if (!targetProgress) {
+        // Altera para o novo topicId
+        await tx.userTopicProgress.update({
+          where: { id: sp.id },
+          data: { topicId: targetTopicId },
+        });
+      } else {
+        // Funde o progresso de forma cumulativa e segura
+        const mergedTotalQuestions = targetProgress.totalQuestions + sp.totalQuestions;
+        const mergedCorrectAnswers = targetProgress.correctAnswers + sp.correctAnswers;
+        const mergedMasteryScore = mergedTotalQuestions > 0
+          ? Math.round((mergedCorrectAnswers / mergedTotalQuestions) * 100)
+          : Math.max(targetProgress.masteryScore, sp.masteryScore);
+
+        const mergedStatus = mergedMasteryScore >= 85
+          ? "DOMINADO"
+          : (targetProgress.status !== "NAO_INICIADO" ? targetProgress.status : sp.status);
+
+        await tx.userTopicProgress.update({
+          where: { id: targetProgress.id },
+          data: {
+            totalQuestions: mergedTotalQuestions,
+            correctAnswers: mergedCorrectAnswers,
+            masteryScore: mergedMasteryScore,
+            status: mergedStatus,
+            totalTimeMinutes: targetProgress.totalTimeMinutes + sp.totalTimeMinutes,
+            lastStudiedAt: targetProgress.lastStudiedAt || sp.lastStudiedAt,
+          },
+        });
+
+        // Remove o progresso antigo já fundido
+        await tx.userTopicProgress.delete({ where: { id: sp.id } });
+      }
+    }
+
+    // 6. Após migrar todas as dependências, remove com segurança o tópico antigo
+    await tx.topic.delete({ where: { id: sourceTopicId } });
+
+    return {
+      lessons: lessonsMoved.count,
+      questions: questionsMoved.count,
+      flashcards: flashcardsMoved.count,
+      sessions: sessionsMoved.count,
+      progresses: sourceProgresses.length,
+    };
+  });
+}
+
+async function reconcileTopics() {
+  console.log("🔒 [INTEGRIDADE] Iniciando reconciliação segura da taxonomia de tópicos oficiais...");
 
   const mathSubject = await prisma.subject.findFirst({
     where: { name: "Matemática" },
@@ -11,61 +103,42 @@ async function main() {
   });
 
   if (!mathSubject) {
-    console.log("Matemática não encontrada.");
+    console.error("Matemática não encontrada no banco de dados.");
     return;
   }
 
+  // Identifica códigos residuais 11 e 12 de Matemática
   const topic11 = mathSubject.topics.find((t) => t.code === "11");
   const topic12 = mathSubject.topics.find((t) => t.code === "12");
   const topic9 = mathSubject.topics.find((t) => t.code === "9");
   const topic10 = mathSubject.topics.find((t) => t.code === "10");
 
-  if (topic11) {
-    console.log(`Identificado tópico residual 11 ("${topic11.title}").`);
-    // Se houver progresso real (masteryScore > 0 ou status != NAO_INICIADO), migrar para topic9
-    if (topic9) {
-      const p11 = await prisma.userTopicProgress.findFirst({ where: { topicId: topic11.id } });
-      if (p11 && p11.masteryScore > 0) {
-        await prisma.userTopicProgress.update({
-          where: { userId_topicId: { userId: p11.userId, topicId: topic9.id } },
-          data: {
-            masteryScore: Math.max(p11.masteryScore, 0),
-            status: p11.status !== "NAO_INICIADO" ? p11.status : undefined,
-          },
-        });
-      }
-    }
-    await prisma.userTopicProgress.deleteMany({ where: { topicId: topic11.id } });
-    await prisma.topic.delete({ where: { id: topic11.id } });
-    console.log("✅ Tópico 11 removido com sucesso.");
+  if (topic11 && topic9) {
+    console.log(`📦 Migrando dados de Matemática antigo 11 -> novo 9 ("${topic9.title}")...`);
+    const res = await migrateTopicRelations(topic11.id, topic9.id);
+    console.log(`✅ Migrado tópico 11 -> 9:`, res);
   }
 
-  if (topic12) {
-    console.log(`Identificado tópico residual 12 ("${topic12.title}").`);
-    if (topic10) {
-      const p12 = await prisma.userTopicProgress.findFirst({ where: { topicId: topic12.id } });
-      if (p12 && p12.masteryScore > 0) {
-        await prisma.userTopicProgress.update({
-          where: { userId_topicId: { userId: p12.userId, topicId: topic10.id } },
-          data: {
-            masteryScore: Math.max(p12.masteryScore, 0),
-            status: p12.status !== "NAO_INICIADO" ? p12.status : undefined,
-          },
-        });
-      }
-    }
-    await prisma.userTopicProgress.deleteMany({ where: { topicId: topic12.id } });
-    await prisma.topic.delete({ where: { id: topic12.id } });
-    console.log("✅ Tópico 12 removido com sucesso.");
+  if (topic12 && topic10) {
+    console.log(`📦 Migrando dados de Matemática antigo 12 -> novo 10 ("${topic10.title}")...`);
+    const res = await migrateTopicRelations(topic12.id, topic10.id);
+    console.log(`✅ Migrado tópico 12 -> 10:`, res);
   }
 
   const finalCount = await prisma.topic.count();
-  console.log(`🎯 Contagem final de tópicos no banco: ${finalCount} (Esperado: 47)`);
+  console.log(`🎯 Contagem oficial de tópicos no banco: ${finalCount} (Esperado: 47)`);
+  if (finalCount !== 47) {
+    throw new Error(`DIVERGÊNCIA: banco contém ${finalCount} tópicos, esperado exatamente 47.`);
+  }
 }
 
-main()
-  .catch((e) => {
-    console.error("Erro na reconciliação:", e);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+module.exports = { reconcileTopics, migrateTopicRelations };
+
+if (require.main === module) {
+  reconcileTopics()
+    .catch((e) => {
+      console.error("❌ Erro na reconciliação:", e);
+      process.exit(1);
+    })
+    .finally(() => prisma.$disconnect());
+}
