@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
@@ -22,6 +23,21 @@ function normalize(text) {
     .toLowerCase()
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function hashStatement(text) {
+  return crypto.createHash("sha256").update(normalize(text)).digest("hex");
+}
+
+function optionalString(value) {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function optionalInt(value, field) {
+  if (value == null || value === "") return null;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed)) throw new Error(`Valor inteiro inválido: ${field}`);
+  return parsed;
 }
 
 function requireString(value, field) {
@@ -58,6 +74,15 @@ function validateQuestion(item, index) {
   const subject = requireString(item.subject, `#${index}.subject`);
   const topicCode = requireString(item.topicCode, `#${index}.topicCode`);
 
+  const sourceRef = optionalString(item.sourceRef);
+  const sourceUrl = optionalString(item.sourceUrl);
+  const sourceQuestion = optionalString(item.sourceQuestion);
+  const verificationStatus = optionalString(item.verificationStatus) || "PENDENTE";
+
+  if (origin.startsWith("OFICIAL_") && !sourceRef && !sourceUrl && !sourceQuestion) {
+    throw new Error(`Questão #${index}: questão oficial exige ao menos sourceRef, sourceUrl ou sourceQuestion.`);
+  }
+
   return {
     statement,
     optionA: options[0],
@@ -71,10 +96,83 @@ function validateQuestion(item, index) {
     origin,
     subject,
     topicCode,
-    examYear: item.examYear == null ? null : Number(item.examYear),
-    banca: typeof item.banca === "string" && item.banca.trim() ? item.banca.trim() : "Não informado",
-    sourceRef: item.sourceRef ? String(item.sourceRef) : null,
+    examYear: optionalInt(item.examYear, `#${index}.examYear`),
+    banca: optionalString(item.banca) || "Não informado",
+    sourceRef,
+    sourceUrl,
+    sourcePage: optionalInt(item.sourcePage, `#${index}.sourcePage`),
+    sourceQuestion,
+    questionType: optionalString(item.questionType),
+    cognitiveLevel: optionalString(item.cognitiveLevel),
+    subtopic: optionalString(item.subtopic),
+    referenceIdsJson: Array.isArray(item.referenceQuestionIds) ? item.referenceQuestionIds : null,
+    verificationStatus,
+    questionNumber: optionalString(item.questionNumber),
+    notes: optionalString(item.notes),
   };
+}
+
+function validateExam(exam) {
+  if (!exam) return null;
+  return {
+    organization: requireString(exam.organization, "exam.organization"),
+    processName: requireString(exam.processName, "exam.processName"),
+    year: optionalInt(exam.year, "exam.year"),
+    role: optionalString(exam.role),
+    emphasis: optionalString(exam.emphasis),
+    banca: optionalString(exam.banca),
+    examCode: optionalString(exam.examCode),
+    sourceUrl: optionalString(exam.sourceUrl),
+    notes: optionalString(exam.notes),
+  };
+}
+
+async function resolveTopic(question, cache) {
+  const cacheKey = `${question.subject}::${question.topicCode}`;
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
+
+  const subject = await prisma.subject.findFirst({ where: { name: question.subject } });
+  if (!subject) throw new Error(`Matéria não encontrada: ${question.subject}`);
+
+  const topic = await prisma.topic.findFirst({
+    where: { subjectId: subject.id, code: question.topicCode },
+  });
+  if (!topic) throw new Error(`Tópico não encontrado: ${question.subject} / ${question.topicCode}`);
+
+  cache.set(cacheKey, topic);
+  return topic;
+}
+
+async function resolveHistoricalExam(exam) {
+  if (!exam) return null;
+  const where = {
+    organization: exam.organization,
+    processName: exam.processName,
+    year: exam.year,
+    ...(exam.examCode ? { examCode: exam.examCode } : {}),
+  };
+
+  const existing = await prisma.historicalExam.findFirst({ where });
+  if (existing) {
+    return prisma.historicalExam.update({
+      where: { id: existing.id },
+      data: {
+        role: exam.role,
+        emphasis: exam.emphasis,
+        banca: exam.banca,
+        sourceUrl: exam.sourceUrl,
+        notes: exam.notes,
+        accessedAt: new Date(),
+      },
+    });
+  }
+
+  return prisma.historicalExam.create({
+    data: {
+      ...exam,
+      accessedAt: new Date(),
+    },
+  });
 }
 
 async function main() {
@@ -86,6 +184,7 @@ async function main() {
   const absolutePath = path.resolve(inputPath);
   const payload = JSON.parse(fs.readFileSync(absolutePath, "utf8"));
   const items = Array.isArray(payload) ? payload : payload.questions;
+  const exam = validateExam(Array.isArray(payload) ? null : payload.exam);
 
   if (!Array.isArray(items)) throw new Error("O JSON precisa ser um array ou possuir a propriedade questions[].");
 
@@ -99,11 +198,29 @@ async function main() {
     ready: 0,
     duplicates: 0,
     created: 0,
+    historicalCreated: 0,
+    historicalUpdated: 0,
     dryRun: process.argv.includes("--dry-run"),
     errors: [],
   };
 
   const topicCache = new Map();
+  let historicalExam = null;
+
+  if (exam && !report.dryRun) {
+    const before = await prisma.historicalExam.findFirst({
+      where: {
+        organization: exam.organization,
+        processName: exam.processName,
+        year: exam.year,
+        ...(exam.examCode ? { examCode: exam.examCode } : {}),
+      },
+      select: { id: true },
+    });
+    historicalExam = await resolveHistoricalExam(exam);
+    if (before) report.historicalUpdated++;
+    else report.historicalCreated++;
+  }
 
   for (const question of validated) {
     const key = normalize(question.statement);
@@ -112,26 +229,11 @@ async function main() {
       continue;
     }
 
-    const cacheKey = `${question.subject}::${question.topicCode}`;
-    let topic = topicCache.get(cacheKey);
-
-    if (!topic) {
-      const subject = await prisma.subject.findFirst({ where: { name: question.subject } });
-      if (!subject) throw new Error(`Matéria não encontrada: ${question.subject}`);
-
-      topic = await prisma.topic.findFirst({
-        where: { subjectId: subject.id, code: question.topicCode },
-      });
-      if (!topic) {
-        throw new Error(`Tópico não encontrado: ${question.subject} / ${question.topicCode}`);
-      }
-      topicCache.set(cacheKey, topic);
-    }
-
+    const topic = await resolveTopic(question, topicCache);
     report.ready++;
 
     if (!report.dryRun) {
-      await prisma.question.create({
+      const created = await prisma.question.create({
         data: {
           topicId: topic.id,
           statement: question.statement,
@@ -147,11 +249,59 @@ async function main() {
           examYear: question.examYear,
           banca: question.banca,
           sourceRef: question.sourceRef,
+          sourceUrl: question.sourceUrl,
+          sourcePage: question.sourcePage,
+          sourceQuestion: question.sourceQuestion,
+          questionType: question.questionType,
+          cognitiveLevel: question.cognitiveLevel,
+          subtopic: question.subtopic,
+          referenceIdsJson: question.referenceIdsJson,
+          verificationStatus: question.verificationStatus,
         },
       });
+
+      if (historicalExam && question.questionNumber) {
+        await prisma.historicalQuestion.upsert({
+          where: {
+            examId_questionNumber: {
+              examId: historicalExam.id,
+              questionNumber: question.questionNumber,
+            },
+          },
+          create: {
+            examId: historicalExam.id,
+            questionNumber: question.questionNumber,
+            page: question.sourcePage,
+            topicId: topic.id,
+            questionType: question.questionType,
+            cognitiveLevel: question.cognitiveLevel,
+            difficulty: question.difficulty,
+            statementHash: hashStatement(question.statement),
+            verificationStatus: question.verificationStatus,
+            notes: question.notes,
+          },
+          update: {
+            page: question.sourcePage,
+            topicId: topic.id,
+            questionType: question.questionType,
+            cognitiveLevel: question.cognitiveLevel,
+            difficulty: question.difficulty,
+            statementHash: hashStatement(question.statement),
+            verificationStatus: question.verificationStatus,
+            notes: question.notes,
+          },
+        });
+      }
+
       existingStatements.add(key);
       report.created++;
+      void created;
     }
+  }
+
+  if (report.dryRun && exam) {
+    report.historicalExam = exam;
+    report.historicalQuestionRecords = validated.filter(q => q.questionNumber).length;
   }
 
   console.log(JSON.stringify(report, null, 2));
