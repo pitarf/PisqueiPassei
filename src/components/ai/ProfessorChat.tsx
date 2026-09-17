@@ -102,25 +102,25 @@ export const ProfessorChat: React.FC<ProfessorChatProps> = ({
   ];
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl flex flex-col h-[calc(100vh-140px)] sm:h-[calc(100vh-120px)] shadow-xl overflow-hidden">
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl flex flex-col h-[calc(100dvh-175px)] sm:h-[calc(100vh-120px)] shadow-xl overflow-hidden">
       {/* Topo do Chat */}
-      <div className="bg-slate-850 px-4 sm:px-6 py-3 border-b border-slate-800 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+      <div className="bg-slate-850 px-4 sm:px-6 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
             <Bot className="w-4 h-4" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h2 className="text-sm font-bold text-white flex items-center gap-1.5">
-              <span>Professor IA Transpetro</span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="truncate">Professor IA Transpetro</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             </h2>
-            <p className="text-[10px] text-slate-400">
+            <p className="text-[10px] text-slate-400 truncate">
               Conectado ao seu histórico de estudo • Banca Cesgranrio
             </p>
           </div>
         </div>
 
-        <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md border border-slate-700">
+        <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md border border-slate-700 shrink-0">
           Ênfase 18
         </span>
       </div>

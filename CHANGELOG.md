@@ -2,6 +2,15 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.20] - 2026-09-17
+
+### QA Visual, Testes E2E e Responsividade Mobile
+- Integrado o **Playwright com Chromium** para auditoria visual automatizada das 8 rotas do sistema.
+- Criado script de inspeção visual (`scripts/audit-frontend.js`) com captura em resolução Mobile (iPhone 14) e Desktop (1440x900).
+- Criado script de demonstração visível interativa (`scripts/live-demo.js`) para acompanhamento em tempo real na tela.
+- Criado teste de interações e fluxos E2E (`scripts/test-e2e-interactions.js`) validando navegação, formulários e filtros.
+- Corrigida a responsividade do cabeçalho do **Professor IA** (`src/components/ai/ProfessorChat.tsx`) no mobile (`flex-wrap`, badges flexíveis e altura dinâmica `100dvh`).
+
 ## [0.1.19] - 2026-09-17
 
 ### Governança e Processo de Execução
