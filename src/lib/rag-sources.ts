@@ -39,7 +39,7 @@ export const RAG_SOURCES: RagSource[] = [
     path: "documents/estudo/mapa-conteudo.md",
     type: "reference",
     priority: 72,
-    aliases: ["mapa de conteúdo", "mapa de conteudo", "programa oficial", "49 tópicos", "49 topicos", "conteúdo programático", "conteudo programatico"],
+    aliases: ["mapa de conteúdo", "mapa de conteudo", "programa oficial", "47 tópicos", "47 topicos", "conteúdo programático", "conteudo programatico"],
     status: "validated",
   },
   {

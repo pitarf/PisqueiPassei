@@ -23,23 +23,24 @@ Bem-vindo à sua plataforma dedicada de estudos para o concurso da **TRANSPETRO 
    - Acompanhamento de status: *Não iniciado*, *Em estudo*, *Em revisão* e *Dominado*.
 
 3. **Aulas com IA Especializada:**
-   - Aulas geradas em 9 seções didáticas (conceitos, exemplos, pegadinhas da Cesgranrio, resumo e fixação).
+   - Aulas geradas em 9 seções didáticas (o que você precisa saber, em poucas palavras, conceitos fundamentais, exemplos práticos, atenção às pegadinhas da Cesgranrio, o que memorizar, resumo, flashcards e questões de fixação).
    - Armazenadas no banco para você consultar quantas vezes quiser sem gastar tokens.
-   - As questões de fixação geradas pela IA são inéditas e identificadas como geradas por IA, não como questões oficiais aplicadas pela Cesgranrio.
+   - As questões de fixação geradas pela IA são inéditas e identificadas como geradas por IA, nunca afirmando terem sido aplicadas pela Cesgranrio.
 
 4. **Questões e Simulados:**
-   - Treinos de 10, 20, 40 ou 60 questões, conforme a disponibilidade do filtro selecionado.
-   - **Simulado completo de treinamento** com 60 questões e cronômetro de 4 horas, seguindo a distribuição de 40 específicas + 10 de Português + 10 de Matemática.
-   - Diagnóstico pós-simulado com pontuação, percentual, critérios de eliminação e distância até a meta configurada.
-   - O sistema não apresenta questões geradas por IA como questões oficiais da Cesgranrio.
+   - Treinos de 10, 20 ou baterias personalizadas por tópico ou disciplina.
+   - Modo **"Rever O Que Errei"** para atacar prioritariamente os pontos fracos.
+   - **Simulado completo Cesgranrio** com 60 questões (40 específicas + 10 de Português + 10 de Matemática) e cronômetro de 4 horas.
+   - Sistema de **auto-suprimento resiliente de estoque**: se o banco tiver déficit para montar os 60 itens, a IA gera as questões faltantes automaticamente antes de liberar a prova.
+   - Diagnóstico pós-simulado com checagem estrita dos critérios oficiais de eliminação (mínimo de 50% em gerais, 50% em específicas e não zerar Português nem Matemática) e distância até a meta pessoal (47/60).
 
-5. **Flashcards:**
-   - Revisão com repetição espaçada.
-   - Os botões **Entendi**, **Revisar** e **Não entendi** ajustam o domínio e o próximo intervalo de revisão.
+5. **Flashcards (SRS):**
+   - Revisão diária com repetição espaçada.
+   - Botões humanizados e intuitivos: **"Não lembrei"**, **"Lembrei com esforço"** e **"Lembrei fácil"**, ajustando os intervalos automaticamente.
 
 6. **Professor IA:**
-   - Tutor interativo que conhece seu histórico, suas notas e suas dúvidas para explicações personalizadas.
-   - Usa o conteúdo local do edital e das fontes cadastradas no RAG como contexto prioritário.
+   - Tutor interativo humano e objetivo, sem clichês ou rodeios, especialista no concurso da Transpetro.
+   - Respostas fundamentadas nas fontes oficiais do edital e documentos locais via RAG.
 
 ## 📊 Como interpretar seu desempenho
 

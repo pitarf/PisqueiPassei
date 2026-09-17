@@ -12,7 +12,38 @@ export async function GET() {
     const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
     if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
     const now = new Date();
-    const flashcards = await prisma.flashcard.findMany({ include: { topic: { include: { subject: true } }, reviews: { where: { userId: user.id }, orderBy: { reviewedAt: "desc" }, take: 1 } }, orderBy: { createdAt: "desc" } });
+
+    let totalCards = await prisma.flashcard.count();
+
+    // Se o banco inicial não possuir flashcards, cria lote inicial a partir das lições existentes ou tópicos prioritários
+    if (totalCards === 0) {
+      const existingLessons = await prisma.lesson.findMany({ take: 5, include: { topic: true } });
+      for (const les of existingLessons) {
+        const sections = les.contentJson as { step8_flashcards?: Array<{ front: string; back: string }> };
+        if (Array.isArray(sections?.step8_flashcards)) {
+          for (const card of sections.step8_flashcards) {
+            if (card?.front && card?.back) {
+              await prisma.flashcard.create({
+                data: {
+                  topicId: les.topicId,
+                  front: card.front.trim(),
+                  back: card.back.trim(),
+                },
+              });
+            }
+          }
+        }
+      }
+      totalCards = await prisma.flashcard.count();
+    }
+
+    const flashcards = await prisma.flashcard.findMany({
+      include: {
+        topic: { include: { subject: true } },
+        reviews: { where: { userId: user.id }, orderBy: { reviewedAt: "desc" }, take: 1 },
+      },
+      orderBy: { createdAt: "desc" },
+    });
     const due = flashcards.filter((card) => !card.reviews[0] || card.reviews[0].nextReviewDate <= now);
     return NextResponse.json({ flashcards: due.slice(0, RESPONSE_LIMIT), dueCount: due.length, totalCount: flashcards.length });
   } catch (error) {

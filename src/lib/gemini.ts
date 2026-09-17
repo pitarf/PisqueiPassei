@@ -37,6 +37,30 @@ function groundedContext(query: string, subjectName?: string, officialSource?: s
   return `\n\n=== CONTEXTO RAG LOCAL ===\n${getRagContext(query, { subjectName, officialSource })}\n=== FIM DO CONTEXTO RAG ===\n`;
 }
 
+function safeJsonParse<T>(rawText: string, fallbackDesc: string): T {
+  const clean = rawText
+    .trim()
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+
+  try {
+    return JSON.parse(clean) as T;
+  } catch (err) {
+    const firstBrace = clean.indexOf("{");
+    const lastBrace = clean.lastIndexOf("}");
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      try {
+        return JSON.parse(clean.slice(firstBrace, lastBrace + 1)) as T;
+      } catch {
+        // Falha no slice
+      }
+    }
+    throw new Error(`Falha ao decodificar JSON retornado pela IA para ${fallbackDesc}: ${(err as Error).message}`);
+  }
+}
+
 export async function generateStructuredLesson(
   topicTitle: string,
   subjectName: string,
@@ -70,7 +94,7 @@ step9_practiceQuestions (statement, optionA-E, correctOption, explanation).
 
 As practiceQuestions são inéditas e geradas por IA. Não atribua a elas aplicação pela Cesgranrio.`;
   const result = await model.generateContent(prompt);
-  return JSON.parse(result.response.text());
+  return safeJsonParse<any>(result.response.text(), `aula do tópico "${topicTitle}"`);
 }
 
 export async function generateQuestionBatch(
@@ -97,9 +121,9 @@ Teste somente conteúdo sustentado pelo edital e pelas fontes recuperadas. Em le
 As questões são INÉDITAS e GERADAS POR IA. Nunca diga que foram aplicadas pela Cesgranrio.
 
 Retorne somente JSON no formato:
-{"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"${difficulty}","origin":"IA"}]}`;
+{"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"${difficulty}","origin":"AI_GENERATED"}]}`;
   const result = await model.generateContent(prompt);
-  return JSON.parse(result.response.text());
+  return safeJsonParse<{ questions?: any[] }>(result.response.text(), `lote de questões de "${topicTitle}"`);
 }
 
 export async function askProfessorAI(

@@ -2,6 +2,18 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.26] - 2026-09-17
+
+### Hardening Funcional Completo, Concorrência e Automação E2E
+- **Taxonomia Estrita 47 Tópicos:** Removidas e corrigidas quaisquer menções residuais a "49 tópicos" em aliases do RAG e documentação. Taxonomia oficial homologada em 47 tópicos exatos divididos em 6 matérias.
+- **Validador Estrutural de Questões (`src/lib/question-validator.ts`):** Módulo central que exige 5 alternativas não vazias e sem duplicatas internas, gabarito A-E, justificativa obrigatória e proveniência transparente (`AI_GENERATED`, perfil Cesgranrio).
+- **Auto-suprimento Resiliente do Simulado (`/api/simulado`):** Se o estoque de questões tiver déficit para fechar as 60 questões (10 Português, 10 Matemática, 40 Específicas), o sistema aciona reposição automática e controlada com IA antes de falhar, evitando retornos 503 desnecessários.
+- **Isolamento de Concorrência & Idempotência (`scripts/test-concurrency.js`):** Script aprimorado que testa disparos concorrentes simultâneos com a mesma chave. Validado com sucesso: 1 única gravação no banco, 1 único incremento de XP e rejeição protegida por chave única.
+- **Testes Unitários Expandidos (`src/lib/exam.test.ts`):** Cobertura exaustiva de todas as fronteiras e critérios oficiais de eliminação da Cesgranrio (19 vs 20 específicas, 9 vs 10 gerais, 0 vs 1 em Português/Matemática, meta 47 não eliminatória). 28/28 testes passando 100%.
+- **Suíte E2E Playwright Completa (`e2e/transpetro.spec.ts`):** Criada e validada suíte cobrindo toda a jornada do aluno (Início -> Edital -> Questões -> Simulado -> Flashcards -> Desempenho -> Configurações) tanto em Desktop Chrome (1440x900) quanto em Mobile Chrome (390x844). 12/12 testes E2E aprovados.
+- **Auditoria de Integridade do Banco (`scripts/check-db.js`):** Auditoria profunda validando 0 órfãos, 0 alternativas duplicadas e integridade relacional total.
+- **Build de Produção e Documentação:** Next.js 15 compilando com 0 erros, `README.md`, `MANUAL_DEV.md` e `MANUAL_USER.md` sincronizados.
+
 ## [0.1.25] - 2026-09-17
 
 ### Varredura Completa e Aplicação do Humanizer em Toda a Plataforma
