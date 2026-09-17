@@ -4,7 +4,7 @@ import { QuestionSession } from "@/components/questions/QuestionSession";
 import Link from "next/link";
 import { AlertTriangle, Sparkles, Filter, Info } from "lucide-react";
 
-interface QuestoesPageProps { searchParams: Promise<{ modo?: string; topicId?: string; subjectId?: string; count?: string; }>; }
+interface QuestoesPageProps { searchParams: Promise<{ modo?: string; topicId?: string; subjectId?: string; count?: string; difficulty?: string; origin?: string; }>; }
 export const revalidate = 0;
 
 function shuffle<T>(items: T[]) {
@@ -17,7 +17,7 @@ function shuffle<T>(items: T[]) {
 }
 
 export default async function QuestoesPage({ searchParams }: QuestoesPageProps) {
-  const { modo, topicId, subjectId, count } = await searchParams;
+  const { modo, topicId, subjectId, count, difficulty, origin } = await searchParams;
   const countNum = Math.max(1, Math.min(60, parseInt(count || "10", 10) || 10));
   const isTrainingActive = Boolean(modo || topicId || subjectId);
   const subjects = await prisma.subject.findMany({ include: { topics: { select: { id: true, title: true, code: true } } }, orderBy: { order: "asc" } });
