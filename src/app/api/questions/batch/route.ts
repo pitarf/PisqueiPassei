@@ -120,6 +120,10 @@ export async function POST(req: NextRequest) {
                 origin: q.origin,
                 banca: q.banca,
                 sourceRef: q.sourceRef,
+                questionType: q.questionType,
+                cognitiveLevel: q.cognitiveLevel,
+                subtopic: q.subtopic || null,
+                verificationStatus: "PENDENTE",
               },
               include: { topic: { include: { subject: true } } },
             });
