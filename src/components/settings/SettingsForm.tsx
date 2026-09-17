@@ -67,30 +67,30 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialTargetScore, 
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-4">
           <div className="flex items-center gap-2 text-emerald-400">
             <Target className="w-4 h-4" />
-            <h2 className="text-sm font-bold uppercase tracking-wider">Metas de Prova & Desempenho</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider">Suas Metas</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300">Meta de Pontos na Prova</label>
+              <label className="text-xs font-semibold text-slate-300">Meta de acertos na prova</label>
               <div className="flex items-center gap-2">
                 <input type="number" min="30" max="60" value={targetScore} onChange={(e) => setTargetScore(Number(e.target.value))} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-bold outline-none focus:border-emerald-500" />
-                <span className="text-xs text-slate-400 font-semibold shrink-0">/ 60 pts</span>
+                <span className="text-xs text-slate-400 font-semibold shrink-0">/ 60 questões</span>
               </div>
-              <p className="text-[11px] text-slate-500">Meta de estudo definida no app: 47/60. Isso não representa uma nota de corte oficial.</p>
+              <p className="text-[11px] text-slate-500">Sua meta pessoal para os simulados (o padrão recomendado é 47/60).</p>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-300">Meta de Estudo Diário</label>
+              <label className="text-xs font-semibold text-slate-300">Tempo diário de estudo</label>
               <div className="flex items-center gap-2">
                 <input type="number" step="0.5" min="1" max="12" value={dailyHours} onChange={(e) => setDailyHours(Number(e.target.value))} className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white font-bold outline-none focus:border-emerald-500" />
-                <span className="text-xs text-slate-400 font-semibold shrink-0">horas/dia</span>
+                <span className="text-xs text-slate-400 font-semibold shrink-0">horas por dia</span>
               </div>
-              <p className="text-[11px] text-slate-500">Use essa meta para organizar sua rotina até a prova.</p>
+              <p className="text-[11px] text-slate-500">Ajuda a calibrar seu cronograma até o dia da prova.</p>
             </div>
           </div>
           <div className="pt-2">
             <button type="submit" disabled={isSaving} className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 text-slate-950 font-bold text-xs shadow-md transition-colors flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4" />
-              <span>{isSaving ? "Salvando..." : "Salvar Alterações"}</span>
+              <span>{isSaving ? "Salvando..." : "Salvar alterações"}</span>
             </button>
           </div>
         </div>
@@ -98,24 +98,24 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ initialTargetScore, 
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-3">
           <div className="flex items-center gap-2 text-sky-400">
             <Sparkles className="w-4 h-4" />
-            <h2 className="text-sm font-bold uppercase tracking-wider">Motor de IA (Google Gemini)</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider">Inteligência Artificial (Gemini)</h2>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">A chave de API do Gemini fica somente no servidor através de variável de ambiente. As aulas e questões geradas são armazenadas no banco para evitar geração repetida desnecessária.</p>
+          <p className="text-xs text-slate-400 leading-relaxed">Sua chave de acesso ao Gemini fica protegida no servidor. As explicações e questões geradas são salvas para você poder revisitar sem consumir novas chamadas.</p>
           <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 p-2.5 rounded-xl">
             <ShieldCheck className="w-4 h-4" />
-            <span>IA configurada no servidor</span>
+            <span>Serviço ativo e protegido no servidor</span>
           </div>
         </div>
 
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-3">
           <div className="flex items-center gap-2 text-amber-400">
             <Download className="w-4 h-4" />
-            <h2 className="text-sm font-bold uppercase tracking-wider">Backup e Exportação de Dados</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider">Backup e Cópia de Segurança</h2>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">Exporte seu progresso, desempenho por tópico, tentativas, simulados, sessões de estudo, avaliações de flashcards e conversas com o Professor IA em um único JSON.</p>
+          <p className="text-xs text-slate-400 leading-relaxed">Baixe um arquivo completo com todo o seu progresso: questões respondidas, simulados, horas de estudo, flashcards e mensagens com o professor.</p>
           <button type="button" onClick={handleExportData} disabled={isExporting} className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-60 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors">
             <Download className="w-4 h-4 text-emerald-400" />
-            <span>{isExporting ? "Gerando backup..." : "Exportar Backup Completo"}</span>
+            <span>{isExporting ? "Preparando arquivo..." : "Baixar cópia de segurança"}</span>
           </button>
         </div>
       </form>

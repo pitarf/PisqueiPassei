@@ -72,11 +72,11 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
       setShowAnswer({});
       toast.success(
         data.cached
-          ? "Aula carregada instantaneamente do cache local!"
-          : "Aula gerada e salva no banco de dados com sucesso!"
+          ? "Aula pronta para estudo."
+          : "Aula pronta com base no edital."
       );
     } catch (err: any) {
-      toast.error(err.message || "Não foi possível gerar a aula.");
+      toast.error(err.message || "Não foi possível carregar a aula. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -104,19 +104,19 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erro ao salvar progresso.");
+      if (!res.ok) throw new Error(data.error || "Não foi possível salvar seu progresso.");
 
       setFeedbackSent(true);
 
       if (feedbackType === "ENTENDI") {
-        toast.success("Excelente! Domínio atualizado (+15%) e próxima revisão agendada.");
+        toast.success("Progresso salvo. Próxima revisão agendada.");
       } else if (feedbackType === "REVISAR") {
-        toast.info("Anotado! Este tópico voltará ao seu ciclo de revisões em breve.");
+        toast.info("Anotado. Vamos incluir este ponto nas suas próximas revisões.");
       } else {
-        toast.warning("Sem problemas! Rebaixamos o intervalo e o tópico foi marcado para amanhã.");
+        toast.info("Tudo bem. Marcamos este assunto para rever logo.");
       }
     } catch (err: any) {
-      toast.error(err.message || "Erro ao registrar domínio.");
+      toast.error(err.message || "Não foi possível registrar seu feedback.");
     } finally {
       setFeedbackSending(false);
     }
@@ -156,14 +156,14 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
               className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1.5"
             >
               <Bot className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Dúvida com Professor</span>
+              <span>Tirar dúvida</span>
             </Link>
 
             <button
               onClick={() => handleGenerate(true)}
               disabled={loading}
               className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-xs font-medium border border-slate-700 transition-colors flex items-center gap-1.5"
-              title="Regerar aula com IA"
+              title="Gerar nova versão da aula"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Regerar</span>
@@ -176,11 +176,11 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
       {!loading && lesson && (
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
           {[
-            { id: "todas", label: "Toda a Aula" },
-            { id: "teoria", label: "Teoria & Conceitos" },
-            { id: "mnemonicos", label: "Mnemônicos & Macetes" },
+            { id: "todas", label: "Aula completa" },
+            { id: "teoria", label: "Conceitos principais" },
+            { id: "mnemonicos", label: "Mnemônicos e dicas" },
             { id: "flashcards", label: "Flashcards" },
-            { id: "questoes", label: "Questões de Fixação" },
+            { id: "questoes", label: "Questões" },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -202,10 +202,10 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-10 text-center space-y-3">
           <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-sm font-semibold text-slate-200">
-            O Professor IA está montando sua aula estruturada em 9 etapas...
+            Organizando o material desta aula...
           </p>
           <p className="text-xs text-slate-400">
-            Consultando o edital oficial e mapeando pegadinhas da Fundação Cesgranrio.
+            Estruturando conceitos do edital e exemplos no perfil da Cesgranrio.
           </p>
         </div>
       )}
@@ -219,7 +219,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
               <div className="flex items-center gap-2 text-emerald-400 mb-2">
                 <Target className="w-4 h-4" />
                 <h3 className="text-sm font-bold uppercase tracking-wider">
-                  1. O que você precisa aprender para a prova
+                  1. O que você precisa saber
                 </h3>
               </div>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
@@ -234,7 +234,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
               <div className="flex items-center gap-2 text-amber-400 mb-2">
                 <Lightbulb className="w-4 h-4" />
                 <h3 className="text-sm font-bold uppercase tracking-wider">
-                  2. Entendendo de Forma Simples e Direta
+                  2. Em poucas palavras
                 </h3>
               </div>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
@@ -249,7 +249,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
               <div className="flex items-center gap-2 text-sky-400 mb-2">
                 <BookOpen className="w-4 h-4" />
                 <h3 className="text-sm font-bold uppercase tracking-wider">
-                  3. Conceitos Fundamentais & Conteúdo do Edital
+                  3. Conceitos fundamentais
                 </h3>
               </div>
               <div className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line prose-invert max-w-none">
@@ -264,7 +264,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
               <div className="flex items-center gap-2 text-teal-400 mb-2">
                 <Building2 className="w-4 h-4" />
                 <h3 className="text-sm font-bold uppercase tracking-wider">
-                  4. Casos Práticos na Realidade da Transpetro
+                  4. Exemplos práticos
                 </h3>
               </div>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
@@ -279,7 +279,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
               <div className="flex items-center gap-2 text-rose-400 mb-2">
                 <AlertTriangle className="w-4 h-4" />
                 <h3 className="text-sm font-bold uppercase tracking-wider">
-                  5. Pegadinhas Clássicas da Fundação Cesgranrio
+                  5. Atenção às pegadinhas da banca
                 </h3>
               </div>
               <p className="text-xs sm:text-sm text-slate-200 leading-relaxed whitespace-pre-line font-medium">
@@ -294,7 +294,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
               <div className="flex items-center gap-2 text-purple-400 mb-2">
                 <Brain className="w-4 h-4" />
                 <h3 className="text-sm font-bold uppercase tracking-wider">
-                  6. O que Memorizar (Mnemônicos e Regras de Ouro)
+                  6. Mnemônicos e pontos de memorização
                 </h3>
               </div>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
@@ -309,7 +309,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
               <div className="flex items-center gap-2 text-indigo-400 mb-2">
                 <ListChecks className="w-4 h-4" />
                 <h3 className="text-sm font-bold uppercase tracking-wider">
-                  7. Resumo Rápido para Revisão
+                  7. Resumo para revisão rápida
                 </h3>
               </div>
               <div className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
@@ -325,14 +325,14 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
                 <div className="flex items-center gap-2 text-amber-400">
                   <Layers className="w-4 h-4" />
                   <h3 className="text-sm font-bold uppercase tracking-wider">
-                    8. Flashcards Chave Deste Assunto
+                    8. Flashcards do tópico
                   </h3>
                 </div>
                 <Link
                   href="/flashcards"
                   className="text-xs text-amber-400 hover:text-amber-300 font-semibold"
                 >
-                  Treinar no Modo Cards →
+                  Ver no modo cartões →
                 </Link>
               </div>
 
@@ -362,7 +362,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
               <div className="flex items-center gap-2 text-emerald-400 mb-4">
                 <HelpCircle className="w-4 h-4" />
                 <h3 className="text-sm font-bold uppercase tracking-wider">
-                  9. Questões de Fixação (Padrão Cesgranrio)
+                  9. Questões no estilo Cesgranrio
                 </h3>
               </div>
 
@@ -379,10 +379,10 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-slate-400">
-                          Questão de Fixação {qIdx + 1}
+                          Questão {qIdx + 1}
                         </span>
                         <span className="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded">
-                          Questão gerada por IA, baseada no conteúdo do edital
+                          Fixação de conteúdo
                         </span>
                       </div>
 
@@ -445,23 +445,23 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
                             if (selected) {
                               setShowAnswer((prev) => ({ ...prev, [qIdx]: true }));
                             } else {
-                              toast.info("Selecione uma alternativa antes de conferir!");
+                              toast.info("Escolha uma alternativa antes de responder.");
                             }
                           }}
                           className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors"
                         >
-                          Conferir Resposta
+                          Conferir
                         </button>
                       ) : (
                         <div className="pt-2 border-t border-slate-700/70 space-y-1.5">
                           <div className="flex items-center gap-1.5">
                             {isCorrect ? (
                               <div className="flex items-center gap-1 text-emerald-400 text-xs font-bold">
-                                <CheckCircle2 className="w-4 h-4" /> Correto!
+                                <CheckCircle2 className="w-4 h-4" /> Resposta correta
                               </div>
                             ) : (
                               <div className="flex items-center gap-1 text-rose-400 text-xs font-bold">
-                                <XCircle className="w-4 h-4" /> Resposta correta: {q.correctOption}
+                                <XCircle className="w-4 h-4" /> Gabarito: {q.correctOption}
                               </div>
                             )}
                           </div>
@@ -484,7 +484,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
         <div className="fixed bottom-14 sm:bottom-4 left-0 right-0 z-30 px-4">
           <div className="max-w-2xl mx-auto bg-slate-900/95 backdrop-blur-md border border-slate-700 p-3 sm:p-4 rounded-2xl shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-3">
             <span className="text-xs text-slate-300 font-semibold text-center sm:text-left">
-              Como você avalia seu domínio deste conteúdo?
+              Como foi seu rendimento neste tópico?
             </span>
             <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
@@ -492,7 +492,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
                 disabled={feedbackSending || feedbackSent}
                 className="flex-1 sm:flex-initial px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-bold text-xs transition-all active:scale-95"
               >
-                Não entendi
+                Preciso reaprender
               </button>
               <button
                 onClick={() => handleFeedback("REVISAR")}
@@ -506,7 +506,7 @@ export const LessonViewer: React.FC<LessonViewerProps> = ({
                 disabled={feedbackSending || feedbackSent}
                 className="flex-1 sm:flex-initial px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition-all active:scale-95 shadow-md shadow-emerald-500/20"
               >
-                Entendi!
+                Entendi bem
               </button>
             </div>
           </div>

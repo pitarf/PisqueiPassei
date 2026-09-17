@@ -40,8 +40,9 @@
 - [x] Formalização do documento de execução mestre com subagentes em documents/fases/EXECUCAO-MESTRE-SUBAGENTES.md
 - [x] Reconciliação do banco de dados para exatamente 47 tópicos oficiais (remoção dos tópicos residuais 11 e 12 em Matemática)
 - [x] Seed idempotente com autocura e remoção automática de tópicos obsoletos
-- [x] Suíte automatizada com 19 testes nativos (Simulado, SRS, Streak, RAG e Taxonomia) rodando via npm test
+- [x] Suíte automatizada com 20 testes nativos (Simulado, SRS, Streak, RAG e Taxonomia) rodando via npm test
 - [x] Smoke test aprovado com 200 OK em 100% das rotas e páginas dinâmicas da aplicação
+- [x] Varredura completa de UI copy e tom com o Humanizer em 100% das telas da plataforma
 
 ## 🛠️ Próxima frente de hardening
 

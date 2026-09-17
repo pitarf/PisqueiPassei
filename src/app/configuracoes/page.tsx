@@ -13,10 +13,10 @@ export default async function ConfiguracoesPage() {
     <div className="space-y-6">
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-md">
         <h1 className="text-xl sm:text-2xl font-black text-white">
-          Configurações da Plataforma
+          Configurações
         </h1>
         <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Ajuste suas metas de pontuação, preferências de estudo e gerencie seus dados.
+          Ajuste suas metas de estudo, entenda a integração com a IA e exporte seus dados quando quiser.
         </p>
       </div>
 

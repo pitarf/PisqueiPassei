@@ -2,6 +2,34 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.25] - 2026-09-17
+
+### Varredura Completa e Aplicação do Humanizer em Toda a Plataforma
+- **Varredura Paralela com Subagentes Especializados:** Aplicadas as diretrizes do Humanizer (`blader/humanizer`) em todas as telas e fluxos de estudo da plataforma.
+- **Dashboard & Navegação Global (`/`, `SidebarNav`, `AppHeader`, `BottomNav`):**
+  - Substituídos clichês motivacionais inflados ("Rumo à Aprovação", slogans corporativos) por chamadas autênticas e diretas ("Transpetro 2026", "Continuar de onde parou", "Praticar erros").
+- **Edital Verticalizado e Leitor Didático (`/edital`, `/aula/[topicId]`):**
+  - Títulos e orientações reescritos com simplicidade ("O que você precisa saber", "Em poucas palavras", "Atenção às pegadinhas da banca").
+  - Botões e notificações de estudo humanizados ("Aula pronta para estudo", "Tirar dúvida", "Preciso reaprender", "Entendi bem").
+- **Banco de Questões e Simulado de Prova (`/questoes`, `/simulado`):**
+  - Enunciados, instruções de prova e opções de treino reformulados ("Padrão Cesgranrio", "Prática de Questões", "Rever O Que Errei").
+  - Feedbacks de resposta amigáveis e acolhedores ("Na mosca! Resposta certa", "Não foi dessa vez") e confirmações de envio transparentes ("Entregar Prova").
+- **Flashcards SRS (`/flashcards`):**
+  - Botões de classificação do algoritmo SRS substituídos por reações humanas naturais: "Não lembrei", "Lembrei com esforço" e "Lembrei fácil".
+  - Explicação do intervalo espaçado simplificada e clara para o estudante.
+- **Professor IA (`/professor`):**
+  - Acolhimento inicial objetivo e descontraído, sem saudações robóticas ou apresentações pomposas. Status e sugestões rápidas mais amigáveis.
+- **Desempenho e Configurações (`/desempenho`, `/configuracoes`):**
+  - Vocabulário direto de concurseiro ("Seu progresso", "Questões de treino", "Domínio do edital", "Tempo estudado", "Tópicos para reforçar").
+  - Configurações e cópias de segurança explicadas de forma simples e transparente.
+- **Validação de Código e Testes:** 100% dos 20 testes unitários aprovados e compilação do TypeScript estritamente verificada.
+
+## [0.1.24] - 2026-09-17
+
+### Humanização da IA (Integração com Humanizer)
+- **Instalação do Skill Humanizer:** Baixado e instalado o repositório oficial `blader/humanizer` em `~/.gemini/config/skills/humanizer`, padrão de referência na comunidade (gstack / Y Combinator) para remoção de vícios de escrita artificial de LLMs.
+- **Aprimoramento de Tom do Professor IA:** Integradas diretrizes de escrita humana e natural em `src/lib/gemini.ts` (`SYSTEM_INSTRUCTION_TRANSPETRO`), instruindo o modelo a evitar clichês robóticos ("não apenas X, mas Y", "é fundamental lembrar", "ecossistema", introduções e conclusões pomposas vazias) e a adotar tom direto, prático, acolhedor e focado no concurso da Transpetro.
+
 ## [0.1.23] - 2026-09-17
 
 ### Correção de CI e Isolamento de Testes Unitários

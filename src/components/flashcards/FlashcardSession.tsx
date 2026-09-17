@@ -31,10 +31,10 @@ export const FlashcardSession: React.FC<FlashcardSessionProps> = ({ cards }) => 
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Erro ao registrar revisão do card.");
       if (!data.duplicate) setReviewedCount((prev) => prev + 1);
-      if (!data.duplicate) toast.success(rating === "FACIL" ? "Revisão fácil registrada. Próximo intervalo ampliado." : rating === "MEDIO" ? "Revisão registrada. O próximo intervalo foi ajustado." : "Revisão difícil registrada. O próximo intervalo será mais curto.");
+      if (!data.duplicate) toast.success(rating === "FACIL" ? "Boa! Este cartão vai demorar mais para reaparecer." : rating === "MEDIO" ? "Anotado. Intervalo equilibrado para a próxima revisão." : "Sem problemas! Vamos rever este cartão em breve.");
       if (currentIndex + 1 < cards.length) { setIsFlipped(false); setCurrentIndex((prev) => prev + 1); setStartedAt(Date.now()); setElapsedSeconds(0); }
       else setIsFinished(true);
-    } catch (err: any) { toast.error(err.message || "Falha ao registrar avaliação."); }
+    } catch (err: any) { toast.error(err.message || "Não foi possível salvar a avaliação."); }
     finally { setIsSubmitting(false); }
   };
 
@@ -42,16 +42,16 @@ export const FlashcardSession: React.FC<FlashcardSessionProps> = ({ cards }) => 
 
   if (cards.length === 0 || isFinished) {
     const minutes = Math.max(1, Math.round(elapsedSeconds / 60));
-    return <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-4 max-w-lg mx-auto shadow-xl"><div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto"><CheckCircle2 className="w-7 h-7" /></div><div><h2 className="text-xl font-black text-white">Sessão de Cards Concluída!</h2><p className="text-xs text-slate-400 mt-1">Você revisou {reviewedCount} flashcards nesta sessão. As próximas revisões foram agendadas pelo SRS.</p></div><div className="grid grid-cols-2 gap-3 bg-slate-800/70 rounded-xl p-3"><div><span className="text-[11px] text-slate-400">Cards revisados</span><p className="text-lg font-black text-emerald-300">{reviewedCount}</p></div><div><span className="text-[11px] text-slate-400">Tempo</span><p className="text-lg font-black text-amber-300">{minutes} min</p></div></div><div className="pt-2 flex items-center justify-center gap-3"><Link href="/edital" className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">Ver Edital</Link><Link href="/" className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-md">Voltar ao Início</Link></div></div>;
+    return <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-4 max-w-lg mx-auto shadow-xl"><div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto"><CheckCircle2 className="w-7 h-7" /></div><div><h2 className="text-xl font-black text-white">Sessão concluída!</h2><p className="text-xs text-slate-400 mt-1">Você passou por {reviewedCount} cartões nesta rodada. O espaçamento foi reprogramado conforme sua facilidade em cada um.</p></div><div className="grid grid-cols-2 gap-3 bg-slate-800/70 rounded-xl p-3"><div><span className="text-[11px] text-slate-400">Cartões revisados</span><p className="text-lg font-black text-emerald-300">{reviewedCount}</p></div><div><span className="text-[11px] text-slate-400">Tempo dedicado</span><p className="text-lg font-black text-amber-300">{minutes} min</p></div></div><div className="pt-2 flex items-center justify-center gap-3"><Link href="/edital" className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold">Ver edital</Link><Link href="/" className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-md">Voltar ao início</Link></div></div>;
   }
 
   return (
     <div className="space-y-6 max-w-xl mx-auto">
       <div className="flex items-center justify-between text-xs text-slate-400">
-        <span>Card <strong className="text-white font-bold">{currentIndex + 1}</strong> de {cards.length}</span>
+        <span>Cartão <strong className="text-white font-bold">{currentIndex + 1}</strong> de {cards.length}</span>
         <div className="flex items-center gap-3">
           <span className="text-emerald-400 font-semibold flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
-            <Brain className="w-3.5 h-3.5" /> SRS ativo
+            <Brain className="w-3.5 h-3.5" /> Repetição inteligente
           </span>
           <span className="flex items-center gap-1 text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-700/60 font-mono">
             <Clock className="w-3 h-3 text-slate-400" />
@@ -77,10 +77,10 @@ export const FlashcardSession: React.FC<FlashcardSessionProps> = ({ cards }) => 
           <div className="flex items-center justify-between pb-3 border-b border-slate-800">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
               <span className={`w-2 h-2 rounded-full ${isFlipped ? "bg-emerald-400" : "bg-sky-400"}`} />
-              {isFlipped ? "Verso • Resposta" : "Frente • Pergunta"}
+              {isFlipped ? "Resposta" : "Pergunta"}
             </span>
             <span className="text-xs text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors">
-              <RotateCw className="w-3.5 h-3.5 text-emerald-400" /> {isFlipped ? "Voltar à pergunta" : "Virar resposta"}
+              <RotateCw className="w-3.5 h-3.5 text-emerald-400" /> {isFlipped ? "Ver pergunta" : "Ver resposta"}
             </span>
           </div>
           <div className="pt-6">
@@ -108,7 +108,7 @@ export const FlashcardSession: React.FC<FlashcardSessionProps> = ({ cards }) => 
       {isFlipped ? (
         <div className="space-y-2.5">
           <p className="text-center text-xs text-slate-300 font-medium">
-            Quão fácil foi lembrar deste conceito?
+            Como foi lembrar a resposta?
           </p>
           <div className="grid grid-cols-3 gap-3">
             <button
@@ -116,25 +116,25 @@ export const FlashcardSession: React.FC<FlashcardSessionProps> = ({ cards }) => 
               disabled={isSubmitting}
               className="py-3 px-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 active:bg-rose-500/40 border border-rose-500/40 text-rose-200 font-bold text-xs transition-all active:scale-95 disabled:opacity-50"
             >
-              Difícil
+              Não lembrei
             </button>
             <button
               onClick={() => handleRating("MEDIO")}
               disabled={isSubmitting}
               className="py-3 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 active:bg-amber-500/40 border border-amber-500/40 text-amber-200 font-bold text-xs transition-all active:scale-95 disabled:opacity-50"
             >
-              Médio
+              Lembrei com esforço
             </button>
             <button
               onClick={() => handleRating("FACIL")}
               disabled={isSubmitting}
               className="py-3 px-2 rounded-xl bg-emerald-500/25 hover:bg-emerald-500/35 active:bg-emerald-500/45 border border-emerald-500/50 text-emerald-200 font-bold text-xs transition-all active:scale-95 disabled:opacity-50"
             >
-              Fácil
+              Lembrei fácil
             </button>
           </div>
           <p className="text-center text-[10px] text-slate-500">
-            A próxima data é calculada automaticamente pelo motor SRS.
+            Quanto mais fácil achar, mais tarde o cartão voltará a ser revisado.
           </p>
         </div>
       ) : (

@@ -61,9 +61,9 @@ export const SidebarNav: React.FC = () => {
       {/* Card Informativo Cesgranrio */}
       <div className="mt-auto pt-6">
         <div className="p-3.5 bg-slate-800/60 rounded-xl border border-slate-700/60 text-xs">
-          <p className="font-semibold text-slate-200">Foco Cesgranrio</p>
+          <p className="font-semibold text-slate-200">Foco no Edital</p>
           <p className="text-slate-400 mt-1 leading-relaxed">
-            Meta: 47/60 pontos. Ênfase em compras públicas e logística aplicada.
+            Meta: 47 de 60 acertos. Priorize compras públicas e gestão de estoques.
           </p>
         </div>
       </div>

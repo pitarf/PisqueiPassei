@@ -135,24 +135,24 @@ export function EditalVerticalizadoClient({
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-white mt-1">
-              Edital Verticalizado & Domínio de Conteúdo
+              Edital Verticalizado
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 mt-1 leading-relaxed">
-              Taxonomia 100% fiel à publicação oficial da Transpetro / Cesgranrio. Acompanhe seu status e nível de domínio tópico por tópico.
+              Conteúdo programático oficial da Transpetro (Cesgranrio). Acompanhe seu progresso e o que precisa revisar tópico por tópico.
             </p>
           </div>
 
           <div className="flex items-center gap-3 bg-slate-800/80 px-4 py-2.5 rounded-xl border border-slate-700/60 shrink-0 self-start sm:self-auto">
             <div>
-              <p className="text-[11px] text-slate-400">Progresso do Edital</p>
+              <p className="text-[11px] text-slate-400">Progresso geral</p>
               <p className="text-lg font-bold text-emerald-400">
                 {totalTopics > 0 ? Math.round((studiedTopicsCount / totalTopics) * 100) : 0}%
               </p>
             </div>
             <div className="text-right border-l border-slate-700 pl-3">
-              <p className="text-[11px] text-slate-400">Cobertura</p>
+              <p className="text-[11px] text-slate-400">Tópicos vistos</p>
               <p className="text-sm font-semibold text-slate-200">
-                {studiedTopicsCount} / {totalTopics} tópicos
+                {studiedTopicsCount} de {totalTopics}
               </p>
             </div>
           </div>
@@ -385,7 +385,7 @@ export function EditalVerticalizadoClient({
                               <Link
                                 href={`/questoes?topicId=${topic.id}`}
                                 className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium border border-slate-700 transition-colors flex items-center gap-1.5"
-                                title="Treinar Questões deste Tópico"
+                                title="Resolver questões deste tópico"
                               >
                                 <HelpCircle className="w-3.5 h-3.5" />
                                 <span>Questões</span>
@@ -396,7 +396,7 @@ export function EditalVerticalizadoClient({
                                 className="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 active:scale-95"
                               >
                                 <Sparkles className="w-3.5 h-3.5" />
-                                <span>{hasLessonCache ? "Revisar Aula" : "Estudar Agora"}</span>
+                                <span>{hasLessonCache ? "Ver aula" : "Estudar tópico"}</span>
                                 <ChevronRight className="w-3 h-3" />
                               </Link>
                             </div>

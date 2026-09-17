@@ -33,7 +33,7 @@ export const ProfessorChat: React.FC<ProfessorChatProps> = ({
       id: "welcome",
       role: "assistant",
       content:
-        "Olá, Rafael! Sou seu **Professor IA especializado na Transpetro (2026.3 • Ênfase 18)** e na banca **Fundação Cesgranrio**.\n\nConheço todo o edital, suas notas e seus erros mais recentes. Posso explicar matérias, resumir leis como o Decreto 2.745 e a Lei 13.303, apontar pegadinhas da Cesgranrio ou montar seu próximo plano de estudo. O que deseja ver agora?",
+        "Olá, Rafael! Estou por dentro do edital da **Transpetro (Ênfase 18)** e do estilo de cobrança da **Cesgranrio**.\n\nPosso tirar dúvidas teóricas, resumir artigos e leis como o Decreto 2.745 e a Lei 13.303, destrinchar pegadinhas típicas da banca ou sugerir onde focar agora com base nos seus erros. Como posso ajudar hoje?",
     },
   ]);
   const [inputMessage, setInputMessage] = useState(initialQuestion);
@@ -76,7 +76,7 @@ export const ProfessorChat: React.FC<ProfessorChatProps> = ({
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erro ao consultar o Professor IA.");
+      if (!res.ok) throw new Error(data.error || "Não foi possível obter resposta do Professor.");
 
       setConversationId(data.conversationId);
       setMessages((prev) => [
@@ -88,7 +88,7 @@ export const ProfessorChat: React.FC<ProfessorChatProps> = ({
         },
       ]);
     } catch (err: any) {
-      toast.error(err.message || "Erro na conexão com o Professor IA.");
+      toast.error(err.message || "Houve uma instabilidade na conversa.");
     } finally {
       setIsLoading(false);
     }
@@ -96,9 +96,9 @@ export const ProfessorChat: React.FC<ProfessorChatProps> = ({
 
   const quickPrompts = [
     "O que devo estudar agora?",
-    "Quais são meus pontos mais fracos?",
-    "Explique a Lei 13.303/2016 para a Cesgranrio",
-    "Qual a diferença entre Estoque de Segurança e Estoque Máximo?",
+    "Quais tópicos preciso reforçar?",
+    "Resuma a Lei 13.303/2016 com foco na Cesgranrio",
+    "Estoque de Segurança x Estoque Máximo: qual a diferença?",
   ];
 
   return (
@@ -111,11 +111,11 @@ export const ProfessorChat: React.FC<ProfessorChatProps> = ({
           </div>
           <div className="min-w-0">
             <h2 className="text-sm font-bold text-white flex items-center gap-1.5">
-              <span className="truncate">Professor IA Transpetro</span>
+              <span className="truncate">Professor Transpetro</span>
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
             </h2>
             <p className="text-[10px] text-slate-400 truncate">
-              Conectado ao seu histórico de estudo • Banca Cesgranrio
+              Orientação personalizada • Foco na Cesgranrio
             </p>
           </div>
         </div>
@@ -164,7 +164,7 @@ export const ProfessorChat: React.FC<ProfessorChatProps> = ({
             <div className="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
               <Bot className="w-3.5 h-3.5" />
             </div>
-            <span className="italic">O Professor IA está elaborando sua resposta...</span>
+            <span className="italic">Consultando o conteúdo...</span>
           </div>
         )}
 
@@ -197,7 +197,7 @@ export const ProfessorChat: React.FC<ProfessorChatProps> = ({
               handleSend();
             }
           }}
-          placeholder="Pergunte ao Professor sobre qualquer tópico do edital..."
+          placeholder="Envie sua dúvida sobre a matéria ou resolução de questão..."
           disabled={isLoading}
           className="flex-1 bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 outline-none transition-colors"
         />
