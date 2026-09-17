@@ -17,7 +17,8 @@
     "prisma:seed": "node -r ts-node/register prisma/seed.ts",
     "audit:questions": "node scripts/audit-question-bank.js",
     "import:questions": "node scripts/import-question-bank.js",
-    "report:questions": "node scripts/question-bank-report.js"
+    "report:questions": "node scripts/question-bank-report.js",
+    "audit:historical": "node scripts/audit-historical-bank.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
