@@ -15,7 +15,8 @@
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:push": "prisma db push",
     "prisma:seed": "node -r ts-node/register prisma/seed.ts",
-    "audit:questions": "node scripts/audit-question-bank.js"
+    "audit:questions": "node scripts/audit-question-bank.js",
+    "import:questions": "node scripts/import-question-bank.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
