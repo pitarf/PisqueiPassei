@@ -12,7 +12,9 @@ export async function POST(req: NextRequest) {
     const validOption = typeof chosenOption === "string" && /^[A-E]$/.test(chosenOption);
     const time = Number(timeSpentSeconds);
     const key = typeof idempotencyKey === "string" ? idempotencyKey.trim() : "";
+    const normalizedOption = validOption ? chosenOption.trim().toUpperCase() : "";
     if (typeof questionId !== "string" || !questionId.trim() || !validOption) return NextResponse.json({ error: "Questão e alternativa A-E são obrigatórias." }, { status: 400 });
+    if (normalizedOption !== chosenOption) return NextResponse.json({ error: "Alternativa inválida." }, { status: 400 });
     if (!Number.isFinite(time) || time < 0 || time > MAX_TIME_SECONDS) return NextResponse.json({ error: "Tempo de resposta inválido." }, { status: 400 });
     if (key.length > MAX_IDEMPOTENCY_KEY_LENGTH) return NextResponse.json({ error: "Chave de idempotência inválida." }, { status: 400 });
 
@@ -30,16 +32,16 @@ export async function POST(req: NextRequest) {
     }
 
     const roundedTime = Math.round(time);
-    const isCorrect = question.correctOption === chosenOption;
+    const isCorrect = question.correctOption === normalizedOption;
     const studyMinutes = roundedTime > 0 ? Math.max(1, Math.round(roundedTime / 60)) : 0;
 
     try {
       const result = await prisma.$transaction(async (tx) => {
         if (!key) {
           const recentAttempt = await tx.questionAttempt.findFirst({ where: { userId: user.id, questionId }, orderBy: { createdAt: "desc" }, take: 1 });
-          if (recentAttempt && Date.now() - recentAttempt.createdAt.getTime() < 10000 && recentAttempt.chosenOption === chosenOption) return { duplicate: true, isCorrect: recentAttempt.isCorrect };
+          if (recentAttempt && Date.now() - recentAttempt.createdAt.getTime() < 10000 && recentAttempt.chosenOption === normalizedOption) return { duplicate: true, isCorrect: recentAttempt.isCorrect };
         }
-        await tx.questionAttempt.create({ data: { userId: user.id, questionId, chosenOption, isCorrect, timeSpentSeconds: roundedTime, ...(key ? { idempotencyKey: key } : {}) } });
+        await tx.questionAttempt.create({ data: { userId: user.id, questionId, chosenOption: normalizedOption, isCorrect, timeSpentSeconds: roundedTime, ...(key ? { idempotencyKey: key } : {}) } });
         const progress = await tx.userTopicProgress.findUnique({ where: { userId_topicId: { userId: user.id, topicId: question.topicId } } });
         const total = (progress?.totalQuestions || 0) + 1;
         const correct = (progress?.correctAnswers || 0) + (isCorrect ? 1 : 0);
