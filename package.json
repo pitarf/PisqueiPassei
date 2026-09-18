@@ -18,7 +18,8 @@
     "audit:questions": "node scripts/audit-question-bank.js",
     "import:questions": "node scripts/import-question-bank.js",
     "report:questions": "node scripts/question-bank-report.js",
-    "audit:historical": "node scripts/audit-historical-bank.js"
+    "audit:historical": "node scripts/audit-historical-bank.js",
+    "test:priority": "bun test src/lib/study-priority.test.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
