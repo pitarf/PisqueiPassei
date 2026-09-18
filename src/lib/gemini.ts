@@ -97,6 +97,26 @@ As practiceQuestions são inéditas e geradas por IA. Não atribua a elas aplica
   return safeJsonParse<any>(result.response.text(), `aula do tópico "${topicTitle}"`);
 }
 
+export function summarizeHistoricalPatterns(
+  rows: Array<{
+    topicTitle: string;
+    difficulty?: string | null;
+    questionType?: string | null;
+    cognitiveLevel?: string | null;
+  }>
+) {
+  const count = (values: string[]) => values.reduce<Record<string, number>>((acc, value) => {
+    acc[value] = (acc[value] || 0) + 1;
+    return acc;
+  }, {});
+  return {
+    total: rows.length,
+    difficulty: count(rows.map(r => r.difficulty || "SEM_CLASSIFICACAO")),
+    questionType: count(rows.map(r => r.questionType || "SEM_CLASSIFICACAO")),
+    cognitiveLevel: count(rows.map(r => r.cognitiveLevel || "SEM_CLASSIFICACAO")),
+  };
+}
+
 export async function generateQuestionBatch(
   topicTitle: string,
   subjectName: string,
@@ -117,7 +137,7 @@ Tópico: "${topicTitle}".
 Dificuldade: "${difficulty}".
 ${rag}
 
-Teste somente conteúdo sustentado pelo edital e pelas fontes recuperadas. Em legislação, não crie artigo ou regra ausente nas fontes.
+Se houver dados históricos estruturados no contexto, use-os apenas para calibrar formato, dificuldade, tipo cognitivo e subtema. Não reproduza questões históricas nem atribua a elas conteúdo que não esteja sustentado pelas fontes.\nTeste somente conteúdo sustentado pelo edital e pelas fontes recuperadas. Em legislação, não crie artigo ou regra ausente nas fontes.
 As questões são INÉDITAS e GERADAS POR IA. Nunca diga que foram aplicadas pela Cesgranrio.
 
 Retorne somente JSON no formato:
