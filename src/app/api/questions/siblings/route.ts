@@ -15,9 +15,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "questionId é obrigatório." }, { status: 400 });
     }
 
-    const variants = requestedVariants
+    const variants = [...new Set(requestedVariants
       .map((item: unknown) => String(item).toUpperCase())
-      .filter((item: string): item is typeof VARIANTS[number] => (VARIANTS as readonly string[]).includes(item))
+      .filter((item: string): item is typeof VARIANTS[number] => (VARIANTS as readonly string[]).includes(item)))]
       .slice(0, 5);
 
     if (!variants.length) {
@@ -68,6 +68,12 @@ export async function POST(req: NextRequest) {
       const q = validation.question;
       const key = normalizeText(q.statement);
       if (seen.has(key)) continue;
+
+      const alreadyExists = await prisma.question.findFirst({
+        where: { topicId: reference.topicId, statement: q.statement },
+        select: { id: true },
+      });
+      if (alreadyExists) continue;
 
       const item = await prisma.question.create({
         data: {
