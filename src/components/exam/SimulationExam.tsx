@@ -14,6 +14,10 @@ export const SimulationExam=({questions}:{questions:any[]})=>{
   const submit=async(force=false)=>{
    if(sendingRef.current||submittedRef.current)return;
    recordCurrentQuestionTime();
+   if(Object.keys(answersRef.current).some(id=>!/^[A-E]$/.test(String(answersRef.current[id]).trim().toUpperCase()))) {
+    toast.error("Há uma resposta inválida. Revise a folha antes de entregar.");
+    return;
+   }
    const currentAnswers=answersRef.current,currentLeft=leftRef.current,answered=Object.keys(currentAnswers).length;
    if(!force&&answered<60&&currentLeft>60&&!window.confirm(`Você marcou ${answered} das 60 questões. Deseja entregar o simulado agora mesmo com questões em branco?`))return;
    if(!submissionKeyRef.current)submissionKeyRef.current=crypto.randomUUID();
