@@ -56,6 +56,10 @@ async function refillStock(
               origin: q.origin,
               banca: q.banca,
               sourceRef: q.sourceRef,
+              questionType: q.questionType,
+              cognitiveLevel: q.cognitiveLevel,
+              subtopic: q.subtopic,
+              verificationStatus: q.verificationStatus,
             },
           });
           existingStatements.add(key);
@@ -180,7 +184,7 @@ export async function POST(req: NextRequest) {
     const topicCounts = new Map<string, { total: number; correct: number }>();
     const attemptsToCreate = orderedQuestions.map((q) => {
       const raw = answers[q.id];
-      const chosen = typeof raw === "string" && /^[A-E]$/.test(raw) ? raw : "";
+      const chosen = typeof raw === "string" && /^[A-Ea-e]$/.test(raw.trim()) ? raw.trim().toUpperCase() : "";
       const isCorrect = chosen !== "" && chosen === q.correctOption;
       if (isCorrect) { if (q.topic.subject.name === "Língua Portuguesa") portCorrect++; else if (q.topic.subject.name === "Matemática") mathCorrect++; else specificCorrect++; }
       const current = topicCounts.get(q.topicId) || { total: 0, correct: 0 }; current.total++; if (isCorrect) current.correct++; topicCounts.set(q.topicId, current);
