@@ -40,6 +40,12 @@ function optionalInt(value, field) {
   return parsed;
 }
 
+function requiredInt(value, field) {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed)) throw new Error(`Valor inteiro obrigatório inválido: ${field}`);
+  return parsed;
+}
+
 function requireString(value, field) {
   if (typeof value !== "string" || !value.trim()) {
     throw new Error(`Campo obrigatório inválido: ${field}`);
