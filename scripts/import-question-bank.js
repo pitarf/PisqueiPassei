@@ -263,7 +263,16 @@ async function main() {
       }
 
       if (historicalExam && question.questionNumber) {
-        const historical = await prisma.historicalQuestion.upsert({
+        const historicalBefore = await prisma.historicalQuestion.findUnique({
+          where: {
+            examId_questionNumber: {
+              examId: historicalExam.id,
+              questionNumber: question.questionNumber,
+            },
+          },
+          select: { id: true },
+        });
+        await prisma.historicalQuestion.upsert({
           where: {
             examId_questionNumber: {
               examId: historicalExam.id,
@@ -293,9 +302,8 @@ async function main() {
             notes: question.notes,
           },
         });
-        if (historical.createdAt.getTime() === historical.createdAt.getTime()) {
-          // The upsert is intentionally idempotent; counts are informational only.
-        }
+        if (historicalBefore) report.historicalUpdated++;
+        else report.historicalCreated++;
       }
     }
   }
