@@ -9,12 +9,11 @@ const MAX_IDEMPOTENCY_KEY_LENGTH = 128;
 export async function POST(req: NextRequest) {
   try {
     const { questionId, chosenOption, timeSpentSeconds = 0, idempotencyKey } = await req.json();
-    const validOption = typeof chosenOption === "string" && /^[A-E]$/.test(chosenOption);
+    const validOption = typeof chosenOption === "string" && /^[A-Ea-e]$/.test(chosenOption.trim());
     const time = Number(timeSpentSeconds);
     const key = typeof idempotencyKey === "string" ? idempotencyKey.trim() : "";
     const normalizedOption = validOption ? chosenOption.trim().toUpperCase() : "";
     if (typeof questionId !== "string" || !questionId.trim() || !validOption) return NextResponse.json({ error: "Questão e alternativa A-E são obrigatórias." }, { status: 400 });
-    if (normalizedOption !== chosenOption) return NextResponse.json({ error: "Alternativa inválida." }, { status: 400 });
     if (!Number.isFinite(time) || time < 0 || time > MAX_TIME_SECONDS) return NextResponse.json({ error: "Tempo de resposta inválido." }, { status: 400 });
     if (key.length > MAX_IDEMPOTENCY_KEY_LENGTH) return NextResponse.json({ error: "Chave de idempotência inválida." }, { status: 400 });
 
