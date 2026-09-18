@@ -14,26 +14,33 @@ const valid = {
   questionType: "APLICACAO",
   cognitiveLevel: "APLICAR",
 };
-const r1 = validateAiQuestion(valid);
+
 describe("question validator", () => {
   it("normaliza texto", () => expect(normalizeText(" Gestão Ágil! ")).toBe("gestao agil"));
+
   it("aceita questão válida e força origem IA", () => {
-    expect(r1.valid).toBe(true);
-    if (r1.valid) {
-      expect(r1.question.origin).toBe("AI_GENERATED");
-      expect(r1.question.banca).toBe("IA (perfil Cesgranrio)");
-    }
-  
-  it("aceita alternativa minúscula na validação de envio", () => {
     const result = validateAiQuestion(valid);
     expect(result.valid).toBe(true);
+    if (result.valid) {
+      expect(result.question.origin).toBe("AI_GENERATED");
+      expect(result.question.banca).toBe("IA (perfil Cesgranrio)");
+    }
   });
-});
-  it("rejeita alternativas duplicadas", () => expect(validateAiQuestion({...valid, optionE: valid.optionA}).valid).toBe(false));
-  it("rejeita taxonomia pedagógica inválida", () => expect(validateAiQuestion({...valid, questionType: "TIPO_INVENTADO"}).valid).toBe(false));
-  it("rejeita nível cognitivo inválido", () => expect(validateAiQuestion({...valid, cognitiveLevel: "NIVEL_INVENTADO"}).valid).toBe(false));
+
+  it("rejeita alternativas duplicadas", () => {
+    expect(validateAiQuestion({ ...valid, optionE: valid.optionA }).valid).toBe(false);
+  });
+
+  it("rejeita taxonomia pedagógica inválida", () => {
+    expect(validateAiQuestion({ ...valid, questionType: "TIPO_INVENTADO" }).valid).toBe(false);
+  });
+
+  it("rejeita nível cognitivo inválido", () => {
+    expect(validateAiQuestion({ ...valid, cognitiveLevel: "NIVEL_INVENTADO" }).valid).toBe(false);
+  });
+
   it("usa dificuldade solicitada quando a IA não informa uma válida", () => {
-    const result = validateAiQuestion({...valid, difficulty: "X"}, "FACIL");
+    const result = validateAiQuestion({ ...valid, difficulty: "X" }, "FACIL");
     expect(result.valid).toBe(true);
     if (result.valid) expect(result.question.difficulty).toBe("FACIL");
   });
