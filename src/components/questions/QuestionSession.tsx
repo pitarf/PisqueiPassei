@@ -79,7 +79,7 @@ export const QuestionSession: React.FC<QuestionSessionProps> = ({ initialQuestio
 
   const handleNextQuestion = () => {
     if (currentIndex + 1 < questions.length) {
-      setCurrentIndex((prev) => prev + 1); setSelectedOption(null); setIsAnswered(false); setLastResult(null); setTimerSeconds(0); setIdempotencyKey("");
+      setCurrentIndex((prev) => prev + 1); setSelectedOption(null); setIsAnswered(false); setLastResult(null); setTimerSeconds(0); setIdempotencyKey(""); setSiblingCreated(0);
     } else setIsFinished(true);
   };
 
