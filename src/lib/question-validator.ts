@@ -36,6 +36,8 @@ export interface ValidatedQuestion {
 
 export const VALID_OPTIONS = new Set(["A", "B", "C", "D", "E"]);
 export const VALID_DIFFICULTIES = new Set(["FACIL", "MEDIA", "DIFICIL"]);
+export const VALID_QUESTION_TYPES = new Set(["CONCEITO","APLICACAO","CALCULO","INTERPRETACAO","CASO_PRATICO","COMPARACAO","EXCECAO","PROCEDIMENTO"]);
+export const VALID_COGNITIVE_LEVELS = new Set(["CONHECER","COMPREENDER","APLICAR","ANALISAR","AVALIAR"]);
 
 export function normalizeText(text: string): string {
   return text
@@ -94,6 +96,11 @@ export function validateAiQuestion(
     return { valid: false, reason: "A questão contém opções idênticas/duplicadas." };
   }
 
+  const normalizedQuestionType = typeof q.questionType === "string" && q.questionType.trim() ? q.questionType.trim().toUpperCase() : "APLICACAO";
+  const normalizedCognitiveLevel = typeof q.cognitiveLevel === "string" && q.cognitiveLevel.trim() ? q.cognitiveLevel.trim().toUpperCase() : "APLICAR";
+  if (!VALID_QUESTION_TYPES.has(normalizedQuestionType)) return { valid: false, reason: "Tipo de questão inválido." };
+  if (!VALID_COGNITIVE_LEVELS.has(normalizedCognitiveLevel)) return { valid: false, reason: "Nível cognitivo inválido." };
+
   const normalizedDiff = typeof q.difficulty === "string" && VALID_DIFFICULTIES.has(q.difficulty.toUpperCase())
     ? (q.difficulty.toUpperCase() as "FACIL" | "MEDIA" | "DIFICIL")
     : VALID_DIFFICULTIES.has(expectedDifficulty.toUpperCase())
@@ -115,8 +122,8 @@ export function validateAiQuestion(
       origin: "AI_GENERATED",
       banca: "IA (perfil Cesgranrio)",
       sourceRef: typeof q.sourceRef === "string" && q.sourceRef.trim() ? q.sourceRef.trim() : "Questão inédita gerada por IA, baseada no perfil de cobrança do edital.",
-      questionType: typeof q.questionType === "string" && q.questionType.trim() ? q.questionType.trim() : "APLICACAO",
-      cognitiveLevel: typeof q.cognitiveLevel === "string" && q.cognitiveLevel.trim() ? q.cognitiveLevel.trim() : "APLICAR",
+      questionType: normalizedQuestionType,
+      cognitiveLevel: normalizedCognitiveLevel,
       subtopic: typeof q.subtopic === "string" && q.subtopic.trim() ? q.subtopic.trim() : "",
     },
   };
