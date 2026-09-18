@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { rankStudyPriorities } from "@/lib/study-priority";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
+    const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" }, select: { id: true } });
     if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
 
     const topics = await prisma.topic.findMany({
@@ -17,39 +18,35 @@ export async function GET() {
       orderBy: [{ subject: { order: "asc" } }, { order: "asc" }],
     });
 
-    const ranked = topics.map(topic => {
+    const ranked = rankStudyPriorities(topics.map((topic) => {
       const p = topic.userProgress[0];
-      const mastery = p?.masteryScore ?? 0;
-      const studied = Boolean(p && p.status !== "NAO_INICIADO");
-      const due = Boolean(p?.nextReviewDate && p.nextReviewDate <= new Date());
-      const attempts = p?.totalQuestions ?? 0;
-      const accuracy = attempts ? Math.round(((p?.correctAnswers ?? 0) / attempts) * 100) : 0;
-      const historical = topic._count.historicalQuestions;
-      const noQuestions = topic._count.questions === 0;
-
-      let priority = 0;
-      const reasons: string[] = [];
-      if (due) { priority += 45; reasons.push("revisão vencida"); }
-      if (!studied) { priority += 35; reasons.push("ainda não estudado"); }
-      if (mastery < 70 && studied) { priority += Math.round((70 - mastery) * 0.8); reasons.push("domínio abaixo de 70%"); }
-      if (accuracy < 70 && attempts >= 3) { priority += 12; reasons.push("acerto abaixo de 70%"); }
-      if (historical > 0) { priority += Math.min(historical, 8); reasons.push("há histórico catalogado"); }
-      if (noQuestions) { priority += 8; reasons.push("sem questões no banco"); }
-
+      return {
+        topicId: topic.id,
+        masteryScore: p?.masteryScore ?? 0,
+        status: p?.status ?? "NAO_INICIADO",
+        totalQuestions: p?.totalQuestions ?? 0,
+        correctAnswers: p?.correctAnswers ?? 0,
+        nextReviewDate: p?.nextReviewDate ?? null,
+        questionCount: topic._count.questions,
+        historicalQuestionCount: topic._count.historicalQuestions,
+      };
+    })).map((item) => {
+      const topic = topics.find((candidate) => candidate.id === item.topicId)!;
       return {
         topicId: topic.id,
         code: topic.code,
         title: topic.title,
         subject: topic.subject.name,
-        mastery: Math.round(mastery),
-        accuracy,
-        attempts,
-        historicalQuestions: historical,
-        availableQuestions: topic._count.questions,
-        priority,
-        reasons,
+        mastery: Math.round(item.masteryScore),
+        accuracy: item.totalQuestions ? Math.round((item.correctAnswers / item.totalQuestions) * 100) : 0,
+        attempts: item.totalQuestions,
+        historicalQuestions: item.historicalQuestionCount,
+        availableQuestions: item.questionCount,
+        priority: item.priority,
+        reason: item.reason,
+        suggestedDifficulty: item.suggestedDifficulty,
       };
-    }).sort((a,b) => b.priority - a.priority);
+    });
 
     return NextResponse.json({
       generatedAt: new Date().toISOString(),
