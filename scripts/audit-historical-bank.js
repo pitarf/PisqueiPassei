@@ -49,6 +49,22 @@ async function main() {
     orderBy: { createdAt: "asc" },
   });
 
+  const provenanceGaps = questions
+    .filter(q => OFFICIAL_ORIGINS.has(q.origin))
+    .filter(q => !q.sourceRef && !q.sourceUrl && !q.sourceQuestion)
+    .map(q => ({ id: q.id, statement: q.statement.slice(0, 160), origin: q.origin }));
+
+  const metadataGaps = questions
+    .filter(q => !q.questionType || !q.cognitiveLevel || !q.subtopic)
+    .map(q => ({
+      id: q.id,
+      missing: [
+        !q.questionType ? "questionType" : null,
+        !q.cognitiveLevel ? "cognitiveLevel" : null,
+        !q.subtopic ? "subtopic" : null,
+      ].filter(Boolean),
+    }));
+
   const historicalGaps = historical.map(q => ({
     id: q.id,
     exam: `${q.exam.organization} ${q.exam.year}`,
