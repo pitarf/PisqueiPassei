@@ -44,26 +44,30 @@ async function main() {
     }
   }
 
-  const provenanceGaps = questions
-    .filter(q => OFFICIAL_ORIGINS.has(q.origin))
-    .filter(q => !q.sourceRef || !q.sourceRef.trim())
-    .map(q => ({ id: q.id, statement: q.statement.slice(0, 160) }));
+  const historical = await prisma.historicalQuestion.findMany({
+    include: { exam: true, topic: { include: { subject: true } } },
+    orderBy: { createdAt: "asc" },
+  });
 
-  const metadataGaps = questions
-    .filter(q => !q.questionType || !q.cognitiveLevel)
-    .map(q => ({
-      id: q.id,
-      origin: q.origin,
-      topic: q.topic.code,
-      missing: [
-        !q.questionType ? "questionType" : null,
-        !q.cognitiveLevel ? "cognitiveLevel" : null,
-      ].filter(Boolean),
-    }));
+  const historicalGaps = historical.map(q => ({
+    id: q.id,
+    exam: `${q.exam.organization} ${q.exam.year}`,
+    questionNumber: q.questionNumber,
+    missing: [
+      !q.topicId ? "topicId" : null,
+      !q.questionType ? "questionType" : null,
+      !q.cognitiveLevel ? "cognitiveLevel" : null,
+      !q.difficulty ? "difficulty" : null,
+      !q.verificationStatus ? "verificationStatus" : null,
+    ].filter(Boolean),
+  })).filter(item => item.missing.length);
 
   const report = {
     dryRun: DRY,
     totalQuestions: questions.length,
+    totalHistoricalQuestions: historical.length,
+    historicalMetadataGaps: historicalGaps.length,
+    historicalGaps,
     duplicateGroups: candidates.length,
     provenanceGaps: provenanceGaps.length,
     metadataGaps: metadataGaps.length,
