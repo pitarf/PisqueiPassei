@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { QuestionSession } from "@/components/questions/QuestionSession";
 import Link from "next/link";
 import { AlertTriangle, Sparkles, Filter, Info } from "lucide-react";
+import { rankStudyPriorities, getStudyHref } from "@/lib/study-priority";
 
 interface QuestoesPageProps { searchParams: Promise<{ modo?: string; topicId?: string; subjectId?: string; count?: string; difficulty?: string; origin?: string; }>; }
 export const revalidate = 0;
@@ -149,7 +150,6 @@ async function PriorityStudyCard() {
     },
     orderBy: [{ subject: { order: "asc" } }, { order: "asc" }],
   });
-  const { rankStudyPriorities } = await import("@/lib/study-priority");
   const ranked = rankStudyPriorities(topics.map((topic) => {
     const p = topic.userProgress[0];
     return {
@@ -166,7 +166,6 @@ async function PriorityStudyCard() {
   const item = ranked[0];
   const topic = item ? topics.find((candidate) => candidate.id === item.topicId) : null;
   if (!item || !topic) return null;
-  const { getStudyHref } = await import("@/lib/study-priority");
   const href = getStudyHref(item);
   return <div className="bg-slate-900 border border-sky-500/20 rounded-2xl p-5">
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
