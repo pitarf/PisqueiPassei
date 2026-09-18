@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { generateQuestionBatch } from "@/lib/gemini";
+import { generateQuestionBatch, summarizeHistoricalPatterns } from "@/lib/gemini";
 import { validateAiQuestion, normalizeText, VALID_DIFFICULTIES } from "@/lib/question-validator";
 
 const MODES = new Set(["normal", "erros"]);
@@ -79,6 +79,19 @@ export async function POST(req: NextRequest) {
       ? await prisma.topic.findMany({ where: { id: { in: targetTopicIds } }, include: { subject: true }, orderBy: { order: "asc" } })
       : await prisma.topic.findMany({ include: { subject: true }, orderBy: { order: "asc" }, take: 1 });
 
+    const historicalRows = topics.length ? await prisma.historicalQuestion.findMany({
+      where: { topicId: { in: topics.map((topic) => topic.id) } },
+      include: { topic: { select: { title: true } } },
+      take: 200,
+    }) : [];
+    const historicalPatterns = summarizeHistoricalPatterns(historicalRows.map((row) => ({
+      topicTitle: row.topic.title,
+      difficulty: row.difficulty,
+      questionType: row.questionType,
+      cognitiveLevel: row.cognitiveLevel,
+    })));
+    const historicalContext = historicalPatterns.total ? JSON.stringify(historicalPatterns) : null;
+
     if (!topics.length) return NextResponse.json({ questions: selected, generated: 0, requestedDifficulty: safeDifficulty });
 
     let remaining = safeCount - selected.length;
@@ -93,7 +106,7 @@ export async function POST(req: NextRequest) {
         if (remaining <= 0) break;
         const requestCount = Math.min(remaining + 2, 10);
         try {
-          const generated = await generateQuestionBatch(topic.title, topic.subject.name, requestCount, safeDifficulty, topic.officialSource);
+          const generated = await generateQuestionBatch(topic.title, topic.subject.name, requestCount, safeDifficulty, topic.officialSource, historicalContext);
           const rawList = Array.isArray(generated?.questions) ? generated.questions : [];
 
           for (const rawQ of rawList) {
