@@ -117,7 +117,7 @@ function validateExam(exam) {
   return {
     organization: requireString(exam.organization, "exam.organization"),
     processName: requireString(exam.processName, "exam.processName"),
-    year: optionalInt(exam.year, "exam.year"),
+    year: requiredInt(exam.year, "exam.year"),
     role: optionalString(exam.role),
     emphasis: optionalString(exam.emphasis),
     banca: optionalString(exam.banca),
