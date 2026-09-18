@@ -72,7 +72,7 @@ async function refillStock(
   }
 }
 
-async function loadExamQuestions() {
+export async function loadExamQuestions() {
   const [portSubject, mathSubject, specificSubjects] = await Promise.all([
     prisma.subject.findFirst({ where: { name: "Língua Portuguesa" } }),
     prisma.subject.findFirst({ where: { name: "Matemática" } }),
