@@ -74,6 +74,12 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
         <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-md">Padrão Cesgranrio</span>
         <div className="flex items-center justify-between gap-3"><div><h1 className="text-xl sm:text-2xl font-black text-white mt-1">Prática de Questões</h1></div><Link href="/questoes/historico" className="text-xs font-semibold text-sky-300 border border-sky-500/30 bg-sky-500/10 px-3 py-2 rounded-xl">Ver histórico</Link></div>
         <p className="text-xs sm:text-sm text-slate-400 mt-1 leading-relaxed">Exercite os conteúdos com questões de múltipla escolha (A a E). As questões criadas pela plataforma para complementar o edital trazem indicação clara de questão inédita.</p>
+        <div className="flex flex-wrap gap-2 mt-4">
+          <Link href="/questoes" className="px-2.5 py-1.5 rounded-lg border border-slate-700 text-[11px] text-slate-400">Todas</Link>
+          {["FACIL","MEDIA","DIFICIL"].map((d) => <Link key={d} href={`/questoes?difficulty=${d}&count=10`} className="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-[11px] text-slate-300">{d === "MEDIA" ? "Média" : d === "FACIL" ? "Fácil" : "Difícil"}</Link>)}
+          <Link href="/questoes?origin=OFICIAL_CESGRANRIO&count=10" className="px-2.5 py-1.5 rounded-lg border border-sky-500/30 bg-sky-500/10 text-[11px] text-sky-300">Cesgranrio oficial</Link>
+          <Link href="/questoes?origin=INEDITA_IA&count=10" className="px-2.5 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-[11px] text-emerald-300">Inéditas IA</Link>
+        </div>
       </div>
       {isTrainingActive && <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex gap-3">
         <Info className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
