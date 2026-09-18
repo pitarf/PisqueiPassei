@@ -3,7 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { SimulationExam } from "@/components/exam/SimulationExam";
 import { Award, Clock, AlertTriangle, Play, Calendar } from "lucide-react";
-import { loadExamQuestions } from "@/app/api/simulado/route";
+import { loadExamQuestions } from "@/lib/simulation";
 
 interface SimuladoPageProps { searchParams: Promise<{ iniciar?: string }> }
 export const revalidate = 0;
