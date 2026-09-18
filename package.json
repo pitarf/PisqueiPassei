@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "bun test src/lib",
+    "test": "bun test src/lib && bun test src/lib/study-priority.test.ts && bun test src/lib/question-validator.test.ts",
     "test:e2e": "playwright test",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
