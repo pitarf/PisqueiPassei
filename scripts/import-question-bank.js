@@ -83,7 +83,13 @@ function validateQuestion(item, index) {
   const sourceRef = optionalString(item.sourceRef);
   const sourceUrl = optionalString(item.sourceUrl);
   const sourceQuestion = optionalString(item.sourceQuestion);
-  const verificationStatus = optionalString(item.verificationStatus) || "PENDENTE";
+  const verificationStatus = (optionalString(item.verificationStatus) || "PENDENTE").toUpperCase();
+  const questionType = optionalString(item.questionType)?.toUpperCase() || null;
+  const cognitiveLevel = optionalString(item.cognitiveLevel)?.toUpperCase() || null;
+
+  if (!["PENDENTE", "VERIFICADA", "REVISAR"].includes(verificationStatus)) {
+    throw new Error(`Questão #${index}: verificationStatus inválido: ${verificationStatus}`);
+  }
 
   if (origin.startsWith("OFICIAL_") && !sourceRef && !sourceUrl && !sourceQuestion) {
     throw new Error(`Questão #${index}: questão oficial exige ao menos sourceRef, sourceUrl ou sourceQuestion.`);
@@ -108,8 +114,8 @@ function validateQuestion(item, index) {
     sourceUrl,
     sourcePage: optionalInt(item.sourcePage, `#${index}.sourcePage`),
     sourceQuestion,
-    questionType: optionalString(item.questionType),
-    cognitiveLevel: optionalString(item.cognitiveLevel),
+    questionType,
+    cognitiveLevel,
     subtopic: optionalString(item.subtopic),
     referenceIdsJson: Array.isArray(item.referenceQuestionIds) ? item.referenceQuestionIds : null,
     verificationStatus,
