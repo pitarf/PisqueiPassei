@@ -224,44 +224,46 @@ async function main() {
 
   for (const question of validated) {
     const key = normalize(question.statement);
-    if (existingStatements.has(key)) {
-      report.duplicates++;
-      continue;
-    }
+    const duplicate = existingStatements.has(key);
+    if (duplicate) report.duplicates++;
 
     const topic = await resolveTopic(question, topicCache);
     report.ready++;
 
     if (!report.dryRun) {
-      const created = await prisma.question.create({
-        data: {
-          topicId: topic.id,
-          statement: question.statement,
-          optionA: question.optionA,
-          optionB: question.optionB,
-          optionC: question.optionC,
-          optionD: question.optionD,
-          optionE: question.optionE,
-          correctOption: question.correctOption,
-          explanation: question.explanation,
-          difficulty: question.difficulty,
-          origin: question.origin,
-          examYear: question.examYear,
-          banca: question.banca,
-          sourceRef: question.sourceRef,
-          sourceUrl: question.sourceUrl,
-          sourcePage: question.sourcePage,
-          sourceQuestion: question.sourceQuestion,
-          questionType: question.questionType,
-          cognitiveLevel: question.cognitiveLevel,
-          subtopic: question.subtopic,
-          referenceIdsJson: question.referenceIdsJson,
-          verificationStatus: question.verificationStatus,
-        },
-      });
+      if (!duplicate) {
+        await prisma.question.create({
+          data: {
+            topicId: topic.id,
+            statement: question.statement,
+            optionA: question.optionA,
+            optionB: question.optionB,
+            optionC: question.optionC,
+            optionD: question.optionD,
+            optionE: question.optionE,
+            correctOption: question.correctOption,
+            explanation: question.explanation,
+            difficulty: question.difficulty,
+            origin: question.origin,
+            examYear: question.examYear,
+            banca: question.banca,
+            sourceRef: question.sourceRef,
+            sourceUrl: question.sourceUrl,
+            sourcePage: question.sourcePage,
+            sourceQuestion: question.sourceQuestion,
+            questionType: question.questionType,
+            cognitiveLevel: question.cognitiveLevel,
+            subtopic: question.subtopic,
+            referenceIdsJson: question.referenceIdsJson,
+            verificationStatus: question.verificationStatus,
+          },
+        });
+        existingStatements.add(key);
+        report.created++;
+      }
 
       if (historicalExam && question.questionNumber) {
-        await prisma.historicalQuestion.upsert({
+        const historical = await prisma.historicalQuestion.upsert({
           where: {
             examId_questionNumber: {
               examId: historicalExam.id,
@@ -291,11 +293,10 @@ async function main() {
             notes: question.notes,
           },
         });
+        if (historical.createdAt.getTime() === historical.createdAt.getTime()) {
+          // The upsert is intentionally idempotent; counts are informational only.
+        }
       }
-
-      existingStatements.add(key);
-      report.created++;
-      void created;
     }
   }
 
