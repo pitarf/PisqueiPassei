@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { rankStudyPriorities, getStudyHref } from "@/lib/study-priority";
 import { Target, ArrowRight, RotateCcw, AlertTriangle, Award, BookOpen, CheckCircle2, Clock, Sparkles, Flame } from "lucide-react";
 
 export const revalidate = 0;
@@ -28,8 +29,23 @@ export default async function DashboardPage() {
   const unstartedTopic = allTopics.find((topic) => !progressByTopic.has(topic.id) || progressByTopic.get(topic.id)?.status === "NAO_INICIADO");
   const weakTopic = weakPoints[0]?.topic;
   const leastRecentlyStudied = [...allTopics].filter((topic) => progressByTopic.has(topic.id)).sort((a, b) => (progressByTopic.get(a.id)?.lastStudiedAt?.getTime() ?? 0) - (progressByTopic.get(b.id)?.lastStudiedAt?.getTime() ?? 0))[0];
-  const nextToStudy = dueTopic || unstartedTopic || weakTopic || leastRecentlyStudied || allTopics[0];
-  const nextPriorityReason = dueTopic ? "revisão vencida" : unstartedTopic ? "tópico ainda não estudado" : weakTopic ? "menor domínio entre os pontos de atenção" : "retomada do conteúdo menos recente";
+  const rankedPriorities = rankStudyPriorities(allTopics.map((topic) => {
+    const p = progressByTopic.get(topic.id);
+    return {
+      topicId: topic.id,
+      masteryScore: p?.masteryScore ?? 0,
+      status: p?.status ?? "NAO_INICIADO",
+      totalQuestions: p?.totalQuestions ?? 0,
+      correctAnswers: p?.correctAnswers ?? 0,
+      nextReviewDate: p?.nextReviewDate ?? null,
+      questionCount: 0,
+      historicalQuestionCount: 0,
+    };
+  }));
+  const nextPriority = rankedPriorities[0];
+  const nextToStudy = (nextPriority && allTopics.find((topic) => topic.id === nextPriority.topicId)) || dueTopic || unstartedTopic || weakTopic || leastRecentlyStudied || allTopics[0];
+  const nextPriorityReason = nextPriority?.reason || "retomada do conteúdo menos recente";
+  const nextTrainingHref = nextPriority ? getStudyHref(nextPriority) : nextToStudy ? `/questoes?topicId=${nextToStudy.id}&count=10` : "/questoes";
   const daysRemaining = daysUntilExam(now);
 
   return <div className="space-y-6">
@@ -37,7 +53,7 @@ export default async function DashboardPage() {
     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
       <div className="flex items-center justify-between gap-3">
         <div><span className="text-[11px] font-bold uppercase tracking-wider text-sky-400">Treino adaptativo</span><h2 className="text-base font-bold text-white mt-1">Próximo treino sugerido</h2><p className="text-xs text-slate-400 mt-0.5">A recomendação considera revisão, domínio e histórico disponível.</p></div>
-        {nextToStudy && <Link href={`/questoes?topicId=${nextToStudy.id}&count=10`} className="px-3 py-2 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs">10 questões</Link>}
+        {nextToStudy && <Link href={nextTrainingHref} className="px-3 py-2 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs">10 questões</Link>}
       </div>
       {nextToStudy && <p className="text-sm font-bold text-slate-200 mt-3">{nextToStudy.code ? nextToStudy.code + " · " : ""}{nextToStudy.title}</p>}
     </div>
