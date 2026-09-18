@@ -64,7 +64,8 @@ function safeJsonParse<T>(rawText: string, fallbackDesc: string): T {
 export async function generateStructuredLesson(
   topicTitle: string,
   subjectName: string,
-  officialSource?: string | null
+  officialSource?: string | null,
+  historicalContext?: string | null
 ) {
   requireApiKey();
   const model = genAI.getGenerativeModel({
@@ -136,6 +137,7 @@ Disciplina: "${subjectName}".
 Tópico: "${topicTitle}".
 Dificuldade: "${difficulty}".
 ${rag}
+${historicalContext ? `Padrões históricos estruturados, use apenas como calibração: ${historicalContext}` : ""}
 
 Se houver dados históricos estruturados no contexto, use-os apenas para calibrar formato, dificuldade, tipo cognitivo e subtema. Não reproduza questões históricas nem atribua a elas conteúdo que não esteja sustentado pelas fontes.\nTeste somente conteúdo sustentado pelo edital e pelas fontes recuperadas. Em legislação, não crie artigo ou regra ausente nas fontes.
 As questões são INÉDITAS e GERADAS POR IA. Nunca diga que foram aplicadas pela Cesgranrio.
