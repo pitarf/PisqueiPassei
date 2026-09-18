@@ -10,6 +10,7 @@ const OFFICIAL_ORIGINS = new Set([
 ]);
 
 const ALLOWED_DIFFICULTIES = new Set(["FACIL", "MEDIA", "DIFICIL"]);
+const ALLOWED_VERIFICATION = new Set(["PENDENTE", "VERIFICADA", "REVISAR"]);
 
 function normalize(text) {
   return String(text || "")
@@ -71,6 +72,14 @@ async function main() {
 
     if (!/^[A-E]$/.test(q.correctOption || "")) {
       invalid.push({ id: q.id, field: "correctOption", value: q.correctOption });
+    }
+
+    if (!q.questionType || !q.cognitiveLevel) {
+      invalid.push({ id: q.id, field: "pedagogicalMetadata", value: "questionType/cognitiveLevel ausente" });
+    }
+
+    if (!ALLOWED_VERIFICATION.has(q.verificationStatus || "")) {
+      invalid.push({ id: q.id, field: "verificationStatus", value: q.verificationStatus });
     }
 
     const options = [q.optionA, q.optionB, q.optionC, q.optionD, q.optionE].map(normalize);
