@@ -23,7 +23,12 @@ describe("question validator", () => {
       expect(r1.question.origin).toBe("AI_GENERATED");
       expect(r1.question.banca).toBe("IA (perfil Cesgranrio)");
     }
+  
+  it("aceita alternativa minúscula na validação de envio", () => {
+    const result = validateAiQuestion(valid);
+    expect(result.valid).toBe(true);
   });
+});
   it("rejeita alternativas duplicadas", () => expect(validateAiQuestion({...valid, optionE: valid.optionA}).valid).toBe(false));
   it("rejeita taxonomia pedagógica inválida", () => expect(validateAiQuestion({...valid, questionType: "TIPO_INVENTADO"}).valid).toBe(false));
   it("rejeita nível cognitivo inválido", () => expect(validateAiQuestion({...valid, cognitiveLevel: "NIVEL_INVENTADO"}).valid).toBe(false));
