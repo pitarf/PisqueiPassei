@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { BookOpen, Database, ExternalLink, Filter, ArrowRight } from "lucide-react";
+import { Database, ExternalLink, Filter, ArrowRight } from "lucide-react";
 
 export const revalidate = 0;
 
@@ -23,6 +23,12 @@ export default async function HistoricoQuestoesPage() {
   const totalHistorical = historicalQuestions.length;
   const countBy = (key: "difficulty" | "questionType" | "cognitiveLevel" | "verificationStatus") => Object.entries(historicalQuestions.reduce<Record<string, number>>((acc, row) => { const value = row[key] || "SEM_CLASSIFICACAO"; acc[value] = (acc[value] || 0) + 1; return acc; }, {})).sort((a,b) => b[1] - a[1]);
   const coveredTopics = topics.filter(t => t._count.historicalQuestions > 0).length;
+  const patterns = [
+    ["Dificuldade", countBy("difficulty")],
+    ["Tipo de questão", countBy("questionType")],
+    ["Nível cognitivo", countBy("cognitiveLevel")],
+    ["Verificação", countBy("verificationStatus")],
+  ] as const;
 
   return <div className="space-y-6 pb-20">
     <header className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-md">
@@ -39,6 +45,14 @@ export default async function HistoricoQuestoesPage() {
       <Metric label="Questões históricas" value={totalHistorical} />
       <Metric label="Tópicos com histórico" value={coveredTopics + "/" + topics.length} />
     </div>
+
+    <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <h2 className="text-base font-bold text-white">Padrões catalogados</h2>
+      <p className="text-xs text-slate-500 mt-1">Distribuições descritivas do material histórico já registrado.</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+        {patterns.map(([title, rows]) => <Pattern key={title} title={title} rows={rows} />)}
+      </div>
+    </section>
 
     <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
       <h2 className="text-base font-bold text-white flex items-center gap-2"><Database className="w-4 h-4 text-emerald-400" />Provas catalogadas</h2>
