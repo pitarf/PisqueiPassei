@@ -149,30 +149,30 @@ async function PriorityStudyCard() {
     },
     orderBy: [{ subject: { order: "asc" } }, { order: "asc" }],
   });
-  const now = new Date();
-  const ranked = topics.map(topic => {
+  const { rankStudyPriorities } = await import("@/lib/study-priority");
+  const ranked = rankStudyPriorities(topics.map((topic) => {
     const p = topic.userProgress[0];
-    const mastery = p?.masteryScore ?? 0;
-    const attempts = p?.totalQuestions ?? 0;
-    const accuracy = attempts ? Math.round(((p?.correctAnswers ?? 0) / attempts) * 100) : 0;
-    let priority = 0;
-    if (p?.nextReviewDate && p.nextReviewDate <= now) priority += 45;
-    if (!p || p.status === "NAO_INICIADO") priority += 35;
-    if (mastery < 70 && p && p.status !== "NAO_INICIADO") priority += Math.round((70 - mastery) * 0.8);
-    if (accuracy < 70 && attempts >= 3) priority += 12;
-    if (topic._count.questions === 0) priority += 8;
-    if (topic._count.historicalQuestions > 0) priority += Math.min(topic._count.historicalQuestions, 8);
-    return { topic, priority, mastery };
-  }).sort((a,b) => b.priority - a.priority);
+    return {
+      topicId: topic.id,
+      masteryScore: p?.masteryScore ?? 0,
+      status: p?.status ?? "NAO_INICIADO",
+      totalQuestions: p?.totalQuestions ?? 0,
+      correctAnswers: p?.correctAnswers ?? 0,
+      nextReviewDate: p?.nextReviewDate ?? null,
+      questionCount: topic._count.questions,
+      historicalQuestionCount: topic._count.historicalQuestions,
+    };
+  }));
   const item = ranked[0];
-  if (!item) return null;
-  const href = `/questoes?topicId=${item.topic.id}&count=10`;
+  const topic = item ? topics.find((candidate) => candidate.id === item.topicId) : null;
+  if (!item || !topic) return null;
+  const href = `/questoes?topicId=${topic.id}&count=10&difficulty=${item.suggestedDifficulty}`;
   return <div className="bg-slate-900 border border-sky-500/20 rounded-2xl p-5">
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div className="min-w-0">
         <span className="text-[11px] font-bold uppercase tracking-wider text-sky-400">Próximo treino recomendado</span>
-        <h2 className="text-base font-bold text-white mt-1 truncate">{item.topic.code ? item.topic.code + " · " : ""}{item.topic.title}</h2>
-        <p className="text-xs text-slate-400 mt-1">{item.mastery > 0 ? `Domínio atual: ${Math.round(item.mastery)}%` : "Ainda não iniciado"} · prioridade calculada pelo seu progresso e cobertura do banco.</p>
+        <h2 className="text-base font-bold text-white mt-1 truncate">{topic.code ? topic.code + " · " : ""}{topic.title}</h2>
+        <p className="text-xs text-slate-400 mt-1">{item.masteryScore > 0 ? `Domínio atual: ${Math.round(item.masteryScore)}%` : "Ainda não iniciado"} · {item.reason} · dificuldade sugerida: {item.suggestedDifficulty.toLowerCase()}.</p>
       </div>
       <Link href={href} className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs">Treinar este tópico</Link>
     </div>
