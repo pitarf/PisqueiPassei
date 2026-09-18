@@ -81,6 +81,7 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
           <Link href="/questoes?origin=INEDITA_IA&count=10" className="px-2.5 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-[11px] text-emerald-300">Inéditas IA</Link>
         </div>
       </div>
+      {!isTrainingActive && <PriorityStudyCard />}
       {isTrainingActive && <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex gap-3">
         <Info className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
         <div>
@@ -134,5 +135,46 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
       </div>}
       <QuestionSession initialQuestions={questions} title={modo === "erros" ? "Revisão dos Meus Erros" : `Treino de Questões (${questions.length} itens)`} />
     </div>}
+  </div>;
+}
+
+async function PriorityStudyCard() {
+  const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" }, select: { id: true } });
+  if (!user) return null;
+  const topics = await prisma.topic.findMany({
+    include: {
+      subject: true,
+      userProgress: { where: { userId: user.id } },
+      _count: { select: { questions: true, historicalQuestions: true } },
+    },
+    orderBy: [{ subject: { order: "asc" } }, { order: "asc" }],
+  });
+  const now = new Date();
+  const ranked = topics.map(topic => {
+    const p = topic.userProgress[0];
+    const mastery = p?.masteryScore ?? 0;
+    const attempts = p?.totalQuestions ?? 0;
+    const accuracy = attempts ? Math.round(((p?.correctAnswers ?? 0) / attempts) * 100) : 0;
+    let priority = 0;
+    if (p?.nextReviewDate && p.nextReviewDate <= now) priority += 45;
+    if (!p || p.status === "NAO_INICIADO") priority += 35;
+    if (mastery < 70 && p && p.status !== "NAO_INICIADO") priority += Math.round((70 - mastery) * 0.8);
+    if (accuracy < 70 && attempts >= 3) priority += 12;
+    if (topic._count.questions === 0) priority += 8;
+    if (topic._count.historicalQuestions > 0) priority += Math.min(topic._count.historicalQuestions, 8);
+    return { topic, priority, mastery };
+  }).sort((a,b) => b.priority - a.priority);
+  const item = ranked[0];
+  if (!item) return null;
+  const href = `/questoes?topicId=${item.topic.id}&count=10`;
+  return <div className="bg-slate-900 border border-sky-500/20 rounded-2xl p-5">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="min-w-0">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-sky-400">Próximo treino recomendado</span>
+        <h2 className="text-base font-bold text-white mt-1 truncate">{item.topic.code ? item.topic.code + " · " : ""}{item.topic.title}</h2>
+        <p className="text-xs text-slate-400 mt-1">{item.mastery > 0 ? `Domínio atual: ${Math.round(item.mastery)}%` : "Ainda não iniciado"} · prioridade calculada pelo seu progresso e cobertura do banco.</p>
+      </div>
+      <Link href={href} className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs">Treinar este tópico</Link>
+    </div>
   </div>;
 }
