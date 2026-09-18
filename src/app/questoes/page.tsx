@@ -19,7 +19,7 @@ function shuffle<T>(items: T[]) {
 export default async function QuestoesPage({ searchParams }: QuestoesPageProps) {
   const { modo, topicId, subjectId, count, difficulty, origin } = await searchParams;
   const countNum = Math.max(1, Math.min(60, parseInt(count || "10", 10) || 10));
-  const isTrainingActive = Boolean(modo || topicId || subjectId);
+  const isTrainingActive = Boolean(modo || topicId || subjectId || difficulty || origin);
   const subjects = await prisma.subject.findMany({ include: { topics: { select: { id: true, title: true, code: true } } }, orderBy: { order: "asc" } });
   let questions: any[] = [];
 
@@ -29,7 +29,7 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
       const wrongAttempts = user ? await prisma.questionAttempt.findMany({ where: { userId: user.id, isCorrect: false }, orderBy: { createdAt: "desc" }, select: { questionId: true }, take: 100 }) : [];
       const wrongIds = [...new Set(wrongAttempts.map((attempt) => attempt.questionId))];
       if (wrongIds.length > 0) {
-        const wrongPool = await prisma.question.findMany({ where: { id: { in: wrongIds } }, include: { topic: { include: { subject: true } } } });
+        const wrongPool = await prisma.question.findMany({ where: { id: { in: wrongIds }, ...(difficulty ? { difficulty } : {}), ...(origin ? { origin } : {}) }, include: { topic: { include: { subject: true } } } });
         const order = new Map(wrongIds.map((id, index) => [id, index]));
         wrongPool.sort((a, b) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999));
         questions = wrongPool.slice(0, countNum);
@@ -37,7 +37,7 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
         const weakTopics = await prisma.userTopicProgress.findMany({ where: { userId: user.id, masteryScore: { lt: 70 } }, orderBy: { masteryScore: "asc" }, take: 10, select: { topicId: true } });
         const topicIds = weakTopics.map((item) => item.topicId);
         if (topicIds.length > 0) {
-          const weakPool = await prisma.question.findMany({ where: { topicId: { in: topicIds } }, include: { topic: { include: { subject: true } } } });
+          const weakPool = await prisma.question.findMany({ where: { topicId: { in: topicIds }, ...(difficulty ? { difficulty } : {}), ...(origin ? { origin } : {}) }, include: { topic: { include: { subject: true } } } });
           questions = shuffle(weakPool).slice(0, countNum);
         }
       }
@@ -45,8 +45,8 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
       const generalCount = Math.max(1, Math.round(countNum / 3));
       const specificCount = countNum - generalCount;
       const [generalPool, specificPool] = await Promise.all([
-        prisma.question.findMany({ where: { topic: { subject: { category: { in: ["GERAL", "BASICO"] } } } }, include: { topic: { include: { subject: true } } } }),
-        prisma.question.findMany({ where: { topic: { subject: { category: "ESPECIFICO" } } }, include: { topic: { include: { subject: true } } } }),
+        prisma.question.findMany({ where: { ...(difficulty ? { difficulty } : {}), ...(origin ? { origin } : {}), topic: { subject: { category: { in: ["GERAL", "BASICO"] } } } }, include: { topic: { include: { subject: true } } } }),
+        prisma.question.findMany({ where: { ...(difficulty ? { difficulty } : {}), ...(origin ? { origin } : {}), topic: { subject: { category: "ESPECIFICO" } } }, include: { topic: { include: { subject: true } } } }),
       ]);
       const generalQuestions = shuffle(generalPool).slice(0, generalCount);
       const specificQuestions = shuffle(specificPool).slice(0, specificCount);
@@ -59,8 +59,8 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
       questions = mixed;
     } else {
       let whereClause: any = {};
-      if (topicId) whereClause = { topicId };
-      else if (subjectId) whereClause = { topic: { subjectId } };
+      if (topicId) whereClause = { topicId, ...(difficulty ? { difficulty } : {}), ...(origin ? { origin } : {}) };
+      else if (subjectId) whereClause = { topic: { subjectId }, ...(difficulty ? { difficulty } : {}), ...(origin ? { origin } : {}) };
       const pool = await prisma.question.findMany({ where: whereClause, include: { topic: { include: { subject: true } } } });
       questions = shuffle(pool).slice(0, countNum);
     }
