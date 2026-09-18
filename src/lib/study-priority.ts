@@ -50,3 +50,12 @@ export function rankStudyPriorities(inputs: StudyPriorityInput[], now = new Date
     .map((input) => calculateStudyPriority(input, now))
     .sort((a, b) => b.priority - a.priority);
 }
+
+
+export function getStudyPriorityReason(priority: StudyPriority): string {
+  return priority.reason;
+}
+
+export function getStudyHref(priority: StudyPriority): string {
+  return `/questoes?topicId=${encodeURIComponent(priority.topicId)}&count=10&difficulty=${priority.suggestedDifficulty}`;
+}
