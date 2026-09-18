@@ -166,7 +166,8 @@ async function PriorityStudyCard() {
   const item = ranked[0];
   const topic = item ? topics.find((candidate) => candidate.id === item.topicId) : null;
   if (!item || !topic) return null;
-  const href = `/questoes?topicId=${topic.id}&count=10&difficulty=${item.suggestedDifficulty}`;
+  const { getStudyHref } = await import("@/lib/study-priority");
+  const href = getStudyHref(item);
   return <div className="bg-slate-900 border border-sky-500/20 rounded-2xl p-5">
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div className="min-w-0">
