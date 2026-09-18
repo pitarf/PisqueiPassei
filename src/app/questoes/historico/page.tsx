@@ -6,10 +6,13 @@ import { BookOpen, Database, ExternalLink, Filter, ArrowRight } from "lucide-rea
 export const revalidate = 0;
 
 export default async function HistoricoQuestoesPage() {
-  const [exams, topics] = await Promise.all([
+  const [exams, topics, historicalQuestions] = await Promise.all([
     prisma.historicalExam.findMany({
       include: { _count: { select: { questions: true } } },
       orderBy: [{ year: "desc" }, { organization: "asc" }],
+    }),
+    prisma.historicalQuestion.findMany({
+      select: { topicId: true, difficulty: true, questionType: true, cognitiveLevel: true, verificationStatus: true },
     }),
     prisma.topic.findMany({
       include: { subject: true, _count: { select: { historicalQuestions: true } } },
@@ -17,7 +20,8 @@ export default async function HistoricoQuestoesPage() {
     }),
   ]);
 
-  const totalHistorical = exams.reduce((sum, exam) => sum + exam._count.questions, 0);
+  const totalHistorical = historicalQuestions.length;
+  const countBy = (key: "difficulty" | "questionType" | "cognitiveLevel" | "verificationStatus") => Object.entries(historicalQuestions.reduce<Record<string, number>>((acc, row) => { const value = row[key] || "SEM_CLASSIFICACAO"; acc[value] = (acc[value] || 0) + 1; return acc; }, {})).sort((a,b) => b[1] - a[1]);
   const coveredTopics = topics.filter(t => t._count.historicalQuestions > 0).length;
 
   return <div className="space-y-6 pb-20">
@@ -74,6 +78,6 @@ export default async function HistoricoQuestoesPage() {
   </div>;
 }
 
-function Metric({ label, value }: { label: string; value: number | string }) {
+function Pattern({ title, rows }: { title: string; rows: [string, number][] }) { return <div className="bg-slate-800/60 border border-slate-700/50 rounded-xl p-3"><p className="text-xs font-bold text-slate-300">{title}</p><div className="mt-2 space-y-1.5">{rows.slice(0,4).map(([name,count]) => <div key={name} className="flex justify-between gap-2 text-[10px]"><span className="text-slate-500 truncate">{name}</span><span className="font-bold text-sky-300">{count}</span></div>)}</div></div>; }\n\nfunction Metric({ label, value }: { label: string; value: number | string }) {
   return <div className="bg-slate-900 border border-slate-800 rounded-xl p-4"><p className="text-[11px] text-slate-500">{label}</p><p className="text-2xl font-black text-white mt-1">{value}</p></div>;
 }
