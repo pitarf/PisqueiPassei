@@ -6,7 +6,7 @@ import { Database, ExternalLink, Filter, ArrowRight } from "lucide-react";
 export const revalidate = 0;
 
 export default async function HistoricoQuestoesPage() {
-  const [exams, topics, historicalQuestions] = await Promise.all([
+  const [exams, historicalQuestions, topics] = await Promise.all([
     prisma.historicalExam.findMany({
       include: { _count: { select: { questions: true } } },
       orderBy: [{ year: "desc" }, { organization: "asc" }],
