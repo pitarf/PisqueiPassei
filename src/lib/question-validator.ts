@@ -32,6 +32,7 @@ export interface ValidatedQuestion {
   questionType: string;
   cognitiveLevel: string;
   subtopic: string;
+  verificationStatus: string;
 }
 
 export const VALID_OPTIONS = new Set(["A", "B", "C", "D", "E"]);
@@ -125,6 +126,7 @@ export function validateAiQuestion(
       questionType: normalizedQuestionType,
       cognitiveLevel: normalizedCognitiveLevel,
       subtopic: typeof q.subtopic === "string" && q.subtopic.trim() ? q.subtopic.trim() : "",
+      verificationStatus: "PENDENTE",
     },
   };
 }
