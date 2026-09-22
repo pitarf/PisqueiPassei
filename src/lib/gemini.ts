@@ -123,7 +123,8 @@ export async function generateQuestionBatch(
   subjectName: string,
   count = 5,
   difficulty = "MEDIA",
-  officialSource?: string | null
+  officialSource?: string | null,
+  historicalContext?: string | null
 ) {
   requireApiKey();
   const model = genAI.getGenerativeModel({
