@@ -84,8 +84,10 @@ export async function POST(req: NextRequest) {
       include: { topic: { select: { title: true } } },
       take: 200,
     }) : [];
-    const historicalPatterns = summarizeHistoricalPatterns(historicalRows.map((row) => ({
-      topicTitle: row.topic.title,
+    const historicalPatterns = summarizeHistoricalPatterns(historicalRows
+      .filter((row) => row.topic)
+      .map((row) => ({
+      topicTitle: row.topic!.title,
       difficulty: row.difficulty,
       questionType: row.questionType,
       cognitiveLevel: row.cognitiveLevel,
