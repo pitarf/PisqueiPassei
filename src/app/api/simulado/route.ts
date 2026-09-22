@@ -5,13 +5,12 @@ import { evaluateSimulation } from "@/lib/exam";
 import { updateStudyStreak } from "@/lib/streak";
 
 const EXAM_TOTAL = 60;
+const PORT_TOTAL = 10;
+const MATH_TOTAL = 10;
+const SPECIFIC_TOTAL = 40;
 const EXAM_SECONDS = 4 * 60 * 60;
 const DUPLICATE_WINDOW_MS = 15_000;
 const MAX_IDEMPOTENCY_KEY_LENGTH = 128;
-
-function shuffle<T>(items: T[]) { const result = [...items]; for (let i = result.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [result[i], resuestões para o simulado." }, { status: 500 });
-  }
-}
 
 export async function POST(req: NextRequest) {
   try {
