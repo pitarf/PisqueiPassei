@@ -4,12 +4,17 @@ Todas as alterações notáveis deste projeto são registradas neste documento.
 
 ## [0.1.28] - 2026-09-30
 
-### Homologação Final de CI com PostgreSQL 16 e Endurecimento Estrutural contra Duplicidade
-- **PostgreSQL 16 Service Container no CI:** Integrado container de serviço Postgres 16 em `.github/workflows/ci.yml`, eliminando qualquer dependência externa ou mock frágil no GitHub Actions.
-- **Pipeline CI de Alta Confiabilidade:** Configurada execução sequencial com migração (`prisma db push`), seed determinístico (`scripts/seed-ci-e2e.ts`), checagem estrita de tipos (`tsc --noEmit`), 39 testes unitários (`bun test src/lib`), build de produção Next.js 15 e suíte E2E Playwright Chromium em Desktop e Mobile.
-- **Proteção Estrutural de Duplicidade (`statementHash`):** Adicionado campo `statementHash` e constraint `@@unique([topicId, statementHash])` no modelo `Question` do Prisma, garantindo proteção contra race condition no nível do banco de dados (rejeição com P2002 e recuperação graciosa).
-- **Backfill e Resiliência Concorrente:** Realizado backfill em 100% das questões do banco de dados e adicionado tratamento seguro de erro P2002 no auto-refill do simulado, rotas de geração em lote (`/api/questions/batch`) e questões irmãs (`/api/questions/siblings`).
-- **Suíte de Testes Expandida (39/39 testes):** Adicionados testes para o cálculo determinístico de `statementHash` (invariância a acentos, caixas e pontuações) e verificação da taxonomia de 47 tópicos no banco de dados.
+### Homologação Final de CI com PostgreSQL 16, Migration Versionada e Endurecimento Estrutural
+- **Migration Prisma Versionada (`20260930_add_statement_hash_unique`):** Criada migration SQL idempotente com bloco PL/pgSQL que detecta duplicidades preservando deterministamente a questão mais antiga (`createdAt` / `id`), redirecionando tentativas atreladas antes de aplicar o índice único `@@unique([topicId, statementHash])`.
+- **PostgreSQL 16 Service Container no CI:** Integrado container de serviço Postgres 16 em `.github/workflows/ci.yml`, com healthcheck `pg_isready` e esteira determinística completa.
+- **Pipeline CI de Alta Confiabilidade (Fail-Fast):** Execução encadeada: migração (`prisma db push`), seed determinístico (`seed-ci-e2e.ts`), auditoria profunda de integridade com bloqueio (`db:check`), checagem estrita de tipos (`tsc --noEmit`), 46 testes unitários e de integração (`bun test src/lib`), build de produção Next.js 15 e suíte E2E Playwright Chromium em Desktop e Mobile.
+- **Centralização do Hash Determinístico:** Regra única e centralizada em `computeStatementHash` (`src/lib/question-validator.ts`) adotada em todos os scripts (`backfill-hashes.js`, `import-question-bank.js`, `seed-ci-e2e.ts`, `check-db.js`, rotas de API e testes).
+- **Testes de Concorrência e Idempotência:**
+  - `concurrency-hash.test.ts`: prova colisão `P2002` em inserções simultâneas com mesmo `(topicId, statementHash)` e absorção graciosa.
+  - `idempotency.test.ts`: prova proteção estrita em `QuestionAttempt.idempotencyKey` e `Simulation.idempotencyKey` sob 5 requisições paralelas concorrentes.
+  - `simulation.test.ts`: prova que `loadExamQuestions` carrega exatamente 60 questões (10 Português, 10 Matemática e 40 Específicas) com 60 IDs únicos e 0 déficits.
+- **Suíte E2E Playwright Ampliada (22/22 testes):** 11 cenários completos em Desktop Chrome (1440x900) e Mobile Chrome (390x844) cobrindo home, edital, questões, filtro de dificuldade, simulado 60q 4h, simulado interativo com cronômetro, histórico, Professor IA, flashcards, desempenho e configurações.
+- **Auditoria Estrita Aprovada:** 47 tópicos, 6 disciplinas, 0 órfãos, 0 duplicidades e distribuição 10/10/40 validada com `exit code 0`.
 
 ## [0.1.27] - 2026-09-30
 

@@ -46,14 +46,17 @@
 - [x] Validador estrutural e proveniência de questões inéditas geradas por IA (`question-validator.ts`)
 - [x] Auto-suprimento resiliente de estoque para o Simulado Cesgranrio (60 questões com retry controlado)
 - [x] Teste de concorrência e idempotência com transação ACID e constraint P2002 aprovado
-- [x] Suíte E2E automatizada com Playwright (Desktop e Mobile Chrome) 100% verde (18 testes)
-- [x] Auditoria profunda do banco de dados (`scripts/check-db.js`) aprovada sem inconsistências ou órfãos
+- [x] Suíte E2E automatizada com Playwright (Desktop e Mobile Chrome) 100% verde (22 testes cobrindo 11 fluxos essenciais)
+- [x] Auditoria profunda do banco de dados com script `db:check` e bloqueio com `exit code 1` se houver anomalias
 - [x] Unificação e desacoplamento do carregador de simulado em `src/lib/simulation.ts` com aviso transparente de déficit
 - [x] Integração de catálogo e padrões de provas históricas (`/questoes/historico`) e geração de questões irmãs (`/api/questions/siblings`)
+- [x] Migration Prisma versionada (`20260930_add_statement_hash_unique`) com resolução determinística de duplicidades e remapeamento relacional
 - [x] Endurecimento estrutural contra duplicidade de enunciados (`statementHash` + `@@unique([topicId, statementHash])`)
 - [x] Tratamento gracioso de concorrência P2002 no auto-refill, rotas em lote e questões irmãs
+- [x] Testes de concorrência com colisão P2002 e idempotência sob múltiplas requisições paralelas simultâneas
+- [x] Teste de integração de `loadExamQuestions` garantindo 60 questões (10/10/40), 60 IDs únicos e 0 déficits
 - [x] Script de seed determinístico e desacoplado de APIs externas para CI e testes E2E (`scripts/seed-ci-e2e.ts`)
-- [x] Pipeline de CI real no GitHub Actions com PostgreSQL 16 em container de serviço, typecheck, testes unitários, build e Playwright E2E
+- [x] Pipeline de CI real no GitHub Actions com PostgreSQL 16 em container de serviço, fail-fast, typecheck, testes unitários, build e Playwright E2E
 
 ## 🛠️ Próxima frente de hardening
 

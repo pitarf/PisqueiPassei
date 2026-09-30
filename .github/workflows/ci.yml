@@ -52,6 +52,9 @@ jobs:
       - name: Seed Deterministic CI Data
         run: npm run seed:ci
 
+      - name: Audit Database Quality & Taxonomy
+        run: npm run db:check
+
       - name: TypeScript check
         run: npm run typecheck
 
