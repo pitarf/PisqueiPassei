@@ -71,4 +71,32 @@ describe("loadExamQuestions - Validação Rigorosa da Prova Oficial Cesgranrio",
     });
     assert.ok(specCount >= 40, `Banco deve possuir no mínimo 40 questões Específicas (encontradas: ${specCount})`);
   });
+
+  it("selectStratifiedQuestions distribui as questões equilibradamente entre múltiplos tópicos", () => {
+    const { selectStratifiedQuestions } = require("./simulation");
+    const mockPool = [
+      { id: "q1", topicId: "topA" },
+      { id: "q2", topicId: "topA" },
+      { id: "q3", topicId: "topA" },
+      { id: "q4", topicId: "topA" },
+      { id: "q5", topicId: "topB" },
+      { id: "q6", topicId: "topB" },
+      { id: "q7", topicId: "topB" },
+      { id: "q8", topicId: "topC" },
+      { id: "q9", topicId: "topC" },
+      { id: "q10", topicId: "topD" },
+    ];
+
+    const selected = selectStratifiedQuestions(mockPool, 6);
+    assert.equal(selected.length, 6, "Deve selecionar exatamente 6 questões");
+
+    // Deve incluir questões de múltiplos tópicos, sem concentrar tudo em topA
+    const topicCounts = new Map<string, number>();
+    for (const q of selected) {
+      topicCounts.set(q.topicId, (topicCounts.get(q.topicId) || 0) + 1);
+    }
+
+    assert.ok(topicCounts.size >= 3, "Deve contemplar pelo menos 3 tópicos distintos na seleção estratificada de 6 itens");
+    assert.ok((topicCounts.get("topA") || 0) <= 3, "Não deve concentrar todas as questões do topA");
+  });
 });

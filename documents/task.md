@@ -22,6 +22,11 @@
 
 ## ⏳ Em evolução
 
+- [x] Auditoria de qualidade pedagógica e cobertura dos 47 tópicos oficiais (`npm run audit:quality`)
+- [x] Blindagem estrita contra alucinação e falsa atribuição de banca nas questões geradas por IA
+- [x] Calibração de regras pedagógicas nos 5 modos de questões irmãs (`siblings`)
+- [x] Algoritmo estratificado de dispersão temática no simulado Cesgranrio
+- [x] Motor adaptativo com priorização por proficiência (<50% fácil, >80% difícil)
 - [x] Registro de fontes normativas oficiais e status de validação
 - [x] Estruturação oficial da Ênfase 18 no RAG
 - [x] Mapa pedagógico alinhado aos 47 tópicos do programa oficial

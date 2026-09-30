@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
         const statement = q.statement.trim();
         const key = statement.toLocaleLowerCase().replace(/\s+/g, " ");
         if (questionKeys.has(key)) continue;
-        await tx.question.create({ data: { topicId: topic.id, statement, optionA: q.optionA.trim(), optionB: q.optionB.trim(), optionC: q.optionC.trim(), optionD: q.optionD.trim(), optionE: q.optionE.trim(), correctOption: q.correctOption, explanation: q.explanation.trim(), difficulty: "MEDIA", origin: "AI_GENERATED", banca: "IA (perfil Cesgranrio)", sourceRef: "Questão inédita gerada por IA com RAG local" } });
+        await tx.question.create({ data: { topicId: topic.id, statement, optionA: q.optionA.trim(), optionB: q.optionB.trim(), optionC: q.optionC.trim(), optionD: q.optionD.trim(), optionE: q.optionE.trim(), correctOption: q.correctOption, explanation: q.explanation.trim(), difficulty: "MEDIA", origin: "INEDITA_IA", banca: "IA (perfil Cesgranrio)", sourceRef: "Questão inédita em estilo compatível com o perfil da banca. Gerada por IA com RAG local." } });
         questionKeys.add(key);
       }
       return newLesson;

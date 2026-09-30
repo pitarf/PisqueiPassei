@@ -2,7 +2,26 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
-## [0.1.28] - 2026-09-30
+## [0.1.29] - 2026-09-30
+
+### Auditoria e Evolução Pedagógica (Ênfase 18 • TRANSPETRO 2026.3)
+- **Auditoria de Qualidade e Cobertura dos 47 Tópicos:**
+  - Criados os scripts `scripts/audit-question-quality.js` e `scripts/question-bank-quality-report.js` vinculados aos comandos `npm run audit:quality` e `npm run report:quality`.
+  - Mapeamento detalhado dos 47 tópicos da Ênfase 18 por faixas de cobertura: 24 tópicos em nível CRÍTICO (0 questões), 18 em MUITO BAIXA (1 a 4) e 5 em BAIXA (5 a 9). Identificada concentração inicial em Noções de Administração e viés de gabarito C no seed sintético.
+- **Blindagem Pedagógica e Proveniência de IA (`src/lib/gemini.ts` e `src/lib/question-validator.ts`):**
+  - Forçado categoricamente que qualquer questão gerada por IA seja sanitizada com `origin: "INEDITA_IA"`, `banca: "IA (perfil Cesgranrio)"` e aviso explícito no `sourceRef`.
+  - Implementado detector de alegações fraudulentas no validador (`FORBIDDEN_OFFICIAL_PATTERNS`) impedindo que enunciados ou explicações afirmem ter sido aplicadas em provas reais ou gabaritos oficiais Cesgranrio.
+  - Implementado detector de anomalia métrica de tamanho (rejeição de questões onde a alternativa correta é um outlier com o triplo do tamanho dos distratores).
+  - Rejeição de alternativas vazias ou duplicadas por normalização textual.
+- **Motor Pedagógico de Questões Irmãs (`generateSiblingQuestionBatch`):**
+  - Implementadas regras pedagógicas estritas para os 5 modos: `FACIL` (conceito direto, alternativas contrastadas), `EQUIVALENTE` (mesma densidade e complexidade), `DIFICIL` (análise crítica, exceções e cenários combinados), `NOVO_CENARIO` (transposição para operações Transpetro/Petrobras) e `DISTRATORES` (incorporação de 4 armadilhas clássicas da Cesgranrio com explicação das razões de cada distrator).
+- **Motor Adaptativo de Estudo (`src/lib/study-priority.ts`):**
+  - Prioridade pedagógica reequilibrada: tópicos não iniciados ou proficiência <50% recebem foco de consolidação de base com nível `FACIL`; domínio 50%-79% recebe treino intermediário `MEDIA`; domínio >=80% recebe `DIFICIL` e casos práticos; revisões vencidas mantêm prioridade máxima (+60 pontos).
+- **Balanceamento do Simulado Cesgranrio (`src/lib/simulation.ts`):**
+  - Implementado algoritmo estratificado (`selectStratifiedQuestions`) com round-robin por tópico, garantindo dispersão temática equilibrada e preservando os 60 itens (10 Port, 10 Mat, 40 Espec), 4 horas e critérios de corte.
+- **Testes Automatizados:** 55 testes unitários/integração Bun passando 100%, 22/22 testes E2E Playwright (Desktop e Mobile) aprovados e typecheck sem erros.
+
+
 
 ### Homologação Final de CI com PostgreSQL 16, Migration Versionada e Endurecimento Estrutural
 - **Migration Prisma Versionada (`20260930_add_statement_hash_unique`):** Criada migration SQL idempotente com bloco PL/pgSQL que detecta duplicidades preservando deterministamente a questão mais antiga (`createdAt` / `id`), redirecionando tentativas atreladas antes de aplicar o índice único `@@unique([topicId, statementHash])`.

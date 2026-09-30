@@ -172,7 +172,8 @@ async function PriorityStudyCard() {
       <div className="min-w-0">
         <span className="text-[11px] font-bold uppercase tracking-wider text-sky-400">Próximo treino recomendado</span>
         <h2 className="text-base font-bold text-white mt-1 truncate">{topic.code ? topic.code + " · " : ""}{topic.title}</h2>
-        <p className="text-xs text-slate-400 mt-1">{item.masteryScore > 0 ? `Domínio atual: ${Math.round(item.masteryScore)}%` : "Ainda não iniciado"} · {item.reason} · dificuldade sugerida: {item.suggestedDifficulty.toLowerCase()}.</p>
+        <p className="text-xs text-slate-400 mt-1">{item.masteryScore > 0 ? `Domínio atual: ${Math.round(item.masteryScore)}%` : "Ainda não iniciado"} · {item.reason} · nível: {item.suggestedDifficulty.toLowerCase()}.</p>
+        {item.actionGuidance && <p className="text-[11px] text-emerald-400/90 mt-1 font-medium">{item.actionGuidance}</p>}
       </div>
       <Link href={href} className="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-bold text-xs">Treinar este tópico</Link>
     </div>

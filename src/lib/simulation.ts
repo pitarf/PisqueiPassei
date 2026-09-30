@@ -20,6 +20,44 @@ export function shuffle<T>(items: T[]): T[] {
   return result;
 }
 
+export function selectStratifiedQuestions<T extends { topicId?: string | null }>(pool: T[], targetCount: number): T[] {
+  if (pool.length <= targetCount) {
+    return shuffle(pool);
+  }
+
+  // Agrupa questões por topicId para garantir distribuição equilibrada
+  const groups = new Map<string, T[]>();
+  for (const item of pool) {
+    const key = item.topicId || "sem_topico";
+    const list = groups.get(key) || [];
+    list.push(item);
+    groups.set(key, list);
+  }
+
+  // Embaralha as filas de cada tópico
+  const topicQueues: T[][] = [];
+  for (const list of groups.values()) {
+    topicQueues.push(shuffle(list));
+  }
+
+  // Embaralha a ordem dos tópicos para despolarizar a seleção inicial
+  const shuffledQueues = shuffle(topicQueues);
+  const selected: T[] = [];
+
+  // Puxa questões em round-robin entre os tópicos até completar targetCount
+  while (selected.length < targetCount && shuffledQueues.some((q) => q.length > 0)) {
+    for (const queue of shuffledQueues) {
+      if (selected.length >= targetCount) break;
+      const question = queue.pop();
+      if (question) {
+        selected.push(question);
+      }
+    }
+  }
+
+  return selected;
+}
+
 export async function refillStock(
   targetTopics: { id: string; title: string; officialSource: string | null; subject: { name: string } }[],
   deficit: number,
@@ -129,9 +167,10 @@ export async function loadExamQuestions() {
     }
   }
 
-  const portQuestions = shuffle(portPool).slice(0, PORT_TOTAL);
-  const mathQuestions = shuffle(mathPool).slice(0, MATH_TOTAL);
-  const specificQuestions = shuffle(specificPool).slice(0, SPECIFIC_TOTAL);
+  // Seleção balanceada estratificada por tópico (evita clusterizar questões em um só tópico)
+  const portQuestions = selectStratifiedQuestions(portPool, PORT_TOTAL);
+  const mathQuestions = selectStratifiedQuestions(mathPool, MATH_TOTAL);
+  const specificQuestions = selectStratifiedQuestions(specificPool, SPECIFIC_TOTAL);
 
   return {
     questions: [...portQuestions, ...mathQuestions, ...specificQuestions],

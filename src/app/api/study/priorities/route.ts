@@ -45,6 +45,9 @@ export async function GET() {
         priority: item.priority,
         reason: item.reason,
         suggestedDifficulty: item.suggestedDifficulty,
+        pedagogicalFocus: item.pedagogicalFocus,
+        suggestedQuestionType: item.suggestedQuestionType,
+        actionGuidance: item.actionGuidance,
       };
     });
 

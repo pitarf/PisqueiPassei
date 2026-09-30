@@ -21,6 +21,8 @@
     "report:questions": "node scripts/question-bank-report.js",
     "audit:historical": "node scripts/audit-historical-bank.js",
     "db:check": "node -r ts-node/register scripts/check-db.js",
+    "audit:quality": "node scripts/audit-question-quality.js",
+    "report:quality": "node scripts/question-bank-quality-report.js",
     "test:priority": "bun test src/lib/study-priority.test.ts",
     "test:validator": "bun test src/lib/question-validator.test.ts"
   },

@@ -7,16 +7,16 @@ const genAI = new GoogleGenerativeAI(apiKey);
 export const SYSTEM_INSTRUCTION_TRANSPETRO = `
 Você é o Professor IA especialista no Processo Seletivo da TRANSPETRO 2026.3, Ênfase 18 - Suprimento de Bens e Serviços, organizado pela Fundação Cesgranrio. A prova será em 06/12/2026.
 
-REGRAS OBRIGATÓRIAS DE CONTEÚDO:
-1. O edital e as fontes oficiais locais recuperadas pelo RAG são a base prioritária.
-2. O edital define o que deve ser estudado. Fontes normativas sustentam detalhes jurídicos.
+REGRAS OBRIGATÓRIAS DE CONTEÚDO E RIGOR CONCEITUAL:
+1. O edital e as fontes oficiais locais recuperadas pelo RAG são a base absoluta e prioritária.
+2. O edital define o que deve ser estudado. Fontes normativas sustentam detalhes jurídicos e técnicos.
 3. Diferencie sempre [CONTEÚDO PREVISTO NO EDITAL] de [INFORMAÇÃO COMPLEMENTAR].
-4. Em legislação, nunca invente artigos, prazos, modalidades, requisitos ou redações.
-5. Fonte marcada como status=pointer é apenas referência de localização/escopo, nunca transcrição integral.
-6. Nunca apresente questão gerada por IA como questão real ou previamente aplicada pela Cesgranrio.
-7. Toda questão inédita deve ser tratada como "Questão gerada por IA, baseada no conteúdo do edital.".
-8. Não use "banca: Cesgranrio" para uma questão inédita. O perfil pode ser Cesgranrio, mas a origem é IA.
-9. Se o RAG não sustentar um detalhe jurídico, informe que o detalhe precisa ser conferido na fonte oficial.
+4. Rigor normativo estrito: em matérias de legislação do edital (como Lei 13.303/2016 - Estatuto das Estatais, Lei 14.133/2021 - Nova Lei de Licitações, Decreto 2.745/1998 - Regulamento Licitatório Simplificado da Petrobras, LGPD - Lei 13.709/2018, LC 123/2006, Código de Ética e Conduta da Petrobras), cite sempre os artigos e dispositivos legais pertinentes e fidedignos.
+5. Proibição absoluta de alucinação: NUNCA invente leis fictícias, artigos inexistentes, prazos arbitrários, percentuais inventados ou redações normativas apócrifas. Se um detalhe legal ou procedimental não constar no contexto recuperado ou na legislação pátria em vigor, aponte a limitação com honestidade e exija conferência na fonte oficial.
+6. Fonte marcada como status=pointer é apenas referência de localização/escopo, nunca transcrição integral.
+7. Em nenhuma hipótese questões geradas por IA recebam rótulo que induza a achar que são questões oficiais da banca ou da Transpetro. Forçar origin='INEDITA_IA', banca='IA (perfil Cesgranrio)' com a nota explícita 'Questão inédita em estilo compatível com o perfil da banca'.
+8. Não use "banca: Cesgranrio" para uma questão inédita. O perfil estilístico é Cesgranrio, mas a autoria é de inteligência artificial.
+9. Equilíbrio estrutural das alternativas: todas as opções (A a E) devem ter extensão equilibrada e grau comparável de detalhe. NUNCA torne a alternativa correta um outlier excessivamente longo ou explicativo que entregue a resposta pelo tamanho.
 10. Não transforme informação complementar em conteúdo oficialmente previsto.
 
 DIRETRIZES DE COMUNICAÇÃO HUMANA (HUMANIZER):
@@ -80,7 +80,7 @@ Tópico: "${topicTitle}"
 ${officialSource ? `Base oficial: "${officialSource}"` : ""}
 ${rag}
 
-Priorize o conteúdo previsto no edital e deixe qualquer conteúdo complementar claramente identificado. Em legislação, não extrapole as fontes recuperadas.
+Priorize o conteúdo previsto no edital e deixe qualquer conteúdo complementar claramente identificado. Em legislação, não extrapole as fontes recuperadas e cite dispositivos reais.
 
 Retorne JSON com title e sections contendo:
 step1_whatYouNeedToLearn,
@@ -93,7 +93,7 @@ step7_summary,
 step8_flashcards (front/back),
 step9_practiceQuestions (statement, optionA-E, correctOption, explanation).
 
-As practiceQuestions são inéditas e geradas por IA. Não atribua a elas aplicação pela Cesgranrio.`;
+As practiceQuestions são inéditas e geradas por IA (origin: "INEDITA_IA", banca: "IA (perfil Cesgranrio)"). Não atribua a elas aplicação prévia pela Cesgranrio. Mantenha as alternativas equilibradas em tamanho.`;
   const result = await model.generateContent(prompt);
   return safeJsonParse<any>(result.response.text(), `aula do tópico "${topicTitle}"`);
 }
@@ -140,11 +140,15 @@ Dificuldade: "${difficulty}".
 ${rag}
 ${historicalContext ? `Padrões históricos estruturados, use apenas como calibração: ${historicalContext}` : ""}
 
-Se houver dados históricos estruturados no contexto, use-os apenas para calibrar formato, dificuldade, tipo cognitivo e subtema. Não reproduza questões históricas nem atribua a elas conteúdo que não esteja sustentado pelas fontes.\nTeste somente conteúdo sustentado pelo edital e pelas fontes recuperadas. Em legislação, não crie artigo ou regra ausente nas fontes.
-As questões são INÉDITAS e GERADAS POR IA. Nunca diga que foram aplicadas pela Cesgranrio.
+DIRETRIZES DE RIGOR CONCEITUAL E LEGISLAÇÃO:
+- Rigor normativo estrito: para tópicos com legislação (Lei 13.303/2016, Lei 14.133/2021, Decreto 2.745/1998, LGPD - Lei 13.709/2018, LC 123/2006, etc.), cite sempre artigos pertinentes na justificativa da resposta.
+- Proibição absoluta de alucinações: NUNCA crie artigos fictícios, números inventados ou prazos arbitrários.
+- Equilíbrio formal de alternativas: todas as alternativas (A a E) devem ter extensão similar; JAMAIS elabore a alternativa correta com extensão ou detalhamento desproporcional (não crie outliers que entreguem o gabarito).
+- Distratores pedagógicos e plausíveis: opções incorretas devem refletir equívocos conceituais típicos da banca Cesgranrio.
+- Origem e atribuição: as questões são estritamente INÉDITAS e geradas por IA. É proibido atribuir aplicação real pela Cesgranrio.
 
 Retorne somente JSON no formato:
-{"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"${difficulty}","origin":"AI_GENERATED","questionType":"APLICACAO","cognitiveLevel":"APLICAR","subtopic":"...","sourceRef":"Questão inédita gerada por IA, baseada no conteúdo e perfil histórico recuperado"}]}`;
+{"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"${difficulty}","origin":"INEDITA_IA","questionType":"APLICACAO","cognitiveLevel":"APLICAR","subtopic":"...","sourceRef":"Questão inédita em estilo compatível com o perfil da banca. Baseada no edital e no perfil de cobrança histórico."}]}`;
   const result = await model.generateContent(prompt);
   return safeJsonParse<{ questions?: any[] }>(result.response.text(), `lote de questões de "${topicTitle}"`);
 }
@@ -218,38 +222,60 @@ export async function generateSiblingQuestionBatch(
     mode: v.mode,
   }));
 
-  const prompt = `Crie questões IRMÃS ORIGINAIS a partir do padrão histórico abaixo.
-A questão de referência serve somente para identificar o conteúdo, a estrutura de cobrança e a complexidade. NÃO copie o enunciado, alternativas ou redação.
+  const prompt = `Crie questões IRMÃS ORIGINAIS a partir do padrão de referência abaixo.
+A questão de referência serve exclusivamente para identificar o conteúdo programático, a estrutura de cobrança e a taxonomia pedagógica. NÃO copie o enunciado, nem as opções e nem a redação.
 
 Disciplina: "${pattern.subjectName}"
 Tópico oficial: "${pattern.topicTitle}"
 Dificuldade da referência: "${pattern.difficulty}"
 Tipo: "${pattern.questionType || "não informado"}"
 Nível cognitivo: "${pattern.cognitiveLevel || "não informado"}"
-Referência: "${pattern.sourceRef || "não informada"}"
+Referência original: "${pattern.sourceRef || "não informada"}"
 Questão de referência:
 "${pattern.statement}"
 
 Contexto oficial recuperado:
 ${rag}
 
-Gere exatamente estas variações:
+Gere exatamente estas variações pedagógicas:
 ${JSON.stringify(requested)}
 
-Regras:
-- Todas devem ser inéditas e originais.
-- Não atribua nenhuma delas à Cesgranrio ou a qualquer prova real.
-- Preserve o mesmo núcleo de conhecimento e tópico oficial.
-- Na versão FACIL, reduza a carga cognitiva sem trocar o conteúdo.
-- Na EQUIVALENTE, mantenha complexidade semelhante.
-- Na DIFICIL, aumente a complexidade por cenário, dados, comparação ou combinação de conceitos, sem criar conteúdo fora do edital.
-- NOVO_CENARIO deve cobrar o mesmo conhecimento em situação diferente.
-- DISTRATORES devem ser plausíveis e tecnicamente defensáveis, sem ambiguidade artificial.
-- Em legislação, use somente regras sustentadas pelo contexto recuperado.
-- Explique por que a alternativa correta está correta e por que os distratores não estão.
+REGRAS PEDAGÓGICAS ESPECÍFICAS PARA OS 5 TIPOS DE VARIANTES:
+1. MODO "FACIL":
+   - Foco na identificação direta do conceito, regra legal expressa ou definição central do tópico.
+   - Enunciado claro e direto, sem premissas desnecessárias.
+   - Alternativas com contrastes conceituais nítidos, evitando ambiguidades sutis.
+   - Mantém rigor normativo com citação de artigo real se envolver legislação.
 
-Retorne somente:
-{"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"...","origin":"INEDITA_IA","sourceRef":"Questão irmã original baseada em padrão histórico; referência: ..."}]}
+2. MODO "EQUIVALENTE":
+   - Mantém o mesmo nível de complexidade, densidade de texto e grau de exigência cognitiva da questão de referência.
+   - Aplica os mesmos dispositivos normativos ou fórmulas a uma situação similar, variando termos e dados técnicos.
+
+3. MODO "DIFICIL":
+   - Eleva a exigência cognitiva para análise crítica e aplicação de regras em cenários complexos.
+   - Explora hipóteses de exceção expressas na lei (ex.: casos estritos de dispensa vs inexigibilidade da Lei 13.303/2016 vs Lei 14.133/2021) ou cálculos com múltiplas variáveis operacionais.
+   - Não invente regras: a dificuldade vem da profundidade analítica fundamentada no edital.
+
+4. MODO "NOVO_CENARIO":
+   - Cobra rigorosamente o mesmo dispositivo legal ou conceito técnico de suprimentos, mas transportado para uma situação operacional inédita e verossímil das atividades da Petrobras/Transpetro (ex.: movimentação em terminal aquaviário, suprimento de sobressalentes navais, contratação de serviços de manutenção industrial de dutos, estocagem em almoxarifados portuários).
+
+5. MODO "DISTRATORES":
+   - Questão desenhada com armadilhas conceituais típicas e sofisticadas da banca Cesgranrio nos distratores:
+     a) Confusão intencional entre institutos conexos (ex.: dispensa x inexigibilidade; estoque mínimo x estoque de segurança; eficácia x eficiência);
+     b) Extrapolação de regra legal (ex.: transformar faculdade da Lei 13.303 em dever vinculativo; misturar regras da Lei das Estatais com a Lei Geral de Licitações);
+     c) Troca de prazos/quantitativos reais previstos na legislação do edital;
+     d) Generalizações indevidas ("sempre", "em qualquer hipótese").
+   - A explicação (explanation) DEVE justificar detalhadamente o erro específico de CADA distrator e expor a armadilha conceitual empregada.
+
+REGRAS UNIVERSAIS DE INTEGRIDADE PEDAGÓGICA:
+- Todas as questões devem ser 100% inéditas e originais.
+- Rigor de atribuição: "origin" deve ser "INEDITA_IA", "banca" deve ser "IA (perfil Cesgranrio)" e "sourceRef" deve conter a nota explícita "Questão inédita em estilo compatível com o perfil da banca".
+- NUNCA atribua aplicação a concurso oficial ou prova real.
+- Equilíbrio de tamanho: todas as alternativas devem ter comprimento similar. A correta NUNCA deve ser mais longa ou detalhada que os distratores.
+- Rigor legal absoluto: cite artigos reais das leis do edital e jamais invente artigos, regras ou prazos.
+
+Retorne somente JSON no formato:
+{"questions":[{"statement":"...","optionA":"...","optionB":"...","optionC":"...","optionD":"...","optionE":"...","correctOption":"A","explanation":"...","difficulty":"...","origin":"INEDITA_IA","questionType":"...","cognitiveLevel":"...","subtopic":"...","sourceRef":"Questão inédita em estilo compatível com o perfil da banca. Variação pedagógica baseada em padrão histórico."}]}
 `;
 
   const result = await model.generateContent(prompt);

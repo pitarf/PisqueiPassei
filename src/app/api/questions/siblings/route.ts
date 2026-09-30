@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
             difficulty: q.difficulty,
             origin: "INEDITA_IA",
             banca: q.banca,
-            sourceRef: q.sourceRef || `Questão inédita derivada da referência ${reference.id}`,
+            sourceRef: q.sourceRef || `Questão inédita em estilo compatível com o perfil da banca. Derivada da referência ${reference.id}`,
             questionType: q.questionType,
             cognitiveLevel: q.cognitiveLevel,
             subtopic: q.subtopic || reference.subtopic || null,
