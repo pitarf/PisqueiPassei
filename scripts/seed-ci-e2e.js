@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import { normalizeText, computeStatementHash } from "../src/lib/question-validator";
+const { PrismaClient } = require("@prisma/client");
+const { computeStatementHash } = require("../src/lib/question-validator");
 
 const prisma = new PrismaClient();
 
@@ -130,7 +130,7 @@ async function main() {
     },
   ];
 
-  const topicMap = new Map<string, string>(); // codeKey -> topicId
+  const topicMap = new Map(); // codeKey -> topicId
 
   for (const s of subjectsData) {
     let sub = await prisma.subject.findFirst({ where: { name: s.name } });
