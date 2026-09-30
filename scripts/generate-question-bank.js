@@ -47,44 +47,61 @@ function computeStatementHash(statement) {
 // Carregamento de contexto local (RAG)
 function getRagContext(query) {
   try {
-    const ragPath = path.join(__dirname, "..", "src", "lib", "rag.ts");
-    // Leitura das pastas de documentos para injetar contexto real
     const docsDir = path.join(__dirname, "..", "documents");
-    const legDir = path.join(docsDir, "legislacao");
-    const estDir = path.join(docsDir, "estudo");
+    if (!fs.existsSync(docsDir)) return "";
 
-    let context = "";
-    const lower = query.toLowerCase();
+    function collectMarkdownFiles(dir) {
+      if (!fs.existsSync(dir)) return [];
+      return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) return collectMarkdownFiles(fullPath);
+        return entry.isFile() && entry.name.endsWith(".md") ? [fullPath] : [];
+      });
+    }
 
-    // Busca contextual simplificada nas pastas de documentos locais
-    const dirs = [legDir, estDir];
-    for (const d of dirs) {
-      if (!fs.existsSync(d)) continue;
-      const files = fs.readdirSync(d);
-      for (const f of files) {
-        if (!f.endsWith(".md")) continue;
-        const fLower = f.toLowerCase();
-        // Casar palavras-chave
-        if (
-          (lower.includes("13.303") && fLower.includes("13303")) ||
-          (lower.includes("14.133") && fLower.includes("14133")) ||
-          (lower.includes("2.745") && fLower.includes("2745")) ||
-          (lower.includes("lgpd") && fLower.includes("lgpd")) ||
-          (lower.includes("123") && fLower.includes("123")) ||
-          (lower.includes("transpetro") && fLower.includes("transpetro")) ||
-          (lower.includes("logística") && (fLower.includes("suprimento") || fLower.includes("logistica"))) ||
-          (lower.includes("contabilidade") && fLower.includes("contabilidade")) ||
-          (lower.includes("informática") && fLower.includes("informatica")) ||
-          (lower.includes("portuguesa") && fLower.includes("portugues")) ||
-          (lower.includes("matemática") && fLower.includes("matematica"))
-        ) {
-          const content = fs.readFileSync(path.join(d, f), "utf8");
-          context += `\n--- FONTE: ${f} ---\n${content.slice(0, 3000)}\n`;
-          if (context.length > 8000) break;
+    const files = collectMarkdownFiles(docsDir);
+    const norm = (t) => String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const normQuery = norm(query);
+    const terms = normQuery.split(/[^a-z0-9]+/).filter((t) => t.length >= 4);
+
+    const scoredDocs = [];
+    for (const file of files) {
+      const content = fs.readFileSync(file, "utf8");
+      const normContent = norm(content);
+      const relative = path.relative(path.join(__dirname, ".."), file).replace(/\\/g, "/");
+
+      let score = 0;
+      // Term matches
+      for (const term of terms) {
+        const count = normContent.split(term).length - 1;
+        if (count > 0) {
+          score += Math.min(count, 8) * 5;
         }
       }
-      if (context.length > 8000) break;
+
+      // Prioridade para documentos oficiais do edital e legislação
+      if (relative.includes("documents/legislacao")) score += 20;
+      if (relative.includes("edital-retificacao")) score += 15;
+      if (relative.includes("edital-oficial")) score += 10;
+
+      if (score > 0) {
+        scoredDocs.push({ file, relative, content, score });
+      }
     }
+
+    scoredDocs.sort((a, b) => b.score - a.score);
+    const topDocs = scoredDocs.slice(0, 4);
+
+    if (topDocs.length === 0) return "";
+
+    let context = "";
+    for (const doc of topDocs) {
+      const excerpt = doc.content.length > 3500 ? doc.content.slice(0, 3500) + "\n[...trecho focado...]" : doc.content;
+      const block = `### FONTE LOCAL: ${doc.relative}\n### RELEVÂNCIA RAG: ${doc.score} pts\n${excerpt}\n\n---\n\n`;
+      if (context.length + block.length > 12000) break;
+      context += block;
+    }
+
     return context;
   } catch {
     return "";

@@ -213,6 +213,22 @@ async function generateQualityReport() {
         optionDisparityCount: optionDisparityCount,
       },
     },
+    semanticAudit: {
+      suspectPairsCount: 0,
+      suspectPairs: [],
+    },
+    specializedDisciplines: {
+      math: { totalQuestions: 0, withNumbersInOptions: 0, deterministicItems: 0 },
+      legislation: { totalQuestions: 0, detectedLaws: [], invalidArticlesCount: 0 },
+      it: { totalQuestions: 0, detectedFunctions: [], invalidFunctionsCount: 0 },
+    },
+    qaRiskSummary: {
+      lowRiskCount: 0,
+      mediumRiskCount: 0,
+      highRiskCount: 0,
+      highRiskItems: [],
+    },
+    subjectAnswerDistribution: {},
     historicalBank: {
       exams: historicalExams.map((e) => ({
         id: e.id,
@@ -234,6 +250,122 @@ async function generateQualityReport() {
       })),
     },
   };
+
+  // Motor de auditoria profunda
+  const {
+    evaluateSemanticSimilarity,
+    validateExcelFunctions,
+    validateLegislationCitations,
+    auditMathQuestion,
+    computeQaRiskScore,
+  } = require("./pedagogical-audit-engine");
+
+  // Auditoria de Duplicidade Semântica
+  const questionsByTopic = new Map();
+  for (const q of questions) {
+    if (!questionsByTopic.has(q.topicId)) questionsByTopic.set(q.topicId, []);
+    questionsByTopic.get(q.topicId).push(q);
+  }
+
+  for (const [topicId, topicQuestions] of questionsByTopic.entries()) {
+    const topicTitle = topicQuestions[0]?.topic?.title || topicId;
+    for (let i = 0; i < topicQuestions.length; i++) {
+      for (let j = i + 1; j < topicQuestions.length; j++) {
+        const qA = topicQuestions[i];
+        const qB = topicQuestions[j];
+        const sim = evaluateSemanticSimilarity(qA.statement, qB.statement);
+        if (sim.isSuspectDuplicate) {
+          reportData.semanticAudit.suspectPairs.push({
+            topicTitle,
+            topicId,
+            questionIdA: qA.id,
+            questionIdB: qB.id,
+            statementA: qA.statement.slice(0, 120),
+            statementB: qB.statement.slice(0, 120),
+            tokenDice: sim.tokenDice,
+            combinedScore: sim.combinedScore,
+          });
+        }
+      }
+    }
+  }
+  reportData.semanticAudit.suspectPairsCount = reportData.semanticAudit.suspectPairs.length;
+
+  // Auditoria de Matemática
+  const mathQuestions = questions.filter((q) => q.topic?.subject?.name?.toLowerCase().includes("matemática"));
+  reportData.specializedDisciplines.math.totalQuestions = mathQuestions.length;
+  for (const q of mathQuestions) {
+    const ma = auditMathQuestion(q.statement, {
+      optionA: q.optionA,
+      optionB: q.optionB,
+      optionC: q.optionC,
+      optionD: q.optionD,
+      optionE: q.optionE,
+    });
+    if (ma.hasNumbersInOptions) reportData.specializedDisciplines.math.withNumbersInOptions++;
+    if (ma.isDeterministicCandidate) reportData.specializedDisciplines.math.deterministicItems++;
+  }
+
+  // Auditoria de Legislação
+  const legQuestions = questions.filter((q) => q.topic?.subject?.name?.toLowerCase().includes("legislação"));
+  reportData.specializedDisciplines.legislation.totalQuestions = legQuestions.length;
+  const detectedLaws = new Set();
+  for (const q of legQuestions) {
+    const la = validateLegislationCitations(`${q.statement} ${q.explanation}`);
+    la.detectedLaws.forEach((l) => detectedLaws.add(l));
+    if (la.hasInvalidArticles) reportData.specializedDisciplines.legislation.invalidArticlesCount++;
+  }
+  reportData.specializedDisciplines.legislation.detectedLaws = Array.from(detectedLaws);
+
+  // Auditoria de Informática
+  const itQuestions = questions.filter((q) => {
+    const sName = (q.topic?.subject?.name || "").toLowerCase();
+    const tTitle = (q.topic?.title || "").toLowerCase();
+    return sName.includes("informática") || tTitle.includes("planilhas") || tTitle.includes("texto");
+  });
+  reportData.specializedDisciplines.it.totalQuestions = itQuestions.length;
+  const itFunctions = new Set();
+  for (const q of itQuestions) {
+    const fa = validateExcelFunctions(`${q.statement} ${q.optionA} ${q.optionB} ${q.optionC} ${q.optionD} ${q.optionE} ${q.explanation}`);
+    fa.detectedFunctions.forEach((f) => itFunctions.add(f));
+    if (!fa.isValid) reportData.specializedDisciplines.it.invalidFunctionsCount += fa.invalidFunctions.length;
+  }
+  reportData.specializedDisciplines.it.detectedFunctions = Array.from(itFunctions);
+
+  // Risco de QA e Gabarito por Disciplina
+  for (const q of questions) {
+    const subName = q.topic?.subject?.name || "Geral";
+    if (!reportData.subjectAnswerDistribution[subName]) {
+      reportData.subjectAnswerDistribution[subName] = { A: 0, B: 0, C: 0, D: 0, E: 0, total: 0 };
+    }
+    reportData.subjectAnswerDistribution[subName][q.correctOption]++;
+    reportData.subjectAnswerDistribution[subName].total++;
+
+    const risk = computeQaRiskScore({
+      statement: q.statement,
+      optionA: q.optionA,
+      optionB: q.optionB,
+      optionC: q.optionC,
+      optionD: q.optionD,
+      optionE: q.optionE,
+      correctOption: q.correctOption,
+      explanation: q.explanation,
+    });
+
+    if (risk.riskScore <= 20) {
+      reportData.qaRiskSummary.lowRiskCount++;
+    } else if (risk.riskScore <= 50) {
+      reportData.qaRiskSummary.mediumRiskCount++;
+    } else {
+      reportData.qaRiskSummary.highRiskCount++;
+      reportData.qaRiskSummary.highRiskItems.push({
+        id: q.id,
+        topic: q.topic?.title,
+        score: risk.riskScore,
+        flags: risk.anomalyFlags,
+      });
+    }
+  }
 
   const outputJsonPath = path.join(__dirname, "../question-bank-quality-report.json");
   fs.writeFileSync(outputJsonPath, JSON.stringify(reportData, null, 2), "utf-8");

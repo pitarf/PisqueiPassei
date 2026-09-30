@@ -22,6 +22,14 @@
 
 ## ⏳ Em evolução
 
+- [x] Auditoria de qualidade real e semântica das 470 questões cadastradas (100% dos 47 tópicos auditados)
+- [x] Motor determinístico de detecção de duplicidades semânticas (Sørensen-Dice / Jaccard / bigramas sem stopwords)
+- [x] Verificação estrita de legislação e artigos oficiais (`documents/legislacao/`, Lei 13.303, 14.133, 2.745, LC 123, LGPD e CF/88)
+- [x] Catálogo e validação de funções legítimas do Microsoft Excel em Português Brasil (PT-BR) e recursos do Office 365
+- [x] Auditoria de consistência matemática e cálculo determinístico para 100% dos itens da disciplina
+- [x] Avaliação de distratores (termos categóricos/denunciadores, caricatos e sinônimos internos) com QA Risk Score
+- [x] Unificação do motor RAG no gerador de questões (`scripts/generate-question-bank.js`) com o RAG oficial (`src/lib/rag.ts`)
+- [x] Suíte unitária `pedagogical-audit.test.ts` (10/10 testes passando, totalizando 65/65 testes Bun)
 - [x] Abastecimento integral do banco pedagógico com 470 questões inéditas (100% dos 47 tópicos com >= 10 questões)
 - [x] Script automatizado de suprimento incremental por disciplina e tópico (`npm run generate:questions`)
 - [x] Auditoria de qualidade pedagógica e cobertura dos 47 tópicos oficiais (`npm run audit:quality`)

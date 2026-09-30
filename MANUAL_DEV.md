@@ -49,14 +49,19 @@ npm run dev
 - Questões, flashcards, simulados e feedback de aula atualizam a sequência quando a atividade é efetivamente registrada.
 - As rotas contam com travas de concorrência via chave de idempotência persistente (`idempotencyKey` com constraint `@unique`) e transações `$transaction`.
 
-## 🧪 Testes e Qualidade
+## 🧪 Testes, Auditoria e Qualidade
 
-- **Testes Unitários:** `npm test` (Bun test com 28 asserts de limites oficiais, taxonomia, SRS, streak e RAG).
-- **Auditoria de Banco:** `node scripts/check-db.js` (inspeciona taxonomia 47, relações órfãs, duplicatas e distribuição).
-- **Teste de Concorrência:** `node scripts/test-concurrency.js` (valida deduplicação sob concorrência e integridade de XP).
-- **Testes E2E (Playwright):** `npx playwright test` (executa fluxos completos em Desktop Chrome 1440x900 e Mobile Chrome 390x844).
+- **Testes Unitários & Integração:** `npm test` (`bun test src/lib` executando 65 testes cobrindo limites oficiais, taxonomia, SRS, streak, RAG, idempotência P2002, simulado estratificado e motor de auditoria semântica).
+- **Auditoria Estrutural de Banco:** `npm run db:check` (`node -r ts-node/register scripts/check-db.js`, fail-fast se houver qualquer anomalia de hash, órfãos ou taxonomia divergente).
+- **Auditoria Pedagógica e Semântica:** `npm run audit:quality` (`node scripts/audit-question-quality.js`, avalia cobertura, viés de gabarito A-E, 149 pares de similaridade semântica, conformidade normativa em legislação, funções Excel PT-BR e QA Risk Score).
+- **Relatório Executivo de Qualidade:** `npm run report:quality` (`node scripts/question-bank-quality-report.js`, exporta `question-bank-quality-report.json`).
+- **Suprimento Incremental por IA:** `npm run generate:questions -- --subject="Nome" --target=10 --batch=5` (`scripts/generate-question-bank.js`, preenchimento de estoque com RAG ponderado multi-termo).
+- **Testes E2E (Playwright):** `npm run test:e2e` (`playwright test`, 22 testes automatizados em Desktop Chrome 1440x900 e Mobile Chrome 390x844).
 
-## 🧪 CI
+## 🧪 CI (GitHub Actions)
+
+- Pipeline automatizado em `.github/workflows/ci.yml` com container de serviço PostgreSQL 16.
+- Esteira sequencial fail-fast: Migrations Prisma (`prisma db push`), Seed determinístico de 60 itens (`seed:ci`), Auditoria estrita (`db:check`), Checagem de tipos estrita (`tsc --noEmit`), Testes unitários/integração (`bun test src/lib`), Build de produção (`next build`) e Testes E2E Playwright (22/22 Desktop e Mobile).
 
 O `.github/workflows/ci.yml` roda em pushes e pull requests para `main` e executa:
 1. `npm ci`

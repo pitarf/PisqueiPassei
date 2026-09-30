@@ -2,6 +2,33 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.31] - 2026-09-30
+
+### Auditoria de Qualidade Real das 470 Questões, Motor Semântico e Rigor Técnico
+- **Auditoria Estrutural e Semântica do Acervo Completo:**
+  - Implementado motor determinístico de auditoria em `src/lib/pedagogical-audit.ts` e `scripts/pedagogical-audit-engine.js`.
+  - Detecção de repetição e duplicidade semântica por coeficiente de Sørensen-Dice e Jaccard sobre tokens conceituais e bigramas normalizados sem stopwords.
+  - Identificação de 149 pares de questões suspeitas de reescrita conceitual para revisão editorial conservadora (sem remoção destrutiva automática).
+- **Auditoria de Legislação e Rigor Normativo:**
+  - Verificação e cruzamento sistemático de citações legais contra os textos de `documents/legislacao/` (Lei 13.303/2016, Lei 14.133/2021, Decreto 2.745/1998, LC 123/2006, LGPD 13.709/2018, RLCT e CF/88).
+  - Teto de artigos por norma para flagrar alucinações e distinção correta de menções constitucionais (ex.: art. 173 da CF/88).
+- **Auditoria de Informática e Planilhas:**
+  - Catálogo canônico de funções oficiais do Microsoft Excel em Português Brasil (PT-BR) com mais de 60 funções validadas (`SOMA`, `PROCV`, `CONT.SE`, `SE`, etc.).
+  - Filtro contra alucinações de fórmulas e validação de comandos do pacote Office 365.
+- **Auditoria de Matemática e Cálculo Determinístico:**
+  - 100/100 itens de Matemática auditados: 95% com dados numéricos explícitos nas alternativas e 97% com dados suficientes e 5 opções distintas para resolução determinística.
+- **Auditoria de Alternativas e QA Risk Score (0 a 100):**
+  - Detecção de viés de tamanho de alternativa (0 ocorrências de correta como outlier longo).
+  - Detecção de distratores caricatos/absurdos e sinônimos internos entre opções.
+  - 100% das 470 questões classificadas na faixa de Baixo Risco de QA (score 0-20), com comprimento médio de explicação de 735.5 caracteres.
+- **Unificação do Mecanismo RAG:**
+  - Atualizado `scripts/generate-question-bank.js` para utilizar motor pontuado com relevância multi-termo, prioridade de fontes locais e limites de caracteres idênticos ao RAG canônico (`src/lib/rag.ts`).
+- **Testes e Validação:**
+  - Criada suíte unitária `src/lib/pedagogical-audit.test.ts` (10/10 novos testes passando).
+  - Suíte total ampliada para 65/65 testes unitários/integração Bun (`100% pass`).
+  - Suíte E2E Playwright com 22/22 testes verdes (Desktop e Mobile).
+  - Build de produção e `db:check` aprovados com zero falhas.
+
 ## [0.1.30] - 2026-09-30
 
 ### Abastecimento Integral do Acervo Pedagógico (470 Questões • 47/47 Tópicos)

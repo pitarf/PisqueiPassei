@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "generatedAt": "2026-09-30T05:25:36.023Z",
+    "generatedAt": "2026-09-30T11:03:39.656Z",
     "emphasis": "Ênfase 18 - Suprimento de Bens e Serviços",
     "targetScore": 47,
     "totalOfficialTopics": 47,
@@ -477,6 +477,1601 @@
       "shortExplanationCount": 0,
       "longCorrectOptionBiasCount": 0,
       "optionDisparityCount": 0
+    }
+  },
+  "semanticAudit": {
+    "suspectPairsCount": 149,
+    "suspectPairs": [
+      {
+        "topicTitle": "Concordância nominal e verbal",
+        "topicId": "f2f121b4-072c-4036-899f-93ad9c132b41",
+        "questionIdA": "a12affcf-d1b9-4c12-b36e-aa6f60cd66b9",
+        "questionIdB": "50aa37dd-c11d-4764-aa86-a325018c1ffc",
+        "statementA": "[Língua Portuguesa - Item 1] No que concerne às regras de concordância verbal e nominal e à pontuação estabelecidas pelo",
+        "statementB": "[Língua Portuguesa - Item 9] No que concerne às regras de concordância verbal e nominal e à pontuação estabelecidas pelo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Emprego do sinal indicativo de crase",
+        "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+        "questionIdA": "f8a7bd53-9148-47b5-b86f-f08099c3d032",
+        "questionIdB": "61a5ffcd-436a-44e4-ba94-80e2ef235bfb",
+        "statementA": "[Língua Portuguesa - Item 2] No que concerne às regras de concordância verbal e nominal e à pontuação estabelecidas pelo",
+        "statementB": "[Língua Portuguesa - Item 10] No que concerne às regras de concordância verbal e nominal e à pontuação estabelecidas pel",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Emprego do sinal indicativo de crase",
+        "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+        "questionIdA": "af91fa95-3af7-472a-b0cf-8d8ca2e6fd1e",
+        "questionIdB": "f5228ef9-03c3-40b6-820b-10cd23302902",
+        "statementA": "O acento indicativo de crase está empregado em estrita conformidade com a norma-padrão da língua portuguesa em:",
+        "statementB": "De acordo com a norma-padrão da língua portuguesa, o uso do acento indicativo de crase é FACULTATIVO em:",
+        "tokenDice": 0.7,
+        "combinedScore": 0.6567
+      },
+      {
+        "topicTitle": "Emprego do sinal indicativo de crase",
+        "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+        "questionIdA": "af91fa95-3af7-472a-b0cf-8d8ca2e6fd1e",
+        "questionIdB": "693f0cfb-769c-4924-9704-1b499e37b8cf",
+        "statementA": "O acento indicativo de crase está empregado em estrita conformidade com a norma-padrão da língua portuguesa em:",
+        "statementB": "No contexto da gestão de suprimentos e movimentação de materiais da Transpetro, a frase em que o acento indicativo de cr",
+        "tokenDice": 0.7407,
+        "combinedScore": 0.7345
+      },
+      {
+        "topicTitle": "Emprego do sinal indicativo de crase",
+        "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+        "questionIdA": "af91fa95-3af7-472a-b0cf-8d8ca2e6fd1e",
+        "questionIdB": "7fec554c-6390-43a3-9e21-f570e92d0a37",
+        "statementA": "O acento indicativo de crase está empregado em estrita conformidade com a norma-padrão da língua portuguesa em:",
+        "statementB": "O acento grave indicativo de crase está empregado em conformidade com as exigências da norma-padrão da língua portuguesa",
+        "tokenDice": 0.8571,
+        "combinedScore": 0.7579
+      },
+      {
+        "topicTitle": "Emprego do sinal indicativo de crase",
+        "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+        "questionIdA": "f5228ef9-03c3-40b6-820b-10cd23302902",
+        "questionIdB": "8bbe5848-2a1d-47c3-be69-9c21c44b6e6e",
+        "statementA": "De acordo com a norma-padrão da língua portuguesa, o uso do acento indicativo de crase é FACULTATIVO em:",
+        "statementB": "No âmbito da norma-padrão da Língua Portuguesa, o emprego do sinal indicativo de crase é gramaticalmente classificado co",
+        "tokenDice": 0.6364,
+        "combinedScore": 0.5655
+      },
+      {
+        "topicTitle": "Emprego do sinal indicativo de crase",
+        "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+        "questionIdA": "f5228ef9-03c3-40b6-820b-10cd23302902",
+        "questionIdB": "7fec554c-6390-43a3-9e21-f570e92d0a37",
+        "statementA": "De acordo com a norma-padrão da língua portuguesa, o uso do acento indicativo de crase é FACULTATIVO em:",
+        "statementB": "O acento grave indicativo de crase está empregado em conformidade com as exigências da norma-padrão da língua portuguesa",
+        "tokenDice": 0.6667,
+        "combinedScore": 0.593
+      },
+      {
+        "topicTitle": "Emprego do sinal indicativo de crase",
+        "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+        "questionIdA": "693f0cfb-769c-4924-9704-1b499e37b8cf",
+        "questionIdB": "7fec554c-6390-43a3-9e21-f570e92d0a37",
+        "statementA": "No contexto da gestão de suprimentos e movimentação de materiais da Transpetro, a frase em que o acento indicativo de cr",
+        "statementB": "O acento grave indicativo de crase está empregado em conformidade com as exigências da norma-padrão da língua portuguesa",
+        "tokenDice": 0.6429,
+        "combinedScore": 0.5654
+      },
+      {
+        "topicTitle": "Relações, funções: funções polinomiais, exponenciais, logarítmicas e trigonométricas",
+        "topicId": "6ee7826a-999f-40fc-a966-ca097db87622",
+        "questionIdA": "7b708da5-41e1-435e-a787-e6f20e4e41e1",
+        "questionIdB": "0efcd9c1-b2f9-4a0e-953d-15b2a9d9d30d",
+        "statementA": "No píer de atracação de um terminal aquaviário operado pela Transpetro, a profundidade h(t) da lâmina d’água, em metros,",
+        "statementB": "Em um terminal aquaviário da Transpetro, o calado seguro para manobra e atracação de navios petroleiros varia periodicam",
+        "tokenDice": 0.6667,
+        "combinedScore": 0.5806
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "767d509f-b876-446d-89de-3ac2fa4ed6e1",
+        "questionIdB": "89ed73d5-85fa-4694-8ae6-0256c2b3ad39",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 1] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 6] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "767d509f-b876-446d-89de-3ac2fa4ed6e1",
+        "questionIdB": "ccc394d5-876b-4c73-919b-7917c77a1b63",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 1] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 11] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "767d509f-b876-446d-89de-3ac2fa4ed6e1",
+        "questionIdB": "36301b78-9ba9-424f-a804-563ba549cd51",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 1] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 16] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "767d509f-b876-446d-89de-3ac2fa4ed6e1",
+        "questionIdB": "1ff28dfa-514d-422a-a482-b6cc2fb93384",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 1] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 21] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "767d509f-b876-446d-89de-3ac2fa4ed6e1",
+        "questionIdB": "feedbf7e-9e71-4fc6-a1e6-85c68c1f1f02",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 1] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 26] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "767d509f-b876-446d-89de-3ac2fa4ed6e1",
+        "questionIdB": "8f9fde74-84ed-4256-860d-adabea91b62b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 1] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 31] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "767d509f-b876-446d-89de-3ac2fa4ed6e1",
+        "questionIdB": "530791c5-7ae8-43cf-bf08-f53ac494df68",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 1] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 36] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "89ed73d5-85fa-4694-8ae6-0256c2b3ad39",
+        "questionIdB": "ccc394d5-876b-4c73-919b-7917c77a1b63",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 6] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 11] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "89ed73d5-85fa-4694-8ae6-0256c2b3ad39",
+        "questionIdB": "36301b78-9ba9-424f-a804-563ba549cd51",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 6] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 16] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "89ed73d5-85fa-4694-8ae6-0256c2b3ad39",
+        "questionIdB": "1ff28dfa-514d-422a-a482-b6cc2fb93384",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 6] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 21] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "89ed73d5-85fa-4694-8ae6-0256c2b3ad39",
+        "questionIdB": "feedbf7e-9e71-4fc6-a1e6-85c68c1f1f02",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 6] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 26] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "89ed73d5-85fa-4694-8ae6-0256c2b3ad39",
+        "questionIdB": "8f9fde74-84ed-4256-860d-adabea91b62b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 6] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 31] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "89ed73d5-85fa-4694-8ae6-0256c2b3ad39",
+        "questionIdB": "530791c5-7ae8-43cf-bf08-f53ac494df68",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 6] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 36] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "ccc394d5-876b-4c73-919b-7917c77a1b63",
+        "questionIdB": "36301b78-9ba9-424f-a804-563ba549cd51",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 11] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 16] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "ccc394d5-876b-4c73-919b-7917c77a1b63",
+        "questionIdB": "1ff28dfa-514d-422a-a482-b6cc2fb93384",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 11] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 21] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "ccc394d5-876b-4c73-919b-7917c77a1b63",
+        "questionIdB": "feedbf7e-9e71-4fc6-a1e6-85c68c1f1f02",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 11] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 26] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "ccc394d5-876b-4c73-919b-7917c77a1b63",
+        "questionIdB": "8f9fde74-84ed-4256-860d-adabea91b62b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 11] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 31] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "ccc394d5-876b-4c73-919b-7917c77a1b63",
+        "questionIdB": "530791c5-7ae8-43cf-bf08-f53ac494df68",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 11] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 36] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "36301b78-9ba9-424f-a804-563ba549cd51",
+        "questionIdB": "1ff28dfa-514d-422a-a482-b6cc2fb93384",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 16] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 21] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "36301b78-9ba9-424f-a804-563ba549cd51",
+        "questionIdB": "feedbf7e-9e71-4fc6-a1e6-85c68c1f1f02",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 16] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 26] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "36301b78-9ba9-424f-a804-563ba549cd51",
+        "questionIdB": "8f9fde74-84ed-4256-860d-adabea91b62b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 16] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 31] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "36301b78-9ba9-424f-a804-563ba549cd51",
+        "questionIdB": "530791c5-7ae8-43cf-bf08-f53ac494df68",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 16] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 36] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "1ff28dfa-514d-422a-a482-b6cc2fb93384",
+        "questionIdB": "feedbf7e-9e71-4fc6-a1e6-85c68c1f1f02",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 21] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 26] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "1ff28dfa-514d-422a-a482-b6cc2fb93384",
+        "questionIdB": "8f9fde74-84ed-4256-860d-adabea91b62b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 21] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 31] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "1ff28dfa-514d-422a-a482-b6cc2fb93384",
+        "questionIdB": "530791c5-7ae8-43cf-bf08-f53ac494df68",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 21] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 36] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "feedbf7e-9e71-4fc6-a1e6-85c68c1f1f02",
+        "questionIdB": "8f9fde74-84ed-4256-860d-adabea91b62b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 26] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 31] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "feedbf7e-9e71-4fc6-a1e6-85c68c1f1f02",
+        "questionIdB": "530791c5-7ae8-43cf-bf08-f53ac494df68",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 26] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 36] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Administração da qualidade",
+        "topicId": "828e2378-362d-4096-a535-034ddd4a6c8b",
+        "questionIdA": "8f9fde74-84ed-4256-860d-adabea91b62b",
+        "questionIdB": "530791c5-7ae8-43cf-bf08-f53ac494df68",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 31] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 36] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "78778c0a-76e1-4149-8465-d548b6cf920c",
+        "questionIdB": "9660656f-702a-4f95-980b-a636aea8a35b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 2] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 7] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "78778c0a-76e1-4149-8465-d548b6cf920c",
+        "questionIdB": "e031dd20-8a95-496c-9a66-3919016a48cd",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 2] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 12] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "78778c0a-76e1-4149-8465-d548b6cf920c",
+        "questionIdB": "bfaf7f09-1295-4405-865f-dc2c7ab3a365",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 2] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 17] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "78778c0a-76e1-4149-8465-d548b6cf920c",
+        "questionIdB": "cf8a7806-950d-4c7e-ba79-17b07b7a3e9f",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 2] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 22] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "78778c0a-76e1-4149-8465-d548b6cf920c",
+        "questionIdB": "cd97f754-e987-4877-bc3a-93da020fe2a4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 2] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 27] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "78778c0a-76e1-4149-8465-d548b6cf920c",
+        "questionIdB": "80e6ce0e-2fa6-4b96-932c-166761bac8fe",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 2] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 32] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "78778c0a-76e1-4149-8465-d548b6cf920c",
+        "questionIdB": "ec9c091f-9fda-4203-85ff-b0a38bfa1ec5",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 2] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 37] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "9660656f-702a-4f95-980b-a636aea8a35b",
+        "questionIdB": "e031dd20-8a95-496c-9a66-3919016a48cd",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 7] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 12] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "9660656f-702a-4f95-980b-a636aea8a35b",
+        "questionIdB": "bfaf7f09-1295-4405-865f-dc2c7ab3a365",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 7] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 17] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "9660656f-702a-4f95-980b-a636aea8a35b",
+        "questionIdB": "cf8a7806-950d-4c7e-ba79-17b07b7a3e9f",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 7] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 22] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "9660656f-702a-4f95-980b-a636aea8a35b",
+        "questionIdB": "cd97f754-e987-4877-bc3a-93da020fe2a4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 7] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 27] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "9660656f-702a-4f95-980b-a636aea8a35b",
+        "questionIdB": "80e6ce0e-2fa6-4b96-932c-166761bac8fe",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 7] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 32] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "9660656f-702a-4f95-980b-a636aea8a35b",
+        "questionIdB": "ec9c091f-9fda-4203-85ff-b0a38bfa1ec5",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 7] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 37] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "e031dd20-8a95-496c-9a66-3919016a48cd",
+        "questionIdB": "bfaf7f09-1295-4405-865f-dc2c7ab3a365",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 12] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 17] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "e031dd20-8a95-496c-9a66-3919016a48cd",
+        "questionIdB": "cf8a7806-950d-4c7e-ba79-17b07b7a3e9f",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 12] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 22] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "e031dd20-8a95-496c-9a66-3919016a48cd",
+        "questionIdB": "cd97f754-e987-4877-bc3a-93da020fe2a4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 12] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 27] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "e031dd20-8a95-496c-9a66-3919016a48cd",
+        "questionIdB": "80e6ce0e-2fa6-4b96-932c-166761bac8fe",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 12] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 32] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "e031dd20-8a95-496c-9a66-3919016a48cd",
+        "questionIdB": "ec9c091f-9fda-4203-85ff-b0a38bfa1ec5",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 12] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 37] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "bfaf7f09-1295-4405-865f-dc2c7ab3a365",
+        "questionIdB": "cf8a7806-950d-4c7e-ba79-17b07b7a3e9f",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 17] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 22] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "bfaf7f09-1295-4405-865f-dc2c7ab3a365",
+        "questionIdB": "cd97f754-e987-4877-bc3a-93da020fe2a4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 17] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 27] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "bfaf7f09-1295-4405-865f-dc2c7ab3a365",
+        "questionIdB": "80e6ce0e-2fa6-4b96-932c-166761bac8fe",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 17] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 32] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "bfaf7f09-1295-4405-865f-dc2c7ab3a365",
+        "questionIdB": "ec9c091f-9fda-4203-85ff-b0a38bfa1ec5",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 17] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 37] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "cf8a7806-950d-4c7e-ba79-17b07b7a3e9f",
+        "questionIdB": "cd97f754-e987-4877-bc3a-93da020fe2a4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 22] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 27] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "cf8a7806-950d-4c7e-ba79-17b07b7a3e9f",
+        "questionIdB": "80e6ce0e-2fa6-4b96-932c-166761bac8fe",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 22] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 32] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "cf8a7806-950d-4c7e-ba79-17b07b7a3e9f",
+        "questionIdB": "ec9c091f-9fda-4203-85ff-b0a38bfa1ec5",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 22] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 37] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "cd97f754-e987-4877-bc3a-93da020fe2a4",
+        "questionIdB": "80e6ce0e-2fa6-4b96-932c-166761bac8fe",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 27] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 32] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "cd97f754-e987-4877-bc3a-93da020fe2a4",
+        "questionIdB": "ec9c091f-9fda-4203-85ff-b0a38bfa1ec5",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 27] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 37] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Gestão por processos",
+        "topicId": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
+        "questionIdA": "80e6ce0e-2fa6-4b96-932c-166761bac8fe",
+        "questionIdB": "ec9c091f-9fda-4203-85ff-b0a38bfa1ec5",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 32] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 37] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "a879ae77-af02-4e42-bb2e-722ed753a644",
+        "questionIdB": "3922d008-f474-440d-a115-6089355aa5a5",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 3] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 8] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "a879ae77-af02-4e42-bb2e-722ed753a644",
+        "questionIdB": "ddeffa84-ad58-4998-82ec-f1b33f4247d2",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 3] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 13] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "a879ae77-af02-4e42-bb2e-722ed753a644",
+        "questionIdB": "78b86eaa-566a-4595-a223-064cf6db2117",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 3] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 18] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "a879ae77-af02-4e42-bb2e-722ed753a644",
+        "questionIdB": "c9375a0a-9c5b-487a-97c5-3bb6e8fccd8b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 3] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 23] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "a879ae77-af02-4e42-bb2e-722ed753a644",
+        "questionIdB": "81785798-88c5-426a-a04a-05dc1078d9ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 3] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 28] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "a879ae77-af02-4e42-bb2e-722ed753a644",
+        "questionIdB": "3a4777f1-a2b3-46ba-a9c2-4587fb5676a6",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 3] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 33] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "a879ae77-af02-4e42-bb2e-722ed753a644",
+        "questionIdB": "2832fc8f-134c-4ac3-8c9b-125e3fb98cff",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 3] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 38] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "3922d008-f474-440d-a115-6089355aa5a5",
+        "questionIdB": "ddeffa84-ad58-4998-82ec-f1b33f4247d2",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 8] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 13] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "3922d008-f474-440d-a115-6089355aa5a5",
+        "questionIdB": "78b86eaa-566a-4595-a223-064cf6db2117",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 8] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 18] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "3922d008-f474-440d-a115-6089355aa5a5",
+        "questionIdB": "c9375a0a-9c5b-487a-97c5-3bb6e8fccd8b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 8] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 23] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "3922d008-f474-440d-a115-6089355aa5a5",
+        "questionIdB": "81785798-88c5-426a-a04a-05dc1078d9ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 8] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 28] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "3922d008-f474-440d-a115-6089355aa5a5",
+        "questionIdB": "3a4777f1-a2b3-46ba-a9c2-4587fb5676a6",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 8] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 33] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "3922d008-f474-440d-a115-6089355aa5a5",
+        "questionIdB": "2832fc8f-134c-4ac3-8c9b-125e3fb98cff",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 8] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 38] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "ddeffa84-ad58-4998-82ec-f1b33f4247d2",
+        "questionIdB": "78b86eaa-566a-4595-a223-064cf6db2117",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 13] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 18] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "ddeffa84-ad58-4998-82ec-f1b33f4247d2",
+        "questionIdB": "c9375a0a-9c5b-487a-97c5-3bb6e8fccd8b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 13] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 23] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "ddeffa84-ad58-4998-82ec-f1b33f4247d2",
+        "questionIdB": "81785798-88c5-426a-a04a-05dc1078d9ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 13] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 28] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "ddeffa84-ad58-4998-82ec-f1b33f4247d2",
+        "questionIdB": "3a4777f1-a2b3-46ba-a9c2-4587fb5676a6",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 13] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 33] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "ddeffa84-ad58-4998-82ec-f1b33f4247d2",
+        "questionIdB": "2832fc8f-134c-4ac3-8c9b-125e3fb98cff",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 13] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 38] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "78b86eaa-566a-4595-a223-064cf6db2117",
+        "questionIdB": "c9375a0a-9c5b-487a-97c5-3bb6e8fccd8b",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 18] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 23] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "78b86eaa-566a-4595-a223-064cf6db2117",
+        "questionIdB": "81785798-88c5-426a-a04a-05dc1078d9ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 18] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 28] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "78b86eaa-566a-4595-a223-064cf6db2117",
+        "questionIdB": "3a4777f1-a2b3-46ba-a9c2-4587fb5676a6",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 18] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 33] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "78b86eaa-566a-4595-a223-064cf6db2117",
+        "questionIdB": "2832fc8f-134c-4ac3-8c9b-125e3fb98cff",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 18] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 38] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "c9375a0a-9c5b-487a-97c5-3bb6e8fccd8b",
+        "questionIdB": "81785798-88c5-426a-a04a-05dc1078d9ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 23] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 28] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "c9375a0a-9c5b-487a-97c5-3bb6e8fccd8b",
+        "questionIdB": "3a4777f1-a2b3-46ba-a9c2-4587fb5676a6",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 23] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 33] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "c9375a0a-9c5b-487a-97c5-3bb6e8fccd8b",
+        "questionIdB": "2832fc8f-134c-4ac3-8c9b-125e3fb98cff",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 23] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 38] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "81785798-88c5-426a-a04a-05dc1078d9ab",
+        "questionIdB": "3a4777f1-a2b3-46ba-a9c2-4587fb5676a6",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 28] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 33] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "81785798-88c5-426a-a04a-05dc1078d9ab",
+        "questionIdB": "2832fc8f-134c-4ac3-8c9b-125e3fb98cff",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 28] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 38] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Atendimento ao cliente",
+        "topicId": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
+        "questionIdA": "3a4777f1-a2b3-46ba-a9c2-4587fb5676a6",
+        "questionIdB": "2832fc8f-134c-4ac3-8c9b-125e3fb98cff",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 33] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 38] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "bd215699-87ce-4d24-aeee-558d81daff15",
+        "questionIdB": "0aab8287-fd5d-4003-9519-48cfa203591e",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 4] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 9] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "bd215699-87ce-4d24-aeee-558d81daff15",
+        "questionIdB": "8ee34532-ec8d-422d-8f2f-c7d3422cc06e",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 4] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 14] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "bd215699-87ce-4d24-aeee-558d81daff15",
+        "questionIdB": "73ac3b49-9f09-464e-89e8-25998debb92c",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 4] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 19] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "bd215699-87ce-4d24-aeee-558d81daff15",
+        "questionIdB": "69a53fdd-e1b2-42a4-9698-dbdea512f7bc",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 4] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 24] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "bd215699-87ce-4d24-aeee-558d81daff15",
+        "questionIdB": "6971413b-7346-4c57-97d8-f8205e6ab52f",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 4] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 29] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "bd215699-87ce-4d24-aeee-558d81daff15",
+        "questionIdB": "805e5f7f-84b0-4bc3-bde1-95dc9c2639d3",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 4] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 34] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "bd215699-87ce-4d24-aeee-558d81daff15",
+        "questionIdB": "7c99ba02-37a4-4e0b-8ccc-938c16e5ffb4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 4] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 39] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "0aab8287-fd5d-4003-9519-48cfa203591e",
+        "questionIdB": "8ee34532-ec8d-422d-8f2f-c7d3422cc06e",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 9] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 14] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "0aab8287-fd5d-4003-9519-48cfa203591e",
+        "questionIdB": "73ac3b49-9f09-464e-89e8-25998debb92c",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 9] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 19] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "0aab8287-fd5d-4003-9519-48cfa203591e",
+        "questionIdB": "69a53fdd-e1b2-42a4-9698-dbdea512f7bc",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 9] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 24] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "0aab8287-fd5d-4003-9519-48cfa203591e",
+        "questionIdB": "6971413b-7346-4c57-97d8-f8205e6ab52f",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 9] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 29] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "0aab8287-fd5d-4003-9519-48cfa203591e",
+        "questionIdB": "805e5f7f-84b0-4bc3-bde1-95dc9c2639d3",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 9] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 34] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "0aab8287-fd5d-4003-9519-48cfa203591e",
+        "questionIdB": "7c99ba02-37a4-4e0b-8ccc-938c16e5ffb4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 9] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 39] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "8ee34532-ec8d-422d-8f2f-c7d3422cc06e",
+        "questionIdB": "73ac3b49-9f09-464e-89e8-25998debb92c",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 14] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 19] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "8ee34532-ec8d-422d-8f2f-c7d3422cc06e",
+        "questionIdB": "69a53fdd-e1b2-42a4-9698-dbdea512f7bc",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 14] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 24] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "8ee34532-ec8d-422d-8f2f-c7d3422cc06e",
+        "questionIdB": "6971413b-7346-4c57-97d8-f8205e6ab52f",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 14] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 29] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "8ee34532-ec8d-422d-8f2f-c7d3422cc06e",
+        "questionIdB": "805e5f7f-84b0-4bc3-bde1-95dc9c2639d3",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 14] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 34] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "8ee34532-ec8d-422d-8f2f-c7d3422cc06e",
+        "questionIdB": "7c99ba02-37a4-4e0b-8ccc-938c16e5ffb4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 14] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 39] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "73ac3b49-9f09-464e-89e8-25998debb92c",
+        "questionIdB": "69a53fdd-e1b2-42a4-9698-dbdea512f7bc",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 19] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 24] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "73ac3b49-9f09-464e-89e8-25998debb92c",
+        "questionIdB": "6971413b-7346-4c57-97d8-f8205e6ab52f",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 19] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 29] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "73ac3b49-9f09-464e-89e8-25998debb92c",
+        "questionIdB": "805e5f7f-84b0-4bc3-bde1-95dc9c2639d3",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 19] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 34] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "73ac3b49-9f09-464e-89e8-25998debb92c",
+        "questionIdB": "7c99ba02-37a4-4e0b-8ccc-938c16e5ffb4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 19] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 39] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "69a53fdd-e1b2-42a4-9698-dbdea512f7bc",
+        "questionIdB": "6971413b-7346-4c57-97d8-f8205e6ab52f",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 24] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 29] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "69a53fdd-e1b2-42a4-9698-dbdea512f7bc",
+        "questionIdB": "805e5f7f-84b0-4bc3-bde1-95dc9c2639d3",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 24] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 34] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "69a53fdd-e1b2-42a4-9698-dbdea512f7bc",
+        "questionIdB": "7c99ba02-37a4-4e0b-8ccc-938c16e5ffb4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 24] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 39] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "6971413b-7346-4c57-97d8-f8205e6ab52f",
+        "questionIdB": "805e5f7f-84b0-4bc3-bde1-95dc9c2639d3",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 29] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 34] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "6971413b-7346-4c57-97d8-f8205e6ab52f",
+        "questionIdB": "7c99ba02-37a4-4e0b-8ccc-938c16e5ffb4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 29] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 39] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Indicadores de Desempenho e KPIs logísticos",
+        "topicId": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
+        "questionIdA": "805e5f7f-84b0-4bc3-bde1-95dc9c2639d3",
+        "questionIdB": "7c99ba02-37a4-4e0b-8ccc-938c16e5ffb4",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 34] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 39] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "64ebd441-b513-4aaa-9db3-3701f1909bc3",
+        "questionIdB": "a03cb925-7633-4c1b-9502-91cc72f1ca9c",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 5] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 10] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "64ebd441-b513-4aaa-9db3-3701f1909bc3",
+        "questionIdB": "f4d35a4f-7c1f-47f1-a704-dbd3e8832026",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 5] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 15] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "64ebd441-b513-4aaa-9db3-3701f1909bc3",
+        "questionIdB": "191fe145-d1b6-4e35-bf43-eba6f484aac3",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 5] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 20] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "64ebd441-b513-4aaa-9db3-3701f1909bc3",
+        "questionIdB": "1caf7543-f8d0-4fc9-8baf-520577a1abcd",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 5] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 25] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "64ebd441-b513-4aaa-9db3-3701f1909bc3",
+        "questionIdB": "862667a8-252c-490e-921a-0de174181d8c",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 5] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 30] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "64ebd441-b513-4aaa-9db3-3701f1909bc3",
+        "questionIdB": "8253acaa-a4ce-486a-99e0-933838c934ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 5] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 35] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "64ebd441-b513-4aaa-9db3-3701f1909bc3",
+        "questionIdB": "518da52d-f60a-4561-9c4e-4c734c576060",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 5] No gerenciamento de estoques e contratação de serviços segundo as boa",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 40] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "a03cb925-7633-4c1b-9502-91cc72f1ca9c",
+        "questionIdB": "f4d35a4f-7c1f-47f1-a704-dbd3e8832026",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 10] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 15] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "a03cb925-7633-4c1b-9502-91cc72f1ca9c",
+        "questionIdB": "191fe145-d1b6-4e35-bf43-eba6f484aac3",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 10] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 20] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "a03cb925-7633-4c1b-9502-91cc72f1ca9c",
+        "questionIdB": "1caf7543-f8d0-4fc9-8baf-520577a1abcd",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 10] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 25] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "a03cb925-7633-4c1b-9502-91cc72f1ca9c",
+        "questionIdB": "862667a8-252c-490e-921a-0de174181d8c",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 10] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 30] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "a03cb925-7633-4c1b-9502-91cc72f1ca9c",
+        "questionIdB": "8253acaa-a4ce-486a-99e0-933838c934ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 10] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 35] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "a03cb925-7633-4c1b-9502-91cc72f1ca9c",
+        "questionIdB": "518da52d-f60a-4561-9c4e-4c734c576060",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 10] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 40] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "f4d35a4f-7c1f-47f1-a704-dbd3e8832026",
+        "questionIdB": "191fe145-d1b6-4e35-bf43-eba6f484aac3",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 15] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 20] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "f4d35a4f-7c1f-47f1-a704-dbd3e8832026",
+        "questionIdB": "1caf7543-f8d0-4fc9-8baf-520577a1abcd",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 15] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 25] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "f4d35a4f-7c1f-47f1-a704-dbd3e8832026",
+        "questionIdB": "862667a8-252c-490e-921a-0de174181d8c",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 15] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 30] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "f4d35a4f-7c1f-47f1-a704-dbd3e8832026",
+        "questionIdB": "8253acaa-a4ce-486a-99e0-933838c934ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 15] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 35] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "f4d35a4f-7c1f-47f1-a704-dbd3e8832026",
+        "questionIdB": "518da52d-f60a-4561-9c4e-4c734c576060",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 15] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 40] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "191fe145-d1b6-4e35-bf43-eba6f484aac3",
+        "questionIdB": "1caf7543-f8d0-4fc9-8baf-520577a1abcd",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 20] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 25] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "191fe145-d1b6-4e35-bf43-eba6f484aac3",
+        "questionIdB": "862667a8-252c-490e-921a-0de174181d8c",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 20] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 30] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "191fe145-d1b6-4e35-bf43-eba6f484aac3",
+        "questionIdB": "8253acaa-a4ce-486a-99e0-933838c934ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 20] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 35] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "191fe145-d1b6-4e35-bf43-eba6f484aac3",
+        "questionIdB": "518da52d-f60a-4561-9c4e-4c734c576060",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 20] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 40] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "1caf7543-f8d0-4fc9-8baf-520577a1abcd",
+        "questionIdB": "862667a8-252c-490e-921a-0de174181d8c",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 25] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 30] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "1caf7543-f8d0-4fc9-8baf-520577a1abcd",
+        "questionIdB": "8253acaa-a4ce-486a-99e0-933838c934ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 25] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 35] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "1caf7543-f8d0-4fc9-8baf-520577a1abcd",
+        "questionIdB": "518da52d-f60a-4561-9c4e-4c734c576060",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 25] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 40] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "862667a8-252c-490e-921a-0de174181d8c",
+        "questionIdB": "8253acaa-a4ce-486a-99e0-933838c934ab",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 30] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 35] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "862667a8-252c-490e-921a-0de174181d8c",
+        "questionIdB": "518da52d-f60a-4561-9c4e-4c734c576060",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 30] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 40] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      },
+      {
+        "topicTitle": "Planejamento Estratégico, Tático e Operacional",
+        "topicId": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
+        "questionIdA": "8253acaa-a4ce-486a-99e0-933838c934ab",
+        "questionIdB": "518da52d-f60a-4561-9c4e-4c734c576060",
+        "statementA": "[Conhecimentos Específicos - Suprimentos - Item 35] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "statementB": "[Conhecimentos Específicos - Suprimentos - Item 40] No gerenciamento de estoques e contratação de serviços segundo as bo",
+        "tokenDice": 1,
+        "combinedScore": 1
+      }
+    ]
+  },
+  "specializedDisciplines": {
+    "math": {
+      "totalQuestions": 100,
+      "withNumbersInOptions": 95,
+      "deterministicItems": 97
+    },
+    "legislation": {
+      "totalQuestions": 60,
+      "detectedLaws": [
+        "DECRETO_2745",
+        "LEI_13303",
+        "LEI_14133",
+        "LC_123",
+        "RLCT_TRANSPETRO",
+        "LGPD_13709",
+        "CF_88"
+      ],
+      "invalidArticlesCount": 3
+    },
+    "it": {
+      "totalQuestions": 80,
+      "detectedFunctions": [
+        "BRUTO",
+        "RECEITA",
+        "SE",
+        "SE.CONDICOES",
+        "DINAMICA",
+        "TECNICA",
+        "CONT.SE",
+        "SOMA.SE",
+        "CONTAR.VAZIO",
+        "CONT.SES",
+        "SOMASE",
+        "CIFRAO",
+        "MATERIAL",
+        "SOMA",
+        "PROCV",
+        "TOTAL.SE",
+        "EXCEL",
+        "SOMASES"
+      ],
+      "invalidFunctionsCount": 11
+    }
+  },
+  "qaRiskSummary": {
+    "lowRiskCount": 470,
+    "mediumRiskCount": 0,
+    "highRiskCount": 0,
+    "highRiskItems": []
+  },
+  "subjectAnswerDistribution": {
+    "Língua Portuguesa": {
+      "A": 25,
+      "B": 14,
+      "C": 16,
+      "D": 15,
+      "E": 10,
+      "total": 80
+    },
+    "Matemática": {
+      "A": 19,
+      "B": 29,
+      "C": 21,
+      "D": 19,
+      "E": 12,
+      "total": 100
+    },
+    "1. Noções de Administração e Logística": {
+      "A": 0,
+      "B": 3,
+      "C": 44,
+      "D": 1,
+      "E": 2,
+      "total": 50
+    },
+    "2. Logística e Cadeia de Suprimentos": {
+      "A": 21,
+      "B": 23,
+      "C": 21,
+      "D": 23,
+      "E": 22,
+      "total": 110
+    },
+    "4. Noções de Contabilidade e Informática": {
+      "A": 14,
+      "B": 14,
+      "C": 14,
+      "D": 14,
+      "E": 14,
+      "total": 70
+    },
+    "3. Legislação": {
+      "A": 12,
+      "B": 12,
+      "C": 12,
+      "D": 12,
+      "E": 12,
+      "total": 60
     }
   },
   "historicalBank": {

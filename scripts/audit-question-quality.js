@@ -270,14 +270,200 @@ async function auditQuestionQuality() {
   });
   console.log(`   • Questões com alegação oficial sem URL/Número de prova histórico: ${suspiciousOfficialClaims.length}`);
 
+  console.log("\n--------------------------------------------------------------------------------");
+
+  // 5. AUDITORIA DE DUPLICIDADE SEMÂNTICA
+  console.log("🔍 5. AUDITORIA DE DUPLICIDADE SEMÂNTICA (PARES SUSPEITOS DENTRO DO MESMO TÓPICO)");
+  const {
+    evaluateSemanticSimilarity,
+    validateExcelFunctions,
+    validateLegislationCitations,
+    auditQuestionOptions,
+    auditMathQuestion,
+    computeQaRiskScore,
+  } = require("./pedagogical-audit-engine");
+
+  const suspectSemanticDuplicates = [];
+  const questionsByTopic = new Map();
+
+  for (const q of questions) {
+    if (!questionsByTopic.has(q.topicId)) {
+      questionsByTopic.set(q.topicId, []);
+    }
+    questionsByTopic.get(q.topicId).push(q);
+  }
+
+  for (const [topicId, topicQuestions] of questionsByTopic.entries()) {
+    const topicTitle = topicQuestions[0]?.topic?.title || topicId;
+    for (let i = 0; i < topicQuestions.length; i++) {
+      for (let j = i + 1; j < topicQuestions.length; j++) {
+        const qA = topicQuestions[i];
+        const qB = topicQuestions[j];
+        const sim = evaluateSemanticSimilarity(qA.statement, qB.statement);
+        if (sim.isSuspectDuplicate) {
+          suspectSemanticDuplicates.push({
+            topicTitle,
+            topicId,
+            questionIdA: qA.id,
+            questionIdB: qB.id,
+            statementA: qA.statement.slice(0, 100) + "...",
+            statementB: qB.statement.slice(0, 100) + "...",
+            score: sim.combinedScore,
+            tokenDice: sim.tokenDice,
+          });
+        }
+      }
+    }
+  }
+
+  console.log(`   • Total de pares suspeitos de repetição semântica: ${suspectSemanticDuplicates.length}`);
+  if (suspectSemanticDuplicates.length > 0) {
+    console.log(`   • Exibindo primeiros pares suspeitos identificados:`);
+    suspectSemanticDuplicates.slice(0, 5).forEach((p, idx) => {
+      console.log(`     [Par ${idx + 1}] Tópico: ${p.topicTitle} (Similaridade Dice: ${(p.tokenDice * 100).toFixed(1)}%, Combinada: ${(p.score * 100).toFixed(1)}%)`);
+      console.log(`       - Q1: "${p.statementA}"`);
+      console.log(`       - Q2: "${p.statementB}"`);
+    });
+  } else {
+    console.log(`   ✅ Nenhuma duplicidade semântica crítica identificada entre os pares.`);
+  }
+
+  console.log("\n--------------------------------------------------------------------------------");
+
+  // 6. AUDITORIA ESPECÍFICA POR DISCIPLINA (MATEMÁTICA, LEGISLAÇÃO, INFORMÁTICA)
+  console.log("📚 6. AUDITORIA ESPECÍFICA POR DISCIPLINA");
+
+  // 6.1 Matemática
+  const mathQuestions = questions.filter((q) => q.topic?.subject?.name?.toLowerCase().includes("matemática"));
+  let mathWithNumbersInOptions = 0;
+  let mathDeterministic = 0;
+
+  for (const q of mathQuestions) {
+    const mathAudit = auditMathQuestion(q.statement, {
+      optionA: q.optionA,
+      optionB: q.optionB,
+      optionC: q.optionC,
+      optionD: q.optionD,
+      optionE: q.optionE,
+    });
+    if (mathAudit.hasNumbersInOptions) mathWithNumbersInOptions++;
+    if (mathAudit.isDeterministicCandidate) mathDeterministic++;
+  }
+  console.log(`   • [Matemática] Total: ${mathQuestions.length} questões.`);
+  console.log(`     - Itens com dados numéricos nas opções: ${mathWithNumbersInOptions}/${mathQuestions.length}`);
+  console.log(`     - Itens com cálculo determinístico (dados suficientes e 5 opções distintas): ${mathDeterministic}/${mathQuestions.length}`);
+
+  // 6.2 Legislação
+  const legQuestions = questions.filter((q) => q.topic?.subject?.name?.toLowerCase().includes("legislação"));
+  let legInvalidArticles = 0;
+  const lawsMentioned = new Set();
+
+  for (const q of legQuestions) {
+    const fullText = `${q.statement} ${q.explanation}`;
+    const legAudit = validateLegislationCitations(fullText);
+    legAudit.detectedLaws.forEach((l) => lawsMentioned.add(l));
+    if (legAudit.hasInvalidArticles) {
+      legInvalidArticles++;
+    }
+  }
+  console.log(`   • [Legislação] Total: ${legQuestions.length} questões.`);
+  console.log(`     - Leis e normas detectadas no acervo: ${Array.from(lawsMentioned).join(", ") || "Nenhuma formal"}`);
+  console.log(`     - Citações de artigos inexistentes/alucinados: ${legInvalidArticles} ocorrências`);
+
+  // 6.3 Informática
+  const itQuestions = questions.filter((q) => {
+    const sName = (q.topic?.subject?.name || "").toLowerCase();
+    const tTitle = (q.topic?.title || "").toLowerCase();
+    return sName.includes("informática") || tTitle.includes("planilhas") || tTitle.includes("texto") || tTitle.includes("apresenta");
+  });
+  let itInvalidFunctions = 0;
+  const detectedFunctionsSet = new Set();
+
+  for (const q of itQuestions) {
+    const fullText = `${q.statement} ${q.optionA} ${q.optionB} ${q.optionC} ${q.optionD} ${q.optionE} ${q.explanation}`;
+    const fnAudit = validateExcelFunctions(fullText);
+    fnAudit.detectedFunctions.forEach((f) => detectedFunctionsSet.add(f));
+    if (!fnAudit.isValid) {
+      itInvalidFunctions += fnAudit.invalidFunctions.length;
+    }
+  }
+  console.log(`   • [Informática] Total: ${itQuestions.length} questões.`);
+  console.log(`     - Funções do Excel identificadas: ${Array.from(detectedFunctionsSet).slice(0, 10).join(", ") || "Nenhuma explícita"}`);
+  console.log(`     - Funções inválidas ou inventadas: ${itInvalidFunctions} ocorrências`);
+
+  console.log("\n--------------------------------------------------------------------------------");
+
+  // 7. QA RISK SCORE E DISTRIBUIÇÃO DE GABARITO POR DISCIPLINA
+  console.log("🛡️  7. QA RISK SCORE PEDAGÓGICO E GABARITO POR DISCIPLINA");
+
+  const riskBuckets = {
+    BAIXO_RISCO: 0,   // 0 - 20
+    MEDIO_RISCO: 0,   // 21 - 50
+    ALTO_RISCO: 0,    // 51+
+  };
+
+  const highRiskQuestions = [];
+  const subjectAnswers = {};
+
+  for (const q of questions) {
+    const subName = q.topic?.subject?.name || "Geral";
+    if (!subjectAnswers[subName]) {
+      subjectAnswers[subName] = { A: 0, B: 0, C: 0, D: 0, E: 0, total: 0 };
+    }
+    subjectAnswers[subName][q.correctOption] = (subjectAnswers[subName][q.correctOption] || 0) + 1;
+    subjectAnswers[subName].total++;
+
+    const risk = computeQaRiskScore({
+      statement: q.statement,
+      optionA: q.optionA,
+      optionB: q.optionB,
+      optionC: q.optionC,
+      optionD: q.optionD,
+      optionE: q.optionE,
+      correctOption: q.correctOption,
+      explanation: q.explanation,
+    });
+
+    if (risk.riskScore <= 20) {
+      riskBuckets.BAIXO_RISCO++;
+    } else if (risk.riskScore <= 50) {
+      riskBuckets.MEDIO_RISCO++;
+    } else {
+      riskBuckets.ALTO_RISCO++;
+      highRiskQuestions.push({
+        id: q.id,
+        topic: q.topic?.title,
+        score: risk.riskScore,
+        flags: risk.anomalyFlags,
+      });
+    }
+  }
+
+  console.log(`   • Distribuição de Risco de Qualidade (QA Risk Score):`);
+  console.log(`     - Baixo Risco (Score 0-20): ${riskBuckets.BAIXO_RISCO} (${((riskBuckets.BAIXO_RISCO / totalQuestions) * 100).toFixed(1)}%)`);
+  console.log(`     - Médio Risco (Score 21-50): ${riskBuckets.MEDIO_RISCO} (${((riskBuckets.MEDIO_RISCO / totalQuestions) * 100).toFixed(1)}%)`);
+  console.log(`     - Alto Risco (Score 51-100): ${riskBuckets.ALTO_RISCO} (${((riskBuckets.ALTO_RISCO / totalQuestions) * 100).toFixed(1)}%)`);
+
+  console.log(`\n   • Distribuição de Gabaritos por Disciplina:`);
+  for (const [subName, sStat] of Object.entries(subjectAnswers)) {
+    const pA = ((sStat.A / sStat.total) * 100).toFixed(0);
+    const pB = ((sStat.B / sStat.total) * 100).toFixed(0);
+    const pC = ((sStat.C / sStat.total) * 100).toFixed(0);
+    const pD = ((sStat.D / sStat.total) * 100).toFixed(0);
+    const pE = ((sStat.E / sStat.total) * 100).toFixed(0);
+    console.log(`     - ${subName.padEnd(40)}: A=${pA}% | B=${pB}% | C=${pC}% | D=${pD}% | E=${pE}% (Total: ${sStat.total})`);
+  }
+
   console.log("\n================================================================================");
   console.log("📋 SÍNTESE DIAGNÓSTICA PARA O PROJETO TRANSPETRO 2026.3");
   console.log("================================================================================");
   console.log(`1. Total de questões ativas no acervo pedagógico: ${totalQuestions}.`);
   console.log(`2. Cobertura: ${coverageBuckets.CRITICO.length} tópicos em nível CRÍTICO (0 questões).`);
   console.log(`3. Cobertura adequada (>= 10 questões): ${coverageBuckets.ADEQUADA.length + coverageBuckets.BOA.length} de ${totalTopics} tópicos.`);
-  console.log(`4. Distribuição de gabarito A-E: A (${((answerCounts.A / totalQuestions) * 100).toFixed(1)}%), B (${((answerCounts.B / totalQuestions) * 100).toFixed(1)}%), C (${((answerCounts.C / totalQuestions) * 100).toFixed(1)}%), D (${((answerCounts.D / totalQuestions) * 100).toFixed(1)}%), E (${((answerCounts.E / totalQuestions) * 100).toFixed(1)}%).`);
-  console.log(`5. Questões com metadados pedagógicos completos (questionType/cognitiveLevel): ${totalQuestions - missingMetadataCount}/${totalQuestions}.`);
+  console.log(`4. Distribuição de gabarito global A-E: A (${((answerCounts.A / totalQuestions) * 100).toFixed(1)}%), B (${((answerCounts.B / totalQuestions) * 100).toFixed(1)}%), C (${((answerCounts.C / totalQuestions) * 100).toFixed(1)}%), D (${((answerCounts.D / totalQuestions) * 100).toFixed(1)}%), E (${((answerCounts.E / totalQuestions) * 100).toFixed(1)}%).`);
+  console.log(`5. Questões com metadados pedagógicos completos: ${totalQuestions - missingMetadataCount}/${totalQuestions}.`);
+  console.log(`6. Pares suspeitos de duplicidade semântica: ${suspectSemanticDuplicates.length}.`);
+  console.log(`7. Questões em nível Baixo Risco de QA: ${riskBuckets.BAIXO_RISCO}/${totalQuestions} (${((riskBuckets.BAIXO_RISCO / totalQuestions) * 100).toFixed(1)}%).`);
   console.log("================================================================================\n");
 
   return {
@@ -292,6 +478,9 @@ async function auditQuestionQuality() {
     answerCounts,
     missingMetadataCount,
     boilerplatePatternCount,
+    suspectSemanticDuplicates,
+    riskBuckets,
+    highRiskQuestions,
     historicalCount: historicalQuestions.length,
     historicalExamsCount: historicalExams.length,
   };

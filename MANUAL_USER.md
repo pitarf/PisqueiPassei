@@ -28,11 +28,12 @@ Bem-vindo à sua plataforma dedicada de estudos para o concurso da **TRANSPETRO 
    - As questões de fixação geradas pela IA são inéditas e identificadas como geradas por IA, nunca afirmando terem sido aplicadas pela Cesgranrio.
 
 4. **Questões e Simulados:**
+   - **Acervo Pedagógico Completo:** mais de 470 questões inéditas distribuídas em 100% dos 47 tópicos oficiais da Ênfase 18 (mínimo de 10 questões por tópico).
    - Treinos de 10, 20 ou baterias personalizadas por tópico ou disciplina.
    - Modo **"Rever O Que Errei"** para atacar prioritariamente os pontos fracos.
-   - **Simulado completo Cesgranrio** com 60 questões (40 específicas + 10 de Português + 10 de Matemática) e cronômetro de 4 horas.
-   - Sistema de **auto-suprimento resiliente de estoque**: se o banco tiver déficit para montar os 60 itens, a IA gera as questões faltantes automaticamente antes de liberar a prova.
-   - Diagnóstico pós-simulado com checagem estrita dos critérios oficiais de eliminação (mínimo de 50% em gerais, 50% em específicas e não zerar Português nem Matemática) e distância até a meta pessoal (47/60).
+   - **Questões Irmãs (Siblings):** crie variações pedagógicas a partir de qualquer questão do acervo (modo Fácil, Equivalente, Difícil, Novo Cenário ou Distratores Cesgranrio).
+   - **Simulado completo Cesgranrio** com exatamente 60 questões (40 específicas + 10 de Português + 10 de Matemática), balanceadas por dispersão estratificada entre tópicos, e cronômetro de 4 horas.
+   - Diagnóstico pós-simulado com checagem estrita dos critérios oficiais de eliminação (mínimo de 50% em gerais, 50% em específicas e não zerar Português nem Matemática) e distância até a meta de estudo (47/60).
 
 5. **Flashcards (SRS):**
    - Revisão diária com repetição espaçada.
