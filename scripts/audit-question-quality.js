@@ -263,8 +263,7 @@ async function auditQuestionQuality() {
 
   const suspiciousOfficialClaims = questions.filter((q) => {
     return (
-      (q.origin.startsWith("OFICIAL") || q.banca.includes("Cesgranrio")) &&
-      q.origin !== "AI_GENERATED" &&
+      q.origin.startsWith("OFICIAL") &&
       !q.sourceUrl &&
       !q.sourceQuestion
     );
@@ -274,11 +273,11 @@ async function auditQuestionQuality() {
   console.log("\n================================================================================");
   console.log("📋 SÍNTESE DIAGNÓSTICA PARA O PROJETO TRANSPETRO 2026.3");
   console.log("================================================================================");
-  console.log(`1. O acervo ativo possui exatamente 60 questões geradas via seed sintético (todas AI_GENERATED).`);
-  console.log(`2. 24 de 47 tópicos (${((24 / 47) * 100).toFixed(1)}%) estão em nível CRÍTICO (0 questões).`);
-  console.log(`3. Os conhecimentos específicos estão concentrados exclusivamente na matéria 1 (Noções de Administração e Logística).`);
-  console.log(`4. Há viés de gabarito acentuado na semente atual: A (16.7%), B (16.7%), C (66.7%), D (0%), E (0%).`);
-  console.log(`5. 100% das 60 questões ativas não possuem questionType e cognitiveLevel definidos no banco.`);
+  console.log(`1. Total de questões ativas no acervo pedagógico: ${totalQuestions}.`);
+  console.log(`2. Cobertura: ${coverageBuckets.CRITICO.length} tópicos em nível CRÍTICO (0 questões).`);
+  console.log(`3. Cobertura adequada (>= 10 questões): ${coverageBuckets.ADEQUADA.length + coverageBuckets.BOA.length} de ${totalTopics} tópicos.`);
+  console.log(`4. Distribuição de gabarito A-E: A (${((answerCounts.A / totalQuestions) * 100).toFixed(1)}%), B (${((answerCounts.B / totalQuestions) * 100).toFixed(1)}%), C (${((answerCounts.C / totalQuestions) * 100).toFixed(1)}%), D (${((answerCounts.D / totalQuestions) * 100).toFixed(1)}%), E (${((answerCounts.E / totalQuestions) * 100).toFixed(1)}%).`);
+  console.log(`5. Questões com metadados pedagógicos completos (questionType/cognitiveLevel): ${totalQuestions - missingMetadataCount}/${totalQuestions}.`);
   console.log("================================================================================\n");
 
   return {

@@ -1,223 +1,102 @@
 {
   "metadata": {
-    "generatedAt": "2026-09-30T04:14:04.184Z",
+    "generatedAt": "2026-09-30T05:25:36.023Z",
     "emphasis": "Ênfase 18 - Suprimento de Bens e Serviços",
     "targetScore": 47,
     "totalOfficialTopics": 47,
     "totalSubjects": 6,
-    "totalActiveQuestions": 60,
+    "totalActiveQuestions": 470,
     "totalHistoricalQuestions": 1,
     "totalHistoricalExams": 1
   },
   "coverage": {
     "summary": {
       "CRITICO": {
-        "count": 24,
-        "percent": 51.1
-      },
-      "MUITO_BAIXA": {
-        "count": 18,
-        "percent": 38.3
-      },
-      "BAIXA": {
-        "count": 5,
-        "percent": 10.6
-      },
-      "ADEQUADA": {
         "count": 0,
         "percent": 0
+      },
+      "MUITO_BAIXA": {
+        "count": 0,
+        "percent": 0
+      },
+      "BAIXA": {
+        "count": 0,
+        "percent": 0
+      },
+      "ADEQUADA": {
+        "count": 47,
+        "percent": 100
       },
       "BOA": {
         "count": 0,
         "percent": 0
       }
     },
-    "criticalTopicsList": [
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.1",
-        "title": "Conceitos de Logística e Gerenciamento de Cadeias de Suprimento"
-      },
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.2",
-        "title": "Gestão de Compras"
-      },
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.3",
-        "title": "Gestão de Estoques e Almoxarifados"
-      },
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.4",
-        "title": "Estratégias de Negociação"
-      },
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.5",
-        "title": "Noções de Comércio Eletrônico"
-      },
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.6",
-        "title": "Seleção e Avaliação de Fornecedores"
-      },
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.7",
-        "title": "Modalidades de Transporte"
-      },
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.8",
-        "title": "Gestão de Transporte de Cargas"
-      },
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.9",
-        "title": "Gestão e Fiscalização de Contratos"
-      },
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.10",
-        "title": "Sustentabilidade na Cadeia de Suprimentos"
-      },
-      {
-        "subject": "2. Logística e Cadeia de Suprimentos",
-        "code": "2.11",
-        "title": "Logística 4.0 e digitalização da cadeia de suprimentos"
-      },
-      {
-        "subject": "3. Legislação",
-        "code": "3.1",
-        "title": "Decreto nº 2.745, de 24 de agosto de 1998"
-      },
-      {
-        "subject": "3. Legislação",
-        "code": "3.2",
-        "title": "Artigos 28 a 91 da Lei nº 13.303, de 30 de junho de 2016"
-      },
-      {
-        "subject": "3. Legislação",
-        "code": "3.3",
-        "title": "Artigos 42 a 49 da Lei Complementar nº 123, de 14 de dezembro de 2006"
-      },
-      {
-        "subject": "3. Legislação",
-        "code": "3.4",
-        "title": "Lei nº 14.133/2021"
-      },
-      {
-        "subject": "3. Legislação",
-        "code": "3.5",
-        "title": "Regulamento de Licitações e Contratos da Transpetro"
-      },
-      {
-        "subject": "3. Legislação",
-        "code": "3.6",
-        "title": "Lei Geral de Proteção de Dados Pessoais (LGPD) aplicada a contratações públicas"
-      },
-      {
-        "subject": "4. Noções de Contabilidade e Informática",
-        "code": "4.1",
-        "title": "Conceitos, Objetivos e finalidades da Contabilidade"
-      },
-      {
-        "subject": "4. Noções de Contabilidade e Informática",
-        "code": "4.2",
-        "title": "Receita, Despesa, Custos e Resultados"
-      },
-      {
-        "subject": "4. Noções de Contabilidade e Informática",
-        "code": "4.3",
-        "title": "Documentos Fiscais, Nota Fiscal de venda de Bens e Serviços"
-      },
-      {
-        "subject": "4. Noções de Contabilidade e Informática",
-        "code": "4.4",
-        "title": "Noções de administração tributária"
-      },
-      {
-        "subject": "4. Noções de Contabilidade e Informática",
-        "code": "4.5",
-        "title": "Noções básicas de Excel, Office 365"
-      },
-      {
-        "subject": "4. Noções de Contabilidade e Informática",
-        "code": "4.6",
-        "title": "Noções básicas de Word, Office 365"
-      },
-      {
-        "subject": "4. Noções de Contabilidade e Informática",
-        "code": "4.7",
-        "title": "Noções básicas do PowerPoint, Office 365"
-      }
-    ],
+    "criticalTopicsList": [],
     "bySubject": [
       {
         "id": "610a5cfa-8470-459d-bafa-6fced77999d2",
         "name": "Língua Portuguesa",
         "category": "BASICO",
         "order": 1,
-        "totalQuestions": 10,
+        "totalQuestions": 80,
         "totalTopics": 8,
         "topics": [
           {
             "id": "c25b8e3e-0959-4120-b929-abc4b9e695bc",
             "code": "1",
             "title": "Compreensão de textos de gêneros variados",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "ce2097ad-cbb2-4c48-8278-6f425af10f15",
             "code": "2",
             "title": "Ortografia oficial",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "aca51354-ea6e-4fbd-af81-bbe3e08d0c55",
             "code": "3",
             "title": "Mecanismos de coesão textual",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "75b56da9-933d-4875-ab81-68e763f14f4f",
             "code": "4",
             "title": "Emprego das classes de palavras",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "f2f121b4-072c-4036-899f-93ad9c132b41",
             "code": "5",
             "title": "Concordância nominal e verbal",
-            "questionsCount": 2,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
             "code": "6",
             "title": "Emprego do sinal indicativo de crase",
-            "questionsCount": 2,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "d3038fb2-d262-4fb9-81f3-791ed99ebd77",
             "code": "7",
             "title": "Sinais de pontuação",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "ce770b6f-0bc8-449a-b183-21d426099ea3",
             "code": "8",
             "title": "Significação das palavras",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           }
         ]
       },
@@ -226,78 +105,78 @@
         "name": "Matemática",
         "category": "BASICO",
         "order": 2,
-        "totalQuestions": 10,
+        "totalQuestions": 100,
         "totalTopics": 10,
         "topics": [
           {
             "id": "970eb247-42c9-4ad6-997f-3fcca667c439",
             "code": "1",
             "title": "Conjuntos numéricos: naturais, inteiros, racionais e reais; ordem, operações e suas propriedades",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "a17a716b-1fa2-4fe9-83e9-f2d87245f165",
             "code": "2",
             "title": "Razão e proporção: regra de três simples e regra de três composta; porcentagem",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "6ee7826a-999f-40fc-a966-ca097db87622",
             "code": "3",
             "title": "Relações, funções: funções polinomiais, exponenciais, logarítmicas e trigonométricas",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "9f3e0a9b-5069-421b-af9d-13e72faf571d",
             "code": "4",
             "title": "Equações: equações do 1º grau, do 2º grau, exponenciais, logarítmicas e sistemas de equações lineares",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "3506de14-7139-4085-ae89-521105640146",
             "code": "5",
             "title": "Análise combinatória: princípio fundamental da contagem; permutação; arranjo e combinação",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "f0f19626-8847-4e89-a84b-2da1809c4c17",
             "code": "6",
             "title": "Probabilidade básica: probabilidade em espaços equiprováveis",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "a1d98c30-a2c0-43e9-973f-3e5a26ff395e",
             "code": "7",
             "title": "Estatística básica: representação tabular e gráfica; medidas de tendência central; medidas de dispersão",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "ff5b3e79-034a-4b69-ada5-87528f368318",
             "code": "8",
             "title": "Matemática financeira: juros simples e juros compostos",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "32507aa4-53b9-4f93-8ba9-96d857fbd177",
             "code": "9",
             "title": "Geometria plana: relações métricas no triângulo retângulo; perímetros e áreas",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "fb36dffd-ef3d-43ca-a4a2-2d694e30b3c8",
             "code": "10",
             "title": "Geometria espacial: áreas e volumes",
-            "questionsCount": 1,
-            "coverageLevel": "MUITO_BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           }
         ]
       },
@@ -306,43 +185,43 @@
         "name": "1. Noções de Administração e Logística",
         "category": "ESPECIFICO",
         "order": 3,
-        "totalQuestions": 40,
+        "totalQuestions": 50,
         "totalTopics": 5,
         "topics": [
           {
             "id": "25c323b8-6be4-41a8-81d3-3f8f810ce908",
             "code": "1.1",
             "title": "Planejamento Estratégico, Tático e Operacional",
-            "questionsCount": 8,
-            "coverageLevel": "BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "828e2378-362d-4096-a535-034ddd4a6c8b",
             "code": "1.2",
             "title": "Administração da qualidade",
-            "questionsCount": 8,
-            "coverageLevel": "BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "e3c34d82-ca2a-4c9d-b3c3-82ba37104ae1",
             "code": "1.3",
             "title": "Gestão por processos",
-            "questionsCount": 8,
-            "coverageLevel": "BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "3601bf51-389a-475e-ab1f-1a8bbba40cd5",
             "code": "1.4",
             "title": "Atendimento ao cliente",
-            "questionsCount": 8,
-            "coverageLevel": "BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "0a16c6e7-a5b7-45ab-8673-656bfc30016c",
             "code": "1.5",
             "title": "Indicadores de Desempenho e KPIs logísticos",
-            "questionsCount": 8,
-            "coverageLevel": "BAIXA"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           }
         ]
       },
@@ -351,85 +230,85 @@
         "name": "2. Logística e Cadeia de Suprimentos",
         "category": "ESPECIFICO",
         "order": 4,
-        "totalQuestions": 0,
+        "totalQuestions": 110,
         "totalTopics": 11,
         "topics": [
           {
             "id": "fc1dfbd3-e579-4cbc-9bf4-984b986fc255",
             "code": "2.1",
             "title": "Conceitos de Logística e Gerenciamento de Cadeias de Suprimento",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "911c6d69-503a-4ed4-895b-fc72c0835341",
             "code": "2.2",
             "title": "Gestão de Compras",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "46464270-692f-4a6c-a3b4-f50261f1b798",
             "code": "2.3",
             "title": "Gestão de Estoques e Almoxarifados",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "cfd797e2-9d2c-498c-b5f8-c9a85c4ce3e6",
             "code": "2.4",
             "title": "Estratégias de Negociação",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "93c70e4c-33b3-41f5-ada4-46f7c1bea91b",
             "code": "2.5",
             "title": "Noções de Comércio Eletrônico",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "b985ba0c-edc4-4614-a026-9824d5c243f3",
             "code": "2.6",
             "title": "Seleção e Avaliação de Fornecedores",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "b34ea40e-6fb6-4613-9d1e-316c65d0f8c2",
             "code": "2.7",
             "title": "Modalidades de Transporte",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "5a1ab578-f852-40cc-9022-10010eefa99e",
             "code": "2.8",
             "title": "Gestão de Transporte de Cargas",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "0201a9e8-36b9-421c-a040-781889f8eae1",
             "code": "2.9",
             "title": "Gestão e Fiscalização de Contratos",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "1296287c-ac1b-487f-a3a3-da0a102874b2",
             "code": "2.10",
             "title": "Sustentabilidade na Cadeia de Suprimentos",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "275aecad-329d-4771-9776-1f6f19dc1b8b",
             "code": "2.11",
             "title": "Logística 4.0 e digitalização da cadeia de suprimentos",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           }
         ]
       },
@@ -438,50 +317,50 @@
         "name": "3. Legislação",
         "category": "ESPECIFICO",
         "order": 5,
-        "totalQuestions": 0,
+        "totalQuestions": 60,
         "totalTopics": 6,
         "topics": [
           {
             "id": "e0c12a24-e715-48d2-a65e-1d9b077661d3",
             "code": "3.1",
             "title": "Decreto nº 2.745, de 24 de agosto de 1998",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "e2856d06-41bf-400f-b031-28a76b8c0feb",
             "code": "3.2",
             "title": "Artigos 28 a 91 da Lei nº 13.303, de 30 de junho de 2016",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "36cc0504-5786-4ebc-b92d-cabcbe26f1e4",
             "code": "3.3",
             "title": "Artigos 42 a 49 da Lei Complementar nº 123, de 14 de dezembro de 2006",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "601df5eb-54b2-4ac0-a8e2-228fdb36a41a",
             "code": "3.4",
             "title": "Lei nº 14.133/2021",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "14531289-bc2c-492e-adb0-423e2120f7c5",
             "code": "3.5",
             "title": "Regulamento de Licitações e Contratos da Transpetro",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "796ec3d5-fab4-4dcf-b4a1-1b72a35ef61b",
             "code": "3.6",
             "title": "Lei Geral de Proteção de Dados Pessoais (LGPD) aplicada a contratações públicas",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           }
         ]
       },
@@ -490,57 +369,57 @@
         "name": "4. Noções de Contabilidade e Informática",
         "category": "ESPECIFICO",
         "order": 6,
-        "totalQuestions": 0,
+        "totalQuestions": 70,
         "totalTopics": 7,
         "topics": [
           {
             "id": "2eea2f25-a414-4fd8-8bc4-2e0ceb62e1d8",
             "code": "4.1",
             "title": "Conceitos, Objetivos e finalidades da Contabilidade",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "b17d4f91-2e4c-4d84-ac0a-8a00460f5362",
             "code": "4.2",
             "title": "Receita, Despesa, Custos e Resultados",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "dda78c1c-f43c-4bb2-9940-fad1a3af777f",
             "code": "4.3",
             "title": "Documentos Fiscais, Nota Fiscal de venda de Bens e Serviços",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "c84a9dcd-de97-47b9-8e70-9fc549ecbbf2",
             "code": "4.4",
             "title": "Noções de administração tributária",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "ebc21674-67b5-4010-b00e-a71d2cfeb8d1",
             "code": "4.5",
             "title": "Noções básicas de Excel, Office 365",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "3fd70b33-b208-4511-a273-eb83ee8e8b9d",
             "code": "4.6",
             "title": "Noções básicas de Word, Office 365",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           },
           {
             "id": "718483de-f09c-4bf1-8b7d-05ba00e3a6e3",
             "code": "4.7",
             "title": "Noções básicas do PowerPoint, Office 365",
-            "questionsCount": 0,
-            "coverageLevel": "CRITICO"
+            "questionsCount": 10,
+            "coverageLevel": "ADEQUADA"
           }
         ]
       }
@@ -548,37 +427,53 @@
   },
   "pedagogicalQuality": {
     "difficultyDistribution": {
-      "MEDIA": 60
+      "MEDIA": 275,
+      "DIFICIL": 59,
+      "FACIL": 136
     },
     "originDistribution": {
-      "AI_GENERATED": 60
+      "AI_GENERATED": 60,
+      "INEDITA_IA": 410
     },
     "cognitiveLevelDistribution": {
-      "NÃO_INFORMADO": 60
+      "NÃO_INFORMADO": 60,
+      "COMPREENDER": 122,
+      "ANALISAR": 92,
+      "CONHECER": 42,
+      "AVALIAR": 9,
+      "APLICAR": 145
     },
     "questionTypeDistribution": {
-      "NÃO_INFORMADO": 60
+      "NÃO_INFORMADO": 60,
+      "CONCEITO": 108,
+      "CASO_PRATICO": 99,
+      "COMPARACAO": 12,
+      "INTERPRETACAO": 10,
+      "PROCEDIMENTO": 66,
+      "APLICACAO": 96,
+      "CALCULO": 17,
+      "EXCECAO": 2
     },
     "verificationDistribution": {
-      "PENDENTE": 60
+      "PENDENTE": 470
     },
     "missingPedagogicalMetadataCount": 60,
     "answerDistribution": {
-      "A": 10,
-      "B": 10,
-      "C": 40,
-      "D": 0,
-      "E": 0
+      "A": 91,
+      "B": 95,
+      "C": 128,
+      "D": 84,
+      "E": 72
     },
     "answerPercentages": {
-      "A": 16.7,
-      "B": 16.7,
-      "C": 66.7,
-      "D": 0,
-      "E": 0
+      "A": 19.4,
+      "B": 20.2,
+      "C": 27.2,
+      "D": 17.9,
+      "E": 15.3
     },
     "textMetrics": {
-      "averageExplanationLengthCharacters": 199.8,
+      "averageExplanationLengthCharacters": 735.5,
       "shortExplanationCount": 0,
       "longCorrectOptionBiasCount": 0,
       "optionDisparityCount": 0

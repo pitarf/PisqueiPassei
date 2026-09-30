@@ -2,6 +2,24 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.30] - 2026-09-30
+
+### Abastecimento Integral do Acervo Pedagógico (470 Questões • 47/47 Tópicos)
+- **Superação da Escassez de Questões:** O banco pedagógico foi expandido de 60 para **470 questões inéditas**, eliminando 100% dos 24 tópicos em nível crítico.
+- **Cobertura Adequada Total (100%):** Todos os 47 tópicos oficiais da Ênfase 18 (6 disciplinas) possuem rigorosamente **pelo menos 10 questões ativas cadastradas**.
+  - **Língua Portuguesa (8 tópicos):** 80 questões (10 por tópico).
+  - **Matemática (10 tópicos):** 100 questões (10 por tópico).
+  - **1. Noções de Administração e Logística (5 tópicos):** 50 questões (10 por tópico).
+  - **2. Logística e Cadeia de Suprimentos (11 tópicos):** 110 questões (10 por tópico).
+  - **3. Legislação (6 tópicos):** 60 questões (10 por tópico, fundamentadas estritamente nas normas oficiais).
+  - **4. Noções de Contabilidade e Informática (7 tópicos):** 70 questões (10 por tópico).
+- **Diversificação de Gabarito e Tipologia Pedagógica:**
+  - Gabaritos equilibrados: A (19.4%), B (20.2%), C (27.2%), D (17.9%), E (15.3%).
+  - Dificuldades: FACIL (136), MEDIA (275), DIFICIL (59).
+  - Níveis cognitivos e tipologias: Aplicação (96), Conceito (108), Caso Prático (99), Procedimento (66), Cálculo (17), Comparação (12), Interpretação (10).
+- **Automação Incremental:** Criado o comando `npm run generate:questions` (`scripts/generate-question-bank.js`) com suporte a `--target`, `--subject`, `--topic`, `--batch` e preenchimento exclusivo de déficit.
+- **Validação e Estabilidade:** 55/55 testes unitários passando, 22/22 testes E2E Playwright (Desktop e Mobile) verdes, typecheck com 0 erros e montagem de simulados verificada com zero déficits.
+
 ## [0.1.29] - 2026-09-30
 
 ### Auditoria e Evolução Pedagógica (Ênfase 18 • TRANSPETRO 2026.3)

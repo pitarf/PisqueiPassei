@@ -22,6 +22,8 @@
 
 ## ⏳ Em evolução
 
+- [x] Abastecimento integral do banco pedagógico com 470 questões inéditas (100% dos 47 tópicos com >= 10 questões)
+- [x] Script automatizado de suprimento incremental por disciplina e tópico (`npm run generate:questions`)
 - [x] Auditoria de qualidade pedagógica e cobertura dos 47 tópicos oficiais (`npm run audit:quality`)
 - [x] Blindagem estrita contra alucinação e falsa atribuição de banca nas questões geradas por IA
 - [x] Calibração de regras pedagógicas nos 5 modos de questões irmãs (`siblings`)
