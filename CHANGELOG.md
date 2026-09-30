@@ -2,6 +2,28 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.32] - 2026-09-30
+
+### Curadoria do Acervo, Eliminação de Boilerplate e Reequilíbrio de Gabarito
+- **Reequilíbrio de Gabarito em Noções de Administração e Logística:**
+  - Identificada a anomalia crítica herdada do seed sintético inicial (C = 88%, A = 0%).
+  - 40 questões de Administração (tópicos 1.1 a 1.5) foram integralmente curadas e reescritas com temas aprofundados do edital (BSC, 5W2H, PDCA, Ishikawa, 5S, TQM, ISO 9001, BPMN, Teoria das Restrições, SLA, CRM, NPS, Ouvidoria, OTIF, IRA, Giro de Estoque, Ruptura, TCO, Fill Rate).
+  - Distribuição de gabarito rebalanceada de forma orgânica e homogênea: **A (24%), B (28%), C (14%), D (22%), E (12%)**.
+- **Erradicação Total de Boilerplates e Prefixos Sintéticos:**
+  - 100% dos prefixos e templates repetitivos (`[Língua Portuguesa - Item X]`, `[Matemática - Item X]` e cópias de ponto de pedido) foram eliminados do acervo pedagógico ativo.
+  - As 62 questões legadas foram substituídas por itens autênticos com enunciados situacionais e explicações didáticas completas.
+- **Resolução e Classificação dos 149 Pares Semanticamente Suspeitos:**
+  - Auditados todos os 149 pares com geração de `question-bank-semantic-review.json`.
+  - Comprovado que 142 pares (95,3%) eram resultantes exclusivamente da repetição do seed sintético inicial de CI.
+  - Após a curadoria, o total de pares suspeitos despencou de **149 para apenas 13** (redução de 91,3%), correspondentes a cobranças de facetas distintas de regras gramaticais da banca Cesgranrio, com **zero duplicações reais**.
+- **Enriquecimento Integral de Metadados Pedagógicos:**
+  - 100% das 470 questões agora possuem metadados completos de `questionType` e `cognitiveLevel` (redução de 60 ausências para zero).
+- **Calibração do Motor de QA Risk Score:**
+  - O algoritmo em `src/lib/pedagogical-audit.ts` e `scripts/pedagogical-audit-engine.js` agora penaliza severamente ausência de metadados (+30 pts), boilerplates sintéticos (+40 pts) e duplicidade semântica (+25 pts).
+  - Adicionadas funções utilitárias `detectAnswerAnomaly` e `reorderOptionsSafely`.
+- **Suíte de Testes Expandida:**
+  - Novos testes automatizados em `src/lib/pedagogical-audit.test.ts` para detecção de anomalias de gabarito, penalização de metadados e reordenação segura de alternativas (68/68 testes unitários passando).
+
 ## [0.1.31] - 2026-09-30
 
 ### Auditoria de Qualidade Real das 470 Questões, Motor Semântico e Rigor Técnico

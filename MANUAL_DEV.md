@@ -51,10 +51,12 @@ npm run dev
 
 ## 🧪 Testes, Auditoria e Qualidade
 
-- **Testes Unitários & Integração:** `npm test` (`bun test src/lib` executando 65 testes cobrindo limites oficiais, taxonomia, SRS, streak, RAG, idempotência P2002, simulado estratificado e motor de auditoria semântica).
+- **Testes Unitários & Integração:** `npm test` (`bun test src/lib` executando 68 testes cobrindo limites oficiais, taxonomia, SRS, streak, RAG, idempotência P2002, simulado estratificado, motor de auditoria semântica e QA Risk Score calibrado).
 - **Auditoria Estrutural de Banco:** `npm run db:check` (`node -r ts-node/register scripts/check-db.js`, fail-fast se houver qualquer anomalia de hash, órfãos ou taxonomia divergente).
-- **Auditoria Pedagógica e Semântica:** `npm run audit:quality` (`node scripts/audit-question-quality.js`, avalia cobertura, viés de gabarito A-E, 149 pares de similaridade semântica, conformidade normativa em legislação, funções Excel PT-BR e QA Risk Score).
+- **Auditoria Pedagógica e Semântica:** `npm run audit:quality` (`node scripts/audit-question-quality.js`, avalia cobertura, viés de gabarito A-E, pares de similaridade semântica, conformidade normativa em legislação, funções Excel PT-BR e QA Risk Score com penalização estrita).
 - **Relatório Executivo de Qualidade:** `npm run report:quality` (`node scripts/question-bank-quality-report.js`, exporta `question-bank-quality-report.json`).
+- **Classificação Semântica:** `node scripts/classify-semantic-pairs.js` (classifica pares suspeitos e exporta `question-bank-semantic-review.json`).
+- **Curadoria e Reescrita:** `node scripts/curate-seed-questions.js` (curadoria cirúrgica de itens legados e eliminação de boilerplates).
 - **Suprimento Incremental por IA:** `npm run generate:questions -- --subject="Nome" --target=10 --batch=5` (`scripts/generate-question-bank.js`, preenchimento de estoque com RAG ponderado multi-termo).
 - **Testes E2E (Playwright):** `npm run test:e2e` (`playwright test`, 22 testes automatizados em Desktop Chrome 1440x900 e Mobile Chrome 390x844).
 

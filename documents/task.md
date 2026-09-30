@@ -22,6 +22,12 @@
 
 ## ⏳ Em evolução
 
+- [x] Curadoria do acervo de 470 itens: reescrita integral de 62 questões legadas de seed (40 em Administração, 10 em Português, 10 em Matemática)
+- [x] Reequilíbrio homogêneo de gabarito em Noções de Administração (A: 24%, B: 28%, C: 14%, D: 22%, E: 12%)
+- [x] Erradicação de 100% dos boilerplates e prefixos de seed no banco pedagógico ativo
+- [x] Resolução e classificação dos 149 pares de similaridade semântica (redução de 91,3% para 13 pares legítimos)
+- [x] Enriquecimento de 100% dos metadados pedagógicos (questionType e cognitiveLevel)
+- [x] Calibração do motor de QA Risk Score para penalizar metadados faltantes, boilerplates e duplicidades
 - [x] Auditoria de qualidade real e semântica das 470 questões cadastradas (100% dos 47 tópicos auditados)
 - [x] Motor determinístico de detecção de duplicidades semânticas (Sørensen-Dice / Jaccard / bigramas sem stopwords)
 - [x] Verificação estrita de legislação e artigos oficiais (`documents/legislacao/`, Lei 13.303, 14.133, 2.745, LC 123, LGPD e CF/88)

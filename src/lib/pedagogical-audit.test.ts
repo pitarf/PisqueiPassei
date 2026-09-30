@@ -8,6 +8,8 @@ import {
   auditQuestionOptions,
   auditMathQuestion,
   computeQaRiskScore,
+  detectAnswerAnomaly,
+  reorderOptionsSafely,
 } from "./pedagogical-audit";
 
 describe("pedagogical-audit - Auditoria Semântica e Integridade Pedagógica", () => {
@@ -130,6 +132,8 @@ describe("pedagogical-audit - Auditoria Semântica e Integridade Pedagógica", (
       optionE: "A contagem física periódica visa exclusivamente à atualização do valor venal para fins de recolhimento tributário.",
       correctOption: "A",
       explanation: "A opção A está correta porque a acurácia de inventário requer auditorias periódicas, especialmente nos itens classe A da curva ABC, para garantir a fidedignidade dos registros operacionais e contábeis do estoque.",
+      questionType: "CONCEITO",
+      cognitiveLevel: "COMPREENDER",
     };
 
     const lowRisk = computeQaRiskScore(perfectQuestion);
@@ -153,4 +157,66 @@ describe("pedagogical-audit - Auditoria Semântica e Integridade Pedagógica", (
     expect(highRisk.anomalyFlags).toContain("DISTRATOR_CARICATO_ABSURDO");
     expect(highRisk.anomalyFlags).toContain("EXPLICACAO_EXTREMAMENTE_CURTA");
   });
+
+  test("penaliza no QA Risk Score ausência de metadados pedagógicos e boilerplate de seed", () => {
+    const seedQuestion = {
+      statement: "[Conhecimentos Específicos - Suprimentos - Item 1] No gerenciamento de estoques e contratação de serviços segundo as boas práticas...",
+      optionA: "Opção A genérica de seed.",
+      optionB: "Opção B genérica de seed.",
+      optionC: "A gestão de estoques por ponto de pedido prevê a reposição antes que o estoque atinja o nível de segurança operacional.",
+      optionD: "Opção D genérica de seed.",
+      optionE: "Opção E genérica de seed.",
+      correctOption: "C",
+      explanation: "Explicação padrão sintética.",
+      questionType: null,
+      cognitiveLevel: null,
+      origin: "AI_GENERATED",
+      isSuspectDuplicate: true,
+    };
+
+    const risk = computeQaRiskScore(seedQuestion);
+    expect(risk.riskScore).toBeGreaterThan(50);
+    expect(risk.anomalyFlags).toContain("METADADOS_PEDAGOGICOS_AUSENTES");
+    expect(risk.anomalyFlags).toContain("BOILERPLATE_SINTETICO_SEED");
+    expect(risk.anomalyFlags).toContain("ORIGEM_SEED_NAO_ENRIQUECIDA");
+    expect(risk.anomalyFlags).toContain("ALTA_SIMILARIDADE_SEMANTICA");
+  });
+
+  test("detecta distribuição anômala de gabaritos quando há concentração excessiva ou letra zerada", () => {
+    // Cenário de anomalia pré-curadoria em Administração: C=88% e A=0%
+    const anomalousDist = { A: 0, B: 3, C: 44, D: 1, E: 2 };
+    const diagAnomaly = detectAnswerAnomaly(anomalousDist);
+
+    expect(diagAnomaly.hasAnomaly).toBe(true);
+    expect(diagAnomaly.zeroLetters).toContain("A");
+    expect(diagAnomaly.dominantLetters.some((d) => d.letter === "C" && d.percentage > 80)).toBe(true);
+
+    // Cenário curado pós-curadoria: distribuição equilibrada sem concentração abusiva
+    const balancedDist = { A: 12, B: 14, C: 7, D: 11, E: 6 };
+    const diagBalanced = detectAnswerAnomaly(balancedDist);
+
+    expect(diagBalanced.hasAnomaly).toBe(false);
+    expect(diagBalanced.zeroLetters).toHaveLength(0);
+    expect(diagBalanced.dominantLetters).toHaveLength(0);
+  });
+
+  test("reordena com segurança a posição das alternativas preservando integridade da resposta", () => {
+    const originalQuestion = {
+      optionA: "Texto da opção A incorreta",
+      optionB: "Texto da opção B incorreta",
+      optionC: "Texto da opção C VERDADEIRA E CORRETA",
+      optionD: "Texto da opção D incorreta",
+      optionE: "Texto da opção E incorreta",
+      correctOption: "C" as const,
+    };
+
+    // Mover a alternativa correta de C para A com segurança
+    const reordered = reorderOptionsSafely(originalQuestion, "A");
+
+    expect(reordered.correctOption).toBe("A");
+    expect(reordered.optionA).toBe("Texto da opção C VERDADEIRA E CORRETA");
+    expect(reordered.optionC).toBe("Texto da opção A incorreta");
+    expect(reordered.optionB).toBe("Texto da opção B incorreta");
+  });
 });
+

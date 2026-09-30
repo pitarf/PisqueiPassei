@@ -341,6 +341,10 @@ async function generateQualityReport() {
     reportData.subjectAnswerDistribution[subName][q.correctOption]++;
     reportData.subjectAnswerDistribution[subName].total++;
 
+    const isSuspect = reportData.semanticAudit.suspectPairs.some(
+      (p) => p.questionIdA === q.id || p.questionIdB === q.id
+    );
+
     const risk = computeQaRiskScore({
       statement: q.statement,
       optionA: q.optionA,
@@ -350,6 +354,10 @@ async function generateQualityReport() {
       optionE: q.optionE,
       correctOption: q.correctOption,
       explanation: q.explanation,
+      questionType: q.questionType,
+      cognitiveLevel: q.cognitiveLevel,
+      origin: q.origin,
+      isSuspectDuplicate: isSuspect,
     });
 
     if (risk.riskScore <= 20) {

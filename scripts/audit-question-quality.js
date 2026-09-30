@@ -413,6 +413,10 @@ async function auditQuestionQuality() {
     subjectAnswers[subName][q.correctOption] = (subjectAnswers[subName][q.correctOption] || 0) + 1;
     subjectAnswers[subName].total++;
 
+    const isSuspect = suspectSemanticDuplicates.some(
+      (p) => p.questionIdA === q.id || p.questionIdB === q.id
+    );
+
     const risk = computeQaRiskScore({
       statement: q.statement,
       optionA: q.optionA,
@@ -422,6 +426,10 @@ async function auditQuestionQuality() {
       optionE: q.optionE,
       correctOption: q.correctOption,
       explanation: q.explanation,
+      questionType: q.questionType,
+      cognitiveLevel: q.cognitiveLevel,
+      origin: q.origin,
+      isSuspectDuplicate: isSuspect,
     });
 
     if (risk.riskScore <= 20) {

@@ -1,0 +1,171 @@
+{
+  "metadata": {
+    "generatedAt": "2026-09-30T18:22:12.326Z",
+    "totalPairsAudited": 13,
+    "distribution": {
+      "DUPLICACAO_REAL": 0,
+      "MESMO_CONCEITO_DISTINTAS": 12,
+      "CONTEXTO_DIFERENTE_RACIOCINIO_DIFERENTE": 0,
+      "FALSO_POSITIVO": 1,
+      "SEED_BOILERPLATE": 0
+    }
+  },
+  "pairs": [
+    {
+      "questionId": "a12affcf-d1b9-4c12-b36e-aa6f60cd66b9",
+      "topicId": "f2f121b4-072c-4036-899f-93ad9c132b41",
+      "topicTitle": "Concordância nominal e verbal",
+      "similarQuestionId": "070731b6-7f6a-4078-b33b-f1d19162c6d8",
+      "similarity": 0.5636,
+      "tokenDice": 0.5714,
+      "classification": "D) FALSO POSITIVO",
+      "reason": "Similaridade identificada por compartilhamento de termos técnicos da matéria (ex: Transpetro, suprimentos, fiscalização), mas raciocínios independentes.",
+      "statementSnippetA": "De acordo com a norma-padrão da língua portuguesa, a frase em que a concordância verbal está inteira...",
+      "statementSnippetB": "Durante o alinhamento operacional no setor de recebimento de cargas de um terminal aquaviário da Tra..."
+    },
+    {
+      "questionId": "f8a7bd53-9148-47b5-b86f-f08099c3d032",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "af91fa95-3af7-472a-b0cf-8d8ca2e6fd1e",
+      "similarity": 0.593,
+      "tokenDice": 0.6667,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "O sinal indicativo de crase deve ser obrigatoriamente empregado, segundo a norma-padrão da língua po...",
+      "statementSnippetB": "O acento indicativo de crase está empregado em estrita conformidade com a norma-padrão da língua por..."
+    },
+    {
+      "questionId": "f8a7bd53-9148-47b5-b86f-f08099c3d032",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "8bbe5848-2a1d-47c3-be69-9c21c44b6e6e",
+      "similarity": 0.5689,
+      "tokenDice": 0.6087,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "O sinal indicativo de crase deve ser obrigatoriamente empregado, segundo a norma-padrão da língua po...",
+      "statementSnippetB": "No âmbito da norma-padrão da Língua Portuguesa, o emprego do sinal indicativo de crase é gramaticalm..."
+    },
+    {
+      "questionId": "f8a7bd53-9148-47b5-b86f-f08099c3d032",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "7fec554c-6390-43a3-9e21-f570e92d0a37",
+      "similarity": 0.5655,
+      "tokenDice": 0.6364,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "O sinal indicativo de crase deve ser obrigatoriamente empregado, segundo a norma-padrão da língua po...",
+      "statementSnippetB": "O acento grave indicativo de crase está empregado em conformidade com as exigências da norma-padrão ..."
+    },
+    {
+      "questionId": "61a5ffcd-436a-44e4-ba94-80e2ef235bfb",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "af91fa95-3af7-472a-b0cf-8d8ca2e6fd1e",
+      "similarity": 0.593,
+      "tokenDice": 0.6667,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "O acento grave indicativo de crase é de uso FACULTATIVO, conforme a norma-padrão da língua portugues...",
+      "statementSnippetB": "O acento indicativo de crase está empregado em estrita conformidade com a norma-padrão da língua por..."
+    },
+    {
+      "questionId": "61a5ffcd-436a-44e4-ba94-80e2ef235bfb",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "f5228ef9-03c3-40b6-820b-10cd23302902",
+      "similarity": 0.7263,
+      "tokenDice": 0.8571,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "O acento grave indicativo de crase é de uso FACULTATIVO, conforme a norma-padrão da língua portugues...",
+      "statementSnippetB": "De acordo com a norma-padrão da língua portuguesa, o uso do acento indicativo de crase é FACULTATIVO..."
+    },
+    {
+      "questionId": "61a5ffcd-436a-44e4-ba94-80e2ef235bfb",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "7fec554c-6390-43a3-9e21-f570e92d0a37",
+      "similarity": 0.6891,
+      "tokenDice": 0.7273,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "O acento grave indicativo de crase é de uso FACULTATIVO, conforme a norma-padrão da língua portugues...",
+      "statementSnippetB": "O acento grave indicativo de crase está empregado em conformidade com as exigências da norma-padrão ..."
+    },
+    {
+      "questionId": "af91fa95-3af7-472a-b0cf-8d8ca2e6fd1e",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "f5228ef9-03c3-40b6-820b-10cd23302902",
+      "similarity": 0.6567,
+      "tokenDice": 0.7,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "O acento indicativo de crase está empregado em estrita conformidade com a norma-padrão da língua por...",
+      "statementSnippetB": "De acordo com a norma-padrão da língua portuguesa, o uso do acento indicativo de crase é FACULTATIVO..."
+    },
+    {
+      "questionId": "af91fa95-3af7-472a-b0cf-8d8ca2e6fd1e",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "693f0cfb-769c-4924-9704-1b499e37b8cf",
+      "similarity": 0.7345,
+      "tokenDice": 0.7407,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "O acento indicativo de crase está empregado em estrita conformidade com a norma-padrão da língua por...",
+      "statementSnippetB": "No contexto da gestão de suprimentos e movimentação de materiais da Transpetro, a frase em que o ace..."
+    },
+    {
+      "questionId": "af91fa95-3af7-472a-b0cf-8d8ca2e6fd1e",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "7fec554c-6390-43a3-9e21-f570e92d0a37",
+      "similarity": 0.7579,
+      "tokenDice": 0.8571,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "O acento indicativo de crase está empregado em estrita conformidade com a norma-padrão da língua por...",
+      "statementSnippetB": "O acento grave indicativo de crase está empregado em conformidade com as exigências da norma-padrão ..."
+    },
+    {
+      "questionId": "f5228ef9-03c3-40b6-820b-10cd23302902",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "8bbe5848-2a1d-47c3-be69-9c21c44b6e6e",
+      "similarity": 0.5655,
+      "tokenDice": 0.6364,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "De acordo com a norma-padrão da língua portuguesa, o uso do acento indicativo de crase é FACULTATIVO...",
+      "statementSnippetB": "No âmbito da norma-padrão da Língua Portuguesa, o emprego do sinal indicativo de crase é gramaticalm..."
+    },
+    {
+      "questionId": "f5228ef9-03c3-40b6-820b-10cd23302902",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "7fec554c-6390-43a3-9e21-f570e92d0a37",
+      "similarity": 0.593,
+      "tokenDice": 0.6667,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "De acordo com a norma-padrão da língua portuguesa, o uso do acento indicativo de crase é FACULTATIVO...",
+      "statementSnippetB": "O acento grave indicativo de crase está empregado em conformidade com as exigências da norma-padrão ..."
+    },
+    {
+      "questionId": "693f0cfb-769c-4924-9704-1b499e37b8cf",
+      "topicId": "fc4f45fb-a5ed-4664-81cc-29474753f5d8",
+      "topicTitle": "Emprego do sinal indicativo de crase",
+      "similarQuestionId": "7fec554c-6390-43a3-9e21-f570e92d0a37",
+      "similarity": 0.5654,
+      "tokenDice": 0.6429,
+      "classification": "B) MESMO CONCEITO, MAS QUESTÕES DISTINTAS",
+      "reason": "Ambas abordam o sinal indicativo de crase, mas uma avalia regras facultativas e outra casos de proibição/obrigatoriedade gramatical com frases distintas.",
+      "statementSnippetA": "No contexto da gestão de suprimentos e movimentação de materiais da Transpetro, a frase em que o ace...",
+      "statementSnippetB": "O acento grave indicativo de crase está empregado em conformidade com as exigências da norma-padrão ..."
+    }
+  ]
+}

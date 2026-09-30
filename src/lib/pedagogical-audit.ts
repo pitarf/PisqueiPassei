@@ -428,8 +428,8 @@ export function auditMathQuestion(
 /**
  * Calcula o Score de Risco de QA Pedagógico de uma questão (0 a 100).
  * 0 = Questão impecável sem vícios
- * 100 = Questão com múltiplos vícios críticos (tamanho tendencioso, distratores caricatos, etc.)
- * @param question Objeto completo da questão
+ * 100 = Questão com múltiplos vícios críticos (tamanho tendencioso, distratores caricatos, falta de metadata, boilerplate etc.)
+ * @param question Objeto completo da questão com metadados opcionais
  * @returns Pontuação de risco e array de anomalias detectadas
  */
 export function computeQaRiskScore(question: {
@@ -441,6 +441,10 @@ export function computeQaRiskScore(question: {
   optionE: string;
   correctOption: string;
   explanation: string;
+  questionType?: string | null;
+  cognitiveLevel?: string | null;
+  origin?: string | null;
+  isSuspectDuplicate?: boolean;
 }): {
   riskScore: number;
   anomalyFlags: string[];
@@ -448,7 +452,39 @@ export function computeQaRiskScore(question: {
   let riskScore = 0;
   const anomalyFlags: string[] = [];
 
-  // 1. Auditoria de opções
+  // 1. Auditoria de metadados pedagógicos obrigatórios
+  if (!question.questionType || !question.cognitiveLevel) {
+    riskScore += 30;
+    anomalyFlags.push("METADADOS_PEDAGOGICOS_AUSENTES");
+  }
+
+  // 2. Detecção de boilerplate / template sintético de seed
+  const stmt = question.statement || "";
+  if (
+    stmt.includes("Item 1]") ||
+    stmt.includes("Item 2]") ||
+    stmt.includes("[Conhecimentos Específicos") ||
+    stmt.includes("[Língua Portuguesa") ||
+    stmt.includes("[Matemática") ||
+    stmt.includes("Uma equipe logística necessita calcular")
+  ) {
+    riskScore += 40;
+    anomalyFlags.push("BOILERPLATE_SINTETICO_SEED");
+  }
+
+  // 3. Origem de seed ou legado não enriquecido
+  if (question.origin === "AI_GENERATED" && (!question.questionType || !question.cognitiveLevel)) {
+    riskScore += 20;
+    anomalyFlags.push("ORIGEM_SEED_NAO_ENRIQUECIDA");
+  }
+
+  // 4. Par suspeito de duplicidade semântica
+  if (question.isSuspectDuplicate) {
+    riskScore += 25;
+    anomalyFlags.push("ALTA_SIMILARIDADE_SEMANTICA");
+  }
+
+  // 5. Auditoria de opções
   const optAudit = auditQuestionOptions(question);
   if (optAudit.hasOutlierCorrectOption) {
     riskScore += 25;
@@ -463,14 +499,14 @@ export function computeQaRiskScore(question: {
     anomalyFlags.push("ALTERNATIVAS_SINONIMAS_REDUNDANTES");
   }
 
-  // 2. Termos categóricos na opção correta (raro em bancas técnicas)
+  // 6. Termos categóricos na opção correta
   const categoricalOnCorrect = optAudit.categoricalTermsFound.filter((c) => c.isCorrect);
   if (categoricalOnCorrect.length > 0) {
     riskScore += 15;
     anomalyFlags.push("CORRETA_COM_TERMO_CATEGORICO_ABSOLUTISTA");
   }
 
-  // 3. Explicação superficial ou vazia
+  // 7. Explicação superficial ou vazia
   const explLen = (question.explanation || "").trim().length;
   if (explLen < 60) {
     riskScore += 35;
@@ -480,8 +516,8 @@ export function computeQaRiskScore(question: {
     anomalyFlags.push("EXPLICACAO_POUCO_FUNDAMENTADA");
   }
 
-  // 4. Enunciado muito curto ou genérico
-  const stmtLen = (question.statement || "").trim().length;
+  // 8. Enunciado muito curto ou genérico
+  const stmtLen = stmt.trim().length;
   if (stmtLen < 80) {
     riskScore += 20;
     anomalyFlags.push("ENUNCIADO_CURTO_OU_GENERICO");
@@ -490,5 +526,92 @@ export function computeQaRiskScore(question: {
   return {
     riskScore: Math.min(riskScore, 100),
     anomalyFlags,
+  };
+}
+
+/**
+ * Detecta anomalias estatísticas na distribuição de gabaritos (ex: letra com 0% ou letra com mais de 50%).
+ * @param distribution Contagem de ocorrências por letra A, B, C, D, E
+ * @returns Diagnóstico de concentração anômala
+ */
+export function detectAnswerAnomaly(distribution: { A: number; B: number; C: number; D: number; E: number }): {
+  hasAnomaly: boolean;
+  zeroLetters: string[];
+  dominantLetters: { letter: string; percentage: number }[];
+  total: number;
+} {
+  const letters = ["A", "B", "C", "D", "E"] as const;
+  const total = letters.reduce((acc, l) => acc + (distribution[l] || 0), 0);
+
+  if (total === 0) {
+    return { hasAnomaly: false, zeroLetters: [], dominantLetters: [], total: 0 };
+  }
+
+  const zeroLetters: string[] = [];
+  const dominantLetters: { letter: string; percentage: number }[] = [];
+
+  for (const letter of letters) {
+    const count = distribution[letter] || 0;
+    const pct = (count / total) * 100;
+    if (count === 0 && total >= 10) {
+      zeroLetters.push(letter);
+    }
+    if (pct > 50.0 && total >= 10) {
+      dominantLetters.push({ letter, percentage: Number(pct.toFixed(1)) });
+    }
+  }
+
+  const hasAnomaly = zeroLetters.length > 0 || dominantLetters.length > 0;
+  return {
+    hasAnomaly,
+    zeroLetters,
+    dominantLetters,
+    total,
+  };
+}
+
+/**
+ * Reordena com segurança a posição das alternativas de uma questão movendo a correta para uma letra alvo,
+ * garantindo integridade e coerência absoluta de conteúdo e explicação.
+ * @param question Questão com alternativas A-E e correctOption atual
+ * @param targetLetter Letra de destino para a alternativa correta ("A" | "B" | "C" | "D" | "E")
+ * @returns Nova questão com alternativas permutadas e correctOption atualizado
+ */
+export function reorderOptionsSafely<T extends {
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+  optionE: string;
+  correctOption: "A" | "B" | "C" | "D" | "E";
+}>(question: T, targetLetter: "A" | "B" | "C" | "D" | "E"): T {
+  if (question.correctOption === targetLetter) {
+    return { ...question };
+  }
+
+  const currentOpts: Record<"A" | "B" | "C" | "D" | "E", string> = {
+    A: question.optionA,
+    B: question.optionB,
+    C: question.optionC,
+    D: question.optionD,
+    E: question.optionE,
+  };
+
+  const correctText = currentOpts[question.correctOption];
+  const targetCurrentText = currentOpts[targetLetter];
+
+  // Troca a posição da alternativa correta com a alternativa que ocupava a letra de destino
+  const newOpts = { ...currentOpts };
+  newOpts[targetLetter] = correctText;
+  newOpts[question.correctOption] = targetCurrentText;
+
+  return {
+    ...question,
+    optionA: newOpts.A,
+    optionB: newOpts.B,
+    optionC: newOpts.C,
+    optionD: newOpts.D,
+    optionE: newOpts.E,
+    correctOption: targetLetter,
   };
 }

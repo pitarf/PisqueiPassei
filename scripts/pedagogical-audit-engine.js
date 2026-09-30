@@ -295,6 +295,39 @@ function computeQaRiskScore(question) {
   let riskScore = 0;
   const anomalyFlags = [];
 
+  // 1. Metadados pedagógicos obrigatórios
+  if (!question.questionType || !question.cognitiveLevel) {
+    riskScore += 30;
+    anomalyFlags.push("METADADOS_PEDAGOGICOS_AUSENTES");
+  }
+
+  // 2. Detecção de boilerplate / template sintético de seed
+  const stmt = question.statement || "";
+  if (
+    stmt.includes("Item 1]") ||
+    stmt.includes("Item 2]") ||
+    stmt.includes("[Conhecimentos Específicos") ||
+    stmt.includes("[Língua Portuguesa") ||
+    stmt.includes("[Matemática") ||
+    stmt.includes("Uma equipe logística necessita calcular")
+  ) {
+    riskScore += 40;
+    anomalyFlags.push("BOILERPLATE_SINTETICO_SEED");
+  }
+
+  // 3. Origem de seed não enriquecida
+  if (question.origin === "AI_GENERATED" && (!question.questionType || !question.cognitiveLevel)) {
+    riskScore += 20;
+    anomalyFlags.push("ORIGEM_SEED_NAO_ENRIQUECIDA");
+  }
+
+  // 4. Par suspeito de duplicidade semântica
+  if (question.isSuspectDuplicate) {
+    riskScore += 25;
+    anomalyFlags.push("ALTA_SIMILARIDADE_SEMANTICA");
+  }
+
+  // 5. Auditoria de opções
   const optAudit = auditQuestionOptions(question);
   if (optAudit.hasOutlierCorrectOption) {
     riskScore += 25;
@@ -324,7 +357,7 @@ function computeQaRiskScore(question) {
     anomalyFlags.push("EXPLICACAO_POUCO_FUNDAMENTADA");
   }
 
-  const stmtLen = (question.statement || "").trim().length;
+  const stmtLen = stmt.trim().length;
   if (stmtLen < 80) {
     riskScore += 20;
     anomalyFlags.push("ENUNCIADO_CURTO_OU_GENERICO");
