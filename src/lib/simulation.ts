@@ -59,13 +59,10 @@ export async function refillStock(
               origin: q.origin,
               banca: q.banca,
               sourceRef: q.sourceRef,
-<<<<<<< HEAD
               questionType: q.questionType,
               cognitiveLevel: q.cognitiveLevel,
               subtopic: q.subtopic,
               verificationStatus: q.verificationStatus,
-=======
->>>>>>> 6acbb6c (feat: desacoplamento do simulado, resiliencia de tipos e expansao da suite E2E Playwright)
             },
           });
           existingStatements.add(key);
@@ -92,10 +89,7 @@ export async function loadExamQuestions() {
     prisma.question.findMany({ where: { topic: { subjectId: { in: specificIds } } }, include: { topic: { include: { subject: true } } } }),
   ]);
 
-<<<<<<< HEAD
   // Se houver déficit em qualquer categoria, aciona suprimento resiliente antes de falhar
-=======
->>>>>>> 6acbb6c (feat: desacoplamento do simulado, resiliencia de tipos e expansao da suite E2E Playwright)
   const portDeficit = PORT_TOTAL - portPool.length;
   const mathDeficit = MATH_TOTAL - mathPool.length;
   const specificDeficit = SPECIFIC_TOTAL - specificPool.length;

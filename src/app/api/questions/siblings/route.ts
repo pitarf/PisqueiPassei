@@ -5,19 +5,24 @@ import { validateAiQuestion, normalizeText, VALID_DIFFICULTIES } from "@/lib/que
 
 const VARIANTS = ["FACIL", "EQUIVALENTE", "DIFICIL", "NOVO_CENARIO", "DISTRATORES"] as const;
 
+type VariantType = typeof VARIANTS[number];
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const questionId = typeof body.questionId === "string" ? body.questionId : "";
-    const requestedVariants = Array.isArray(body.variants) ? body.variants : ["FACIL", "EQUIVALENTE", "DIFICIL"];
+    const requestedVariants: unknown[] = Array.isArray(body.variants) ? body.variants : ["FACIL", "EQUIVALENTE", "DIFICIL"];
 
     if (!questionId) {
       return NextResponse.json({ error: "questionId é obrigatório." }, { status: 400 });
     }
 
-    const variants = [...new Set(requestedVariants
+    const validFiltered: VariantType[] = requestedVariants
       .map((item: unknown) => String(item).toUpperCase())
-      .filter((item: string): item is typeof VARIANTS[number] => (VARIANTS as readonly string[]).includes(item)))]
+      .filter((item: string): item is VariantType => (VARIANTS as readonly string[]).includes(item));
+
+    const variants: VariantType[] = validFiltered
+      .filter((item: VariantType, idx: number) => validFiltered.indexOf(item) === idx)
       .slice(0, 5);
 
     if (!variants.length) {
@@ -47,7 +52,7 @@ export async function POST(req: NextRequest) {
         topicTitle: reference.topic.title,
         subjectName: reference.topic.subject.name,
       },
-      variants.map((mode: typeof VARIANTS[number]) => ({
+      variants.map((mode: VariantType) => ({
         mode,
         difficulty: mode === "FACIL" ? "FACIL" : mode === "DIFICIL" ? "DIFICIL" : reference.difficulty,
       })),

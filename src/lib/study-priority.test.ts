@@ -18,7 +18,8 @@ describe("study priority", () => {
       ...base,
       nextReviewDate: new Date("2026-09-17T00:00:00Z"),
     }, new Date("2026-09-18T00:00:00Z"));
-    expect(result.priority).toBe(61);
+    // 45 (revisão vencida) + 16 (baixo domínio 50 -> (70-50)*0.8 = 16) + 12 (acerto 50% < 70% com 10 questões >= 3) = 73
+    expect(result.priority).toBe(73);
     expect(result.reason).toBe("revisão vencida");
   });
 
