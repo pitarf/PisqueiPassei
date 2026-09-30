@@ -20,6 +20,7 @@ async function run() {
     data: {
       topicId: topic.id,
       statement: 'Questão automatizada de auditoria estrita de idempotência e concorrência ' + Date.now(),
+      statementHash: 'hash-test-' + Date.now(),
       optionA: 'Opção A',
       optionB: 'Opção B',
       optionC: 'Opção C',

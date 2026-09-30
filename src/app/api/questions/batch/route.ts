@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { generateQuestionBatch, summarizeHistoricalPatterns } from "@/lib/gemini";
-import { validateAiQuestion, normalizeText, VALID_DIFFICULTIES } from "@/lib/question-validator";
+import { validateAiQuestion, normalizeText, computeStatementHash, VALID_DIFFICULTIES } from "@/lib/question-validator";
 
 const MODES = new Set(["normal", "erros"]);
 const MAX_GENERATION_RETRIES = 3;
@@ -120,34 +121,43 @@ export async function POST(req: NextRequest) {
 
             const q = validation.question;
             const key = normalizeText(q.statement);
-            if (existingStatements.has(key)) continue;
+            const hash = computeStatementHash(q.statement);
 
-            const item = await prisma.question.create({
-              data: {
-                topicId: topic.id,
-                statement: q.statement,
-                optionA: q.optionA,
-                optionB: q.optionB,
-                optionC: q.optionC,
-                optionD: q.optionD,
-                optionE: q.optionE,
-                correctOption: q.correctOption,
-                explanation: q.explanation,
-                difficulty: q.difficulty,
-                origin: q.origin,
-                banca: q.banca,
-                sourceRef: q.sourceRef,
-                questionType: q.questionType,
-                cognitiveLevel: q.cognitiveLevel,
-                subtopic: q.subtopic || null,
-                verificationStatus: "PENDENTE",
-              },
-              include: { topic: { include: { subject: true } } },
-            });
+            try {
+              const item = await prisma.question.create({
+                data: {
+                  topicId: topic.id,
+                  statement: q.statement,
+                  statementHash: hash,
+                  optionA: q.optionA,
+                  optionB: q.optionB,
+                  optionC: q.optionC,
+                  optionD: q.optionD,
+                  optionE: q.optionE,
+                  correctOption: q.correctOption,
+                  explanation: q.explanation,
+                  difficulty: q.difficulty,
+                  origin: q.origin,
+                  banca: q.banca,
+                  sourceRef: q.sourceRef,
+                  questionType: q.questionType,
+                  cognitiveLevel: q.cognitiveLevel,
+                  subtopic: q.subtopic || null,
+                  verificationStatus: "PENDENTE",
+                },
+                include: { topic: { include: { subject: true } } },
+              });
 
-            created.push(item);
-            existingStatements.add(key);
-            remaining--;
+              created.push(item);
+              existingStatements.add(key);
+              remaining--;
+            } catch (createErr) {
+              if (createErr instanceof Prisma.PrismaClientKnownRequestError && createErr.code === "P2002") {
+                existingStatements.add(key);
+                continue;
+              }
+              throw createErr;
+            }
           }
         } catch (err) {
           console.warn(`[Retry ${retryAttempt}] Falha temporária ao gerar questões para "${topic.title}":`, (err as Error).message);

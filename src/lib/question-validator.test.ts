@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { normalizeText, validateAiQuestion } from "./question-validator";
+import { normalizeText, validateAiQuestion, computeStatementHash } from "./question-validator";
 
 const valid = {
   statement: "Em uma situação de gestão de estoques, qual alternativa representa uma prática adequada?",
@@ -17,6 +17,13 @@ const valid = {
 
 describe("question validator", () => {
   it("normaliza texto", () => expect(normalizeText(" Gestão Ágil! ")).toBe("gestao agil"));
+
+  it("calcula statementHash determinístico e invariante a acentuação e espaços", () => {
+    const hash1 = computeStatementHash("Em uma situação de gestão de estoques...");
+    const hash2 = computeStatementHash("  EM UMA SITUAÇÃO DE GESTAO DE ESTOQUES...  ");
+    expect(hash1).toBe(hash2);
+    expect(hash1.length).toBe(64);
+  });
 
   it("aceita questão válida e força origem IA", () => {
     const result = validateAiQuestion(valid);

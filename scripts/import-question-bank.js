@@ -248,6 +248,7 @@ async function main() {
           data: {
             topicId: topic.id,
             statement: question.statement,
+            statementHash: hashStatement(question.statement),
             optionA: question.optionA,
             optionB: question.optionB,
             optionC: question.optionC,

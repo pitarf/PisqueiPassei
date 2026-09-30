@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { generateQuestionBatch } from "@/lib/gemini";
-import { validateAiQuestion, normalizeText } from "@/lib/question-validator";
+import { validateAiQuestion, normalizeText, computeStatementHash } from "@/lib/question-validator";
 
 export const EXAM_TOTAL = 60;
 export const PORT_TOTAL = 10;
@@ -44,29 +45,40 @@ export async function refillStock(
           const key = normalizeText(q.statement);
           if (existingStatements.has(key)) continue;
 
-          await prisma.question.create({
-            data: {
-              topicId: topic.id,
-              statement: q.statement,
-              optionA: q.optionA,
-              optionB: q.optionB,
-              optionC: q.optionC,
-              optionD: q.optionD,
-              optionE: q.optionE,
-              correctOption: q.correctOption,
-              explanation: q.explanation,
-              difficulty: q.difficulty,
-              origin: q.origin,
-              banca: q.banca,
-              sourceRef: q.sourceRef,
-              questionType: q.questionType,
-              cognitiveLevel: q.cognitiveLevel,
-              subtopic: q.subtopic,
-              verificationStatus: q.verificationStatus,
-            },
-          });
-          existingStatements.add(key);
-          remaining--;
+          const hash = computeStatementHash(q.statement);
+
+          try {
+            await prisma.question.create({
+              data: {
+                topicId: topic.id,
+                statement: q.statement,
+                statementHash: hash,
+                optionA: q.optionA,
+                optionB: q.optionB,
+                optionC: q.optionC,
+                optionD: q.optionD,
+                optionE: q.optionE,
+                correctOption: q.correctOption,
+                explanation: q.explanation,
+                difficulty: q.difficulty,
+                origin: q.origin,
+                banca: q.banca,
+                sourceRef: q.sourceRef,
+                questionType: q.questionType,
+                cognitiveLevel: q.cognitiveLevel,
+                subtopic: q.subtopic,
+                verificationStatus: q.verificationStatus,
+              },
+            });
+            existingStatements.add(key);
+            remaining--;
+          } catch (createErr) {
+            if (createErr instanceof Prisma.PrismaClientKnownRequestError && createErr.code === "P2002") {
+              existingStatements.add(key);
+              continue;
+            }
+            throw createErr;
+          }
         }
       } catch (err) {
         console.warn(`[Auto-Refill] Falha controlada ao gerar questão para "${topic.title}":`, (err as Error).message);

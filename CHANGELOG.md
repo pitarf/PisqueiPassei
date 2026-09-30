@@ -2,6 +2,15 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.28] - 2026-09-30
+
+### Homologação Final de CI com PostgreSQL 16 e Endurecimento Estrutural contra Duplicidade
+- **PostgreSQL 16 Service Container no CI:** Integrado container de serviço Postgres 16 em `.github/workflows/ci.yml`, eliminando qualquer dependência externa ou mock frágil no GitHub Actions.
+- **Pipeline CI de Alta Confiabilidade:** Configurada execução sequencial com migração (`prisma db push`), seed determinístico (`scripts/seed-ci-e2e.ts`), checagem estrita de tipos (`tsc --noEmit`), 39 testes unitários (`bun test src/lib`), build de produção Next.js 15 e suíte E2E Playwright Chromium em Desktop e Mobile.
+- **Proteção Estrutural de Duplicidade (`statementHash`):** Adicionado campo `statementHash` e constraint `@@unique([topicId, statementHash])` no modelo `Question` do Prisma, garantindo proteção contra race condition no nível do banco de dados (rejeição com P2002 e recuperação graciosa).
+- **Backfill e Resiliência Concorrente:** Realizado backfill em 100% das questões do banco de dados e adicionado tratamento seguro de erro P2002 no auto-refill do simulado, rotas de geração em lote (`/api/questions/batch`) e questões irmãs (`/api/questions/siblings`).
+- **Suíte de Testes Expandida (39/39 testes):** Adicionados testes para o cálculo determinístico de `statementHash` (invariância a acentos, caixas e pontuações) e verificação da taxonomia de 47 tópicos no banco de dados.
+
 ## [0.1.27] - 2026-09-30
 
 ### Sincronização de Banco Histórico, Questões Irmãs e E2E Playwright Expandido

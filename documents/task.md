@@ -50,6 +50,10 @@
 - [x] Auditoria profunda do banco de dados (`scripts/check-db.js`) aprovada sem inconsistências ou órfãos
 - [x] Unificação e desacoplamento do carregador de simulado em `src/lib/simulation.ts` com aviso transparente de déficit
 - [x] Integração de catálogo e padrões de provas históricas (`/questoes/historico`) e geração de questões irmãs (`/api/questions/siblings`)
+- [x] Endurecimento estrutural contra duplicidade de enunciados (`statementHash` + `@@unique([topicId, statementHash])`)
+- [x] Tratamento gracioso de concorrência P2002 no auto-refill, rotas em lote e questões irmãs
+- [x] Script de seed determinístico e desacoplado de APIs externas para CI e testes E2E (`scripts/seed-ci-e2e.ts`)
+- [x] Pipeline de CI real no GitHub Actions com PostgreSQL 16 em container de serviço, typecheck, testes unitários, build e Playwright E2E
 
 ## 🛠️ Próxima frente de hardening
 

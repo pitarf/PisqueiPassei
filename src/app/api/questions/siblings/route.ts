@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { generateSiblingQuestionBatch } from "@/lib/gemini";
-import { validateAiQuestion, normalizeText, VALID_DIFFICULTIES } from "@/lib/question-validator";
+import { validateAiQuestion, normalizeText, computeStatementHash, VALID_DIFFICULTIES } from "@/lib/question-validator";
 
 const VARIANTS = ["FACIL", "EQUIVALENTE", "DIFICIL", "NOVO_CENARIO", "DISTRATORES"] as const;
 
@@ -74,38 +75,49 @@ export async function POST(req: NextRequest) {
       const key = normalizeText(q.statement);
       if (seen.has(key)) continue;
 
+      const hash = computeStatementHash(q.statement);
+
       const alreadyExists = await prisma.question.findFirst({
-        where: { topicId: reference.topicId, statement: q.statement },
+        where: { topicId: reference.topicId, statementHash: hash },
         select: { id: true },
       });
       if (alreadyExists) continue;
 
-      const item = await prisma.question.create({
-        data: {
-          topicId: reference.topicId,
-          statement: q.statement,
-          optionA: q.optionA,
-          optionB: q.optionB,
-          optionC: q.optionC,
-          optionD: q.optionD,
-          optionE: q.optionE,
-          correctOption: q.correctOption,
-          explanation: q.explanation,
-          difficulty: q.difficulty,
-          origin: "INEDITA_IA",
-          banca: q.banca,
-          sourceRef: q.sourceRef || `Questão inédita derivada da referência ${reference.id}`,
-          questionType: q.questionType,
-          cognitiveLevel: q.cognitiveLevel,
-          subtopic: q.subtopic || reference.subtopic || null,
-          referenceIdsJson: [reference.id],
-          verificationStatus: "PENDENTE",
-        },
-        include: { topic: { include: { subject: true } } },
-      });
+      try {
+        const item = await prisma.question.create({
+          data: {
+            topicId: reference.topicId,
+            statement: q.statement,
+            statementHash: hash,
+            optionA: q.optionA,
+            optionB: q.optionB,
+            optionC: q.optionC,
+            optionD: q.optionD,
+            optionE: q.optionE,
+            correctOption: q.correctOption,
+            explanation: q.explanation,
+            difficulty: q.difficulty,
+            origin: "INEDITA_IA",
+            banca: q.banca,
+            sourceRef: q.sourceRef || `Questão inédita derivada da referência ${reference.id}`,
+            questionType: q.questionType,
+            cognitiveLevel: q.cognitiveLevel,
+            subtopic: q.subtopic || reference.subtopic || null,
+            referenceIdsJson: [reference.id],
+            verificationStatus: "PENDENTE",
+          },
+          include: { topic: { include: { subject: true } } },
+        });
 
-      created.push(item);
-      seen.add(key);
+        created.push(item);
+        seen.add(key);
+      } catch (createErr) {
+        if (createErr instanceof Prisma.PrismaClientKnownRequestError && createErr.code === "P2002") {
+          seen.add(key);
+          continue;
+        }
+        throw createErr;
+      }
     }
 
     return NextResponse.json({

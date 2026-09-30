@@ -40,6 +40,8 @@ export const VALID_DIFFICULTIES = new Set(["FACIL", "MEDIA", "DIFICIL"]);
 export const VALID_QUESTION_TYPES = new Set(["CONCEITO","APLICACAO","CALCULO","INTERPRETACAO","CASO_PRATICO","COMPARACAO","EXCECAO","PROCEDIMENTO"]);
 export const VALID_COGNITIVE_LEVELS = new Set(["CONHECER","COMPREENDER","APLICAR","ANALISAR","AVALIAR"]);
 
+import { createHash } from "crypto";
+
 export function normalizeText(text: string): string {
   return text
     .normalize("NFD")
@@ -48,6 +50,10 @@ export function normalizeText(text: string): string {
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+export function computeStatementHash(statement: string): string {
+  return createHash("sha256").update(normalizeText(statement)).digest("hex");
 }
 
 /**

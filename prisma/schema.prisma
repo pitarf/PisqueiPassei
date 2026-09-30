@@ -94,8 +94,11 @@ model Question {
   subtopic         String?
   referenceIdsJson Json?
   verificationStatus String @default("PENDENTE")
+  statementHash    String    @default("")
   createdAt        DateTime  @default(now())
   attempts         QuestionAttempt[]
+
+  @@unique([topicId, statementHash])
 }
 
 model HistoricalExam {

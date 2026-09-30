@@ -9,7 +9,27 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: transpetro_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/transpetro_ci
+      NODE_ENV: test
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,6 +46,12 @@ jobs:
       - name: Generate Prisma Client
         run: npm run prisma:generate
 
+      - name: Setup Database Schema
+        run: npx prisma db push --skip-generate
+
+      - name: Seed Deterministic CI Data
+        run: npm run seed:ci
+
       - name: TypeScript check
         run: npm run typecheck
 
@@ -40,4 +66,12 @@ jobs:
       - name: Production build
         run: npm run build
         env:
-          DATABASE_URL: postgresql://ci:ci@localhost:5432/transpetro_ci
+          NODE_ENV: production
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E Tests (Desktop + Mobile)
+        run: npm run test:e2e
+        env:
+          CI: true
