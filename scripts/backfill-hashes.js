@@ -1,21 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
-const { createHash } = require("crypto");
+const { computeStatementHash } = require("../src/lib/question-validator");
 
 const prisma = new PrismaClient();
-
-function normalizeText(text) {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function computeStatementHash(statement) {
-  return createHash("sha256").update(normalizeText(statement)).digest("hex");
-}
 
 async function main() {
   console.log("Iniciando backfill de statementHash nas questões existentes...");

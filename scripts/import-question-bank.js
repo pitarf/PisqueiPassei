@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
-const crypto = require("crypto");
 const { PrismaClient } = require("@prisma/client");
+const { normalizeText, computeStatementHash } = require("../src/lib/question-validator");
 
 const prisma = new PrismaClient();
 
@@ -16,18 +16,8 @@ const ORIGINS = new Set([
 
 const DIFFICULTIES = new Set(["FACIL", "MEDIA", "DIFICIL"]);
 
-function normalize(text) {
-  return String(text || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function hashStatement(text) {
-  return crypto.createHash("sha256").update(normalize(text)).digest("hex");
-}
+const normalize = normalizeText;
+const hashStatement = computeStatementHash;
 
 function optionalString(value) {
   return typeof value === "string" && value.trim() ? value.trim() : null;

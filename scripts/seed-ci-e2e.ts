@@ -1,21 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { createHash } from "crypto";
+import { normalizeText, computeStatementHash } from "../src/lib/question-validator";
 
 const prisma = new PrismaClient();
-
-function normalizeText(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function computeStatementHash(statement: string): string {
-  return createHash("sha256").update(normalizeText(statement)).digest("hex");
-}
 
 async function main() {
   console.log("🌱 [CI-SEED] Iniciando seed determinístico para testes e E2E Playwright...");
