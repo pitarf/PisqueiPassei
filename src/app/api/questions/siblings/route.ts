@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         topicTitle: reference.topic.title,
         subjectName: reference.topic.subject.name,
       },
-      variants.map((mode) => ({
+      variants.map((mode: typeof VARIANTS[number]) => ({
         mode,
         difficulty: mode === "FACIL" ? "FACIL" : mode === "DIFICIL" ? "DIFICIL" : reference.difficulty,
       })),

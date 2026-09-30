@@ -2,14 +2,24 @@ import { prisma } from "@/lib/prisma";
 import { generateQuestionBatch } from "@/lib/gemini";
 import { validateAiQuestion, normalizeText } from "@/lib/question-validator";
 
-const PORT_TOTAL = 10;
-const MATH_TOTAL = 10;
-const SPECIFIC_TOTAL = 40;
+export const EXAM_TOTAL = 60;
+export const PORT_TOTAL = 10;
+export const MATH_TOTAL = 10;
+export const SPECIFIC_TOTAL = 40;
+export const EXAM_SECONDS = 4 * 60 * 60;
+
 const MAX_STOCK_GENERATION_RETRIES = 2;
 
-function shuffle<T>(items: T[]) { const result = [...items]; for (let i = result.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [result[i], result[j]] = [result[j], result[i]]; } return result; }
+export function shuffle<T>(items: T[]): T[] {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 
-async function refillStock(
+export async function refillStock(
   targetTopics: { id: string; title: string; officialSource: string | null; subject: { name: string } }[],
   deficit: number,
   existingStatements: Set<string>
@@ -49,10 +59,13 @@ async function refillStock(
               origin: q.origin,
               banca: q.banca,
               sourceRef: q.sourceRef,
+<<<<<<< HEAD
               questionType: q.questionType,
               cognitiveLevel: q.cognitiveLevel,
               subtopic: q.subtopic,
               verificationStatus: q.verificationStatus,
+=======
+>>>>>>> 6acbb6c (feat: desacoplamento do simulado, resiliencia de tipos e expansao da suite E2E Playwright)
             },
           });
           existingStatements.add(key);
@@ -79,7 +92,10 @@ export async function loadExamQuestions() {
     prisma.question.findMany({ where: { topic: { subjectId: { in: specificIds } } }, include: { topic: { include: { subject: true } } } }),
   ]);
 
+<<<<<<< HEAD
   // Se houver déficit em qualquer categoria, aciona suprimento resiliente antes de falhar
+=======
+>>>>>>> 6acbb6c (feat: desacoplamento do simulado, resiliencia de tipos e expansao da suite E2E Playwright)
   const portDeficit = PORT_TOTAL - portPool.length;
   const mathDeficit = MATH_TOTAL - mathPool.length;
   const specificDeficit = SPECIFIC_TOTAL - specificPool.length;
@@ -110,6 +126,7 @@ export async function loadExamQuestions() {
   const portQuestions = shuffle(portPool).slice(0, PORT_TOTAL);
   const mathQuestions = shuffle(mathPool).slice(0, MATH_TOTAL);
   const specificQuestions = shuffle(specificPool).slice(0, SPECIFIC_TOTAL);
+
   return {
     questions: [...portQuestions, ...mathQuestions, ...specificQuestions],
     distribution: {

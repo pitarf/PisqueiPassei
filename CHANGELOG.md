@@ -2,6 +2,16 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.27] - 2026-09-30
+
+### Sincronização de Banco Histórico, Questões Irmãs e E2E Playwright Expandido
+- **Correção de Tipagem & Resiliência:** Corrigidos tipos estritos e assinaturas de métodos em `src/lib/gemini.ts`, `src/lib/question-validator.ts`, `src/app/api/questions/batch/route.ts` e `src/app/api/questions/siblings/route.ts`.
+- **Módulo Central de Simulado (`src/lib/simulation.ts`):** Extração e unificação das funções de montagem de prova (`loadExamQuestions`, `refillStock`), evitando duplicação de regras entre a API (`/api/simulado`) e a Server Page (`/simulado`).
+- **Aviso Transparente de Déficit:** Exibição clara no frontend caso haja déficit de questões para a composição 10/10/40, sem mascarar números e com opção direta de retry ou treino livre.
+- **Sincronização de Schema Neon PostgreSQL:** Sincronizadas colunas e tabelas para `HistoricalExam` e `HistoricalQuestion` com suporte a metadados didáticos (`questionType`, `cognitiveLevel`, `subtopic`, `verificationStatus`).
+- **Suíte E2E Playwright Ampliada (18/18 testes):** Cobertura expandida para simulação interativa, banco histórico (`/questoes/historico`), Professor IA (`/professor`), flashcards e desempenho em Desktop e Mobile Chrome (18 passed em 16.8s).
+- **Validação Completa:** Typecheck 0 erros, 28 testes unitários passando 100%, auditoria de banco 100% íntegra (47 tópicos oficiais) e build de produção bem-sucedido.
+
 ## [0.1.26] - 2026-09-17
 
 ### Hardening Funcional Completo, Concorrência e Automação E2E

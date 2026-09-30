@@ -1,16 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { loadExamQuestions } from "@/lib/simulation";
 import { evaluateSimulation } from "@/lib/exam";
 import { updateStudyStreak } from "@/lib/streak";
+import { loadExamQuestions, EXAM_TOTAL, PORT_TOTAL, MATH_TOTAL, SPECIFIC_TOTAL, EXAM_SECONDS } from "@/lib/simulation";
 
-const EXAM_TOTAL = 60;
-const PORT_TOTAL = 10;
-const MATH_TOTAL = 10;
-const SPECIFIC_TOTAL = 40;
-const EXAM_SECONDS = 4 * 60 * 60;
 const DUPLICATE_WINDOW_MS = 15_000;
 const MAX_IDEMPOTENCY_KEY_LENGTH = 128;
+
+export async function GET() {
+  try {
+    const { questions, distribution, deficits } = await loadExamQuestions();
+    if (questions.length !== EXAM_TOTAL) {
+      return NextResponse.json(
+        {
+          error: "Estoque insuficiente para montar a prova completa de 60 questões.",
+          required: { portuguese: PORT_TOTAL, math: MATH_TOTAL, specific: SPECIFIC_TOTAL, total: EXAM_TOTAL },
+          available: distribution,
+          deficits,
+          reason: "Não foi possível suprir todas as questões faltantes via IA no momento. Tente novamente em instantes.",
+        },
+        { status: 503 }
+      );
+    }
+    return NextResponse.json({ total: questions.length, questions, distribution });
+  } catch (error) {
+    console.error("Erro ao carregar simulado:", error);
+    return NextResponse.json({ error: "Erro ao gerar ou carregar questões para o simulado." }, { status: 500 });
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {

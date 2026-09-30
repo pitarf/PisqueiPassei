@@ -187,9 +187,12 @@ export type HistoricalQuestionPattern = {
   topicTitle: string;
   subjectName: string;
   difficulty: string;
-  questionType?: string;
-  cognitiveLevel?: string;
+  correctOption?: string;
   explanation?: string;
+  origin?: string;
+  questionType?: string | null;
+  cognitiveLevel?: string | null;
+  subtopic?: string | null;
   sourceRef?: string | null;
 };
 

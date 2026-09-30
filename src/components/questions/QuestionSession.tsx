@@ -6,10 +6,26 @@ import { toast } from "sonner";
 import { Clock, CheckCircle2, XCircle, ArrowRight, Bot, Award } from "lucide-react";
 
 interface Question {
-  id: string; statement: string; optionA: string; optionB: string; optionC: string; optionD: string; optionE: string;
-  correctOption: string; explanation: string; origin: string; difficulty: string;
+  id: string;
+  statement: string;
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+  optionE: string;
+  correctOption: string;
+  explanation: string;
+  origin: string;
+  difficulty: string;
   topic?: { title: string; code?: string | null; subject?: { name: string } };
-  questionType?: string | null; cognitiveLevel?: string | null; subtopic?: string | null; sourceRef?: string | null; sourceUrl?: string | null; sourcePage?: number | null; verificationStatus?: string | null; referenceIdsJson?: unknown;
+  questionType?: string | null;
+  cognitiveLevel?: string | null;
+  subtopic?: string | null;
+  sourceRef?: string | null;
+  sourceUrl?: string | null;
+  sourcePage?: number | null;
+  verificationStatus?: string | null;
+  referenceIdsJson?: unknown;
 }
 interface QuestionSessionProps { initialQuestions: Question[]; title: string; modeDescription?: string }
 

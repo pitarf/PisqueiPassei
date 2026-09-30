@@ -46,8 +46,10 @@
 - [x] Validador estrutural e proveniência de questões inéditas geradas por IA (`question-validator.ts`)
 - [x] Auto-suprimento resiliente de estoque para o Simulado Cesgranrio (60 questões com retry controlado)
 - [x] Teste de concorrência e idempotência com transação ACID e constraint P2002 aprovado
-- [x] Suíte E2E automatizada com Playwright (Desktop e Mobile Chrome) 100% verde (12 testes)
+- [x] Suíte E2E automatizada com Playwright (Desktop e Mobile Chrome) 100% verde (18 testes)
 - [x] Auditoria profunda do banco de dados (`scripts/check-db.js`) aprovada sem inconsistências ou órfãos
+- [x] Unificação e desacoplamento do carregador de simulado em `src/lib/simulation.ts` com aviso transparente de déficit
+- [x] Integração de catálogo e padrões de provas históricas (`/questoes/historico`) e geração de questões irmãs (`/api/questions/siblings`)
 
 ## 🛠️ Próxima frente de hardening
 
