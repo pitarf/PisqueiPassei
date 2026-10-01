@@ -3,7 +3,17 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Clock, CheckCircle2, XCircle, ArrowRight, Bot, Award } from "lucide-react";
+import {
+  Clock,
+  CheckCircle2,
+  XCircle,
+  ArrowRight,
+  Bot,
+  Award,
+  Layers,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
 
 interface Question {
   id: string;
@@ -27,25 +37,82 @@ interface Question {
   verificationStatus?: string | null;
   referenceIdsJson?: unknown;
 }
-interface QuestionSessionProps { initialQuestions: Question[]; title: string; modeDescription?: string }
 
-export const QuestionSession: React.FC<QuestionSessionProps> = ({ initialQuestions, title }) => {
+export interface SessionTopicBreakdown {
+  topicId?: string;
+  title: string;
+  subjectName?: string;
+  total: number;
+  correct: number;
+}
+
+export interface SessionDifficultyBreakdown {
+  difficulty: string;
+  total: number;
+  correct: number;
+}
+
+export interface SessionCognitiveBreakdown {
+  level: string;
+  total: number;
+  correct: number;
+}
+
+interface QuestionSessionProps {
+  initialQuestions: Question[];
+  title: string;
+  modeDescription?: string;
+  sessionPreview?: {
+    totalQuestions: number;
+    newQuestionsCount?: number;
+    reviewQuestionsCount?: number;
+    expectedDifficulty?: string;
+    explanation?: string;
+    selectedTopics?: Array<{
+      title: string;
+      reason: string;
+      suggestedDifficulty: string;
+      questionsCount: number;
+    }>;
+  };
+}
+
+export const QuestionSession: React.FC<QuestionSessionProps> = ({
+  initialQuestions,
+  title,
+  sessionPreview,
+}) => {
   const [questions] = useState<Question[]>(initialQuestions);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [lastResult, setLastResult] = useState<{ isCorrect: boolean; explanation: string; correctOption: string } | null>(null);
-  const [sessionResults, setSessionResults] = useState<{ questionId: string; isCorrect: boolean }[]>([]);
+  const [lastResult, setLastResult] = useState<{
+    isCorrect: boolean;
+    explanation: string;
+    correctOption: string;
+  } | null>(null);
+  const [sessionResults, setSessionResults] = useState<
+    {
+      questionId: string;
+      isCorrect: boolean;
+      timeSpent: number;
+      question: Question;
+    }[]
+  >([]);
   const [isFinished, setIsFinished] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
+  const [totalSessionSeconds, setTotalSessionSeconds] = useState(0);
   const [idempotencyKey, setIdempotencyKey] = useState("");
   const [siblingLoading, setSiblingLoading] = useState(false);
   const [siblingCreated, setSiblingCreated] = useState(0);
 
   useEffect(() => {
     if (isFinished) return;
-    const interval = setInterval(() => setTimerSeconds((prev) => prev + 1), 1000);
+    const interval = setInterval(() => {
+      setTimerSeconds((prev) => prev + 1);
+      setTotalSessionSeconds((prev) => prev + 1);
+    }, 1000);
     return () => clearInterval(interval);
   }, [isFinished]);
 
@@ -61,19 +128,43 @@ export const QuestionSession: React.FC<QuestionSessionProps> = ({ initialQuestio
     setIsSubmitting(true);
     try {
       const res = await fetch("/api/questions/submit", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questionId: currentQuestion.id, chosenOption: selectedOption, timeSpentSeconds: timerSeconds, idempotencyKey: submissionKey }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionId: currentQuestion.id,
+          chosenOption: selectedOption,
+          timeSpentSeconds: timerSeconds,
+          idempotencyKey: submissionKey,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Não conseguimos registrar sua resposta agora.");
       setIsAnswered(true);
-      setLastResult({ isCorrect: data.isCorrect, explanation: data.explanation || currentQuestion.explanation, correctOption: data.correctOption || currentQuestion.correctOption });
-      setSessionResults((prev) => prev.some((item) => item.questionId === currentQuestion.id) ? prev : [...prev, { questionId: currentQuestion.id, isCorrect: data.isCorrect }]);
+      setLastResult({
+        isCorrect: data.isCorrect,
+        explanation: data.explanation || currentQuestion.explanation,
+        correctOption: data.correctOption || currentQuestion.correctOption,
+      });
+      setSessionResults((prev) =>
+        prev.some((item) => item.questionId === currentQuestion.id)
+          ? prev
+          : [
+              ...prev,
+              {
+                questionId: currentQuestion.id,
+                isCorrect: data.isCorrect,
+                timeSpent: timerSeconds,
+                question: currentQuestion,
+              },
+            ]
+      );
       if (data.isCorrect) toast.success(data.duplicate ? "Você acertou!" : "Na mosca! Resposta certa (+10 XP).");
       else toast.error(`Não foi dessa vez. A alternativa correta era a ${data.correctOption}.`);
     } catch (err: any) {
       toast.error(err.message || "Tivemos um problema de conexão. Tente novamente.");
-    } finally { setIsSubmitting(false); }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleGenerateSiblings = async () => {
@@ -83,12 +174,19 @@ export const QuestionSession: React.FC<QuestionSessionProps> = ({ initialQuestio
       const res = await fetch("/api/questions/siblings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questionId: currentQuestion.id, variants: ["FACIL", "EQUIVALENTE", "DIFICIL"] }),
+        body: JSON.stringify({
+          questionId: currentQuestion.id,
+          variants: ["FACIL", "EQUIVALENTE", "DIFICIL"],
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Não foi possível gerar variações.");
       setSiblingCreated(Number(data.generated || 0));
-      toast.success(data.generated ? `${data.generated} variações inéditas adicionadas ao banco.` : "Nenhuma variação nova foi adicionada.");
+      toast.success(
+        data.generated
+          ? `${data.generated} variações inéditas adicionadas ao banco.`
+          : "Nenhuma variação nova foi adicionada."
+      );
     } catch (err: any) {
       toast.error(err.message || "Falha ao gerar variações.");
     } finally {
@@ -98,15 +196,444 @@ export const QuestionSession: React.FC<QuestionSessionProps> = ({ initialQuestio
 
   const handleNextQuestion = () => {
     if (currentIndex + 1 < questions.length) {
-      setCurrentIndex((prev) => prev + 1); setSelectedOption(null); setIsAnswered(false); setLastResult(null); setTimerSeconds(0); setIdempotencyKey(""); setSiblingCreated(0);
-    } else setIsFinished(true);
+      setCurrentIndex((prev) => prev + 1);
+      setSelectedOption(null);
+      setIsAnswered(false);
+      setLastResult(null);
+      setTimerSeconds(0);
+      setIdempotencyKey("");
+      setSiblingCreated(0);
+    } else {
+      setIsFinished(true);
+    }
   };
 
   if (isFinished) {
-    const total = sessionResults.length, correctCount = sessionResults.filter((r) => r.isCorrect).length, accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
-    return <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 text-center space-y-5 max-w-xl mx-auto shadow-xl"><div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mx-auto"><Award className="w-8 h-8" /></div><div><h2 className="text-xl sm:text-2xl font-black text-white">Treino concluído!</h2><p className="text-xs sm:text-sm text-slate-400 mt-1">Seu progresso foi salvo e seu painel de domínio dos temas já está atualizado.</p></div><div className="grid grid-cols-3 gap-3 bg-slate-800/80 p-4 rounded-xl border border-slate-700/60"><div><p className="text-[11px] text-slate-400">Respondidas</p><p className="text-xl font-bold text-white">{total}</p></div><div><p className="text-[11px] text-slate-400">Acertos</p><p className="text-xl font-bold text-emerald-400">{correctCount}</p></div><div><p className="text-[11px] text-slate-400">Aproveitamento</p><p className="text-xl font-bold text-sky-400">{accuracy}%</p></div></div><div className="flex items-center justify-center gap-3 pt-3"><Link href="/questoes" className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs">Treinar Mais</Link><Link href="/" className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs shadow-md">Voltar ao Início</Link></div></div>;
-  }
-  if (!currentQuestion) return <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center"><p className="text-sm text-slate-300">Nenhuma questão encontrada para este filtro.</p><Link href="/questoes" className="mt-3 px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold inline-block">Ver Outros Temas</Link></div>;
+    const total = sessionResults.length;
+    const correctCount = sessionResults.filter((r) => r.isCorrect).length;
+    const errorCount = total - correctCount;
+    const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+    const minutes = Math.floor(totalSessionSeconds / 60);
+    const seconds = totalSessionSeconds % 60;
+    const timeFormatted = `${minutes}m ${seconds}s`;
 
-  return <div className="space-y-5 max-w-3xl mx-auto pb-24 sm:pb-12"><div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between shadow-sm"><div><span className="text-xs font-bold text-emerald-400">{title}</span><p className="text-xs text-slate-400">Questão <span className="text-white font-bold">{currentIndex + 1}</span> de <span className="text-slate-200">{questions.length}</span></p></div><div className="flex items-center gap-3"><div className="flex items-center gap-1 bg-slate-800 px-3 py-1.5 rounded-full text-xs text-slate-300 border border-slate-700"><Clock className="w-3.5 h-3.5 text-amber-400" /><span>{Math.floor(timerSeconds / 60)}:{String(timerSeconds % 60).padStart(2, "0")}</span></div></div></div><div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-7 space-y-5 shadow-md"><div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800"><div className="flex items-center gap-2 flex-wrap">{currentQuestion.topic?.subject?.name && <span className="text-xs font-medium text-slate-400">{currentQuestion.topic.subject.name}</span>}{currentQuestion.topic?.title && <span className="px-2 py-0.5 text-[11px] bg-slate-800 text-slate-300 rounded border border-slate-700 truncate max-w-xs">{currentQuestion.topic.title}</span>}<span className="px-2 py-0.5 text-[10px] uppercase font-bold bg-slate-800 text-slate-400 rounded border border-slate-700">{currentQuestion.difficulty}</span>{currentQuestion.questionType && <span className="px-2 py-0.5 text-[10px] uppercase font-bold bg-sky-500/10 text-sky-300 rounded border border-sky-500/20">{currentQuestion.questionType}</span>}{currentQuestion.cognitiveLevel && <span className="px-2 py-0.5 text-[10px] uppercase font-bold bg-fuchsia-500/10 text-fuchsia-300 rounded border border-fuchsia-500/20">{currentQuestion.cognitiveLevel}</span>}</div><span className={`text-[10px] px-2 py-0.5 rounded border ${(currentQuestion.origin?.startsWith("OFICIAL_") ? "bg-sky-500/10 text-sky-300 border-sky-500/30" : "bg-violet-500/10 text-violet-300 border-violet-500/30")}`}>{currentQuestion.origin.startsWith("OFICIAL_") ? "Prova oficial" : currentQuestion.origin === "INEDITA_IA" || currentQuestion.origin === "AI_GENERATED" ? "Questão inédita" : "Adaptada"}</span></div><p className="text-sm sm:text-base text-slate-100 font-medium leading-relaxed whitespace-pre-line">{currentQuestion.statement}</p><div className="space-y-2 pt-2">{["A", "B", "C", "D", "E"].map((opt) => { const optText = currentQuestion[`option${opt}` as keyof Question] as string; if (!optText) return null; const isSelected = selectedOption === opt, isCorrectAnswer = currentQuestion.correctOption === opt; let btnClass = "w-full text-left p-3 sm:p-3.5 rounded-xl text-xs sm:text-sm font-medium border transition-all flex items-start gap-3 "; if (isAnswered) { if (isCorrectAnswer) btnClass += "bg-emerald-500/20 border-emerald-500 text-emerald-300"; else if (isSelected) btnClass += "bg-rose-500/20 border-rose-500 text-rose-300"; else btnClass += "bg-slate-800/50 border-slate-800 text-slate-500 opacity-60"; } else if (isSelected) btnClass += "bg-emerald-500/15 border-emerald-500 text-emerald-200 shadow-sm"; else btnClass += "bg-slate-800/70 hover:bg-slate-800 border-slate-700/80 text-slate-200 hover:border-slate-600"; return <button key={opt} onClick={() => !isAnswered && !isSubmitting && setSelectedOption(opt)} disabled={isAnswered || isSubmitting} className={btnClass}><span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${isSelected ? "bg-emerald-500 text-slate-950" : "bg-slate-700 text-slate-300"}`}>{opt}</span><span className="leading-snug pt-0.5">{optText}</span></button>; })}</div><div className="pt-4 border-t border-slate-800 flex items-center justify-between"><Link href={`/professor?pergunta=${encodeURIComponent(`Explique a questão: ${currentQuestion.statement.slice(0, 150)}`)}`} className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1.5"><Bot className="w-3.5 h-3.5 text-emerald-400" /><span className="hidden sm:inline">Pedir explicação ao Professor IA</span></Link>{!isAnswered ? <button onClick={handleSubmitAnswer} disabled={!selectedOption || isSubmitting} className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs sm:text-sm shadow-md flex items-center gap-1.5"><span>{isSubmitting ? "Enviando..." : "Responder"}</span><CheckCircle2 className="w-4 h-4" /></button> : <button onClick={handleNextQuestion} className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs sm:text-sm shadow-md flex items-center gap-1.5"><span>{currentIndex + 1 < questions.length ? "Próxima Questão" : "Concluir Bateria"}</span><ArrowRight className="w-4 h-4" /></button>}</div>{isAnswered && <div className="mt-3 flex items-center justify-end gap-2"><button onClick={handleGenerateSiblings} disabled={siblingLoading} className="px-3 py-2 rounded-xl bg-violet-500/10 border border-violet-500/30 text-violet-300 text-[11px] font-bold hover:bg-violet-500/20 disabled:opacity-50">{siblingLoading ? "Gerando..." : "Gerar questões semelhantes"}</button>{siblingCreated > 0 && <span className="text-[10px] text-emerald-400">{siblingCreated} adicionada(s)</span>}</div>}{isAnswered && lastResult && <div className="mt-4 p-4 rounded-xl bg-slate-850 border border-slate-700/80 space-y-2"><div>{lastResult.isCorrect ? <span className="text-emerald-400 font-bold text-xs flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> Resposta certa!</span> : <span className="text-rose-400 font-bold text-xs flex items-center gap-1"><XCircle className="w-4 h-4" /> Gabarito: Alternativa {lastResult.correctOption}</span>}</div><p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">{lastResult.explanation}</p></div>}</div></div>;
+    // Desempenho por Tópico
+    const topicMap = new Map<string, SessionTopicBreakdown>();
+    // Desempenho por Dificuldade
+    const diffMap = new Map<string, SessionDifficultyBreakdown>();
+    // Desempenho por Nível Cognitivo
+    const cogMap = new Map<string, SessionCognitiveBreakdown>();
+    // Questões que precisam de revisão
+    const questionsToReview = sessionResults.filter((r) => !r.isCorrect);
+
+    for (const r of sessionResults) {
+      const q = r.question;
+      const tKey = q.topic?.title || "Tópico Geral";
+      const tData = topicMap.get(tKey) || {
+        title: tKey,
+        subjectName: q.topic?.subject?.name,
+        total: 0,
+        correct: 0,
+      };
+      tData.total++;
+      if (r.isCorrect) tData.correct++;
+      topicMap.set(tKey, tData);
+
+      const dKey = q.difficulty || "MEDIA";
+      const dData = diffMap.get(dKey) || { difficulty: dKey, total: 0, correct: 0 };
+      dData.total++;
+      if (r.isCorrect) dData.correct++;
+      diffMap.set(dKey, dData);
+
+      const cKey = q.cognitiveLevel || "COMPREENDER";
+      const cData = cogMap.get(cKey) || { level: cKey, total: 0, correct: 0 };
+      cData.total++;
+      if (r.isCorrect) cData.correct++;
+      cogMap.set(cKey, cData);
+    }
+
+    const topicBreakdown = Array.from(topicMap.values());
+    const diffBreakdown = Array.from(diffMap.values());
+    const cogBreakdown = Array.from(cogMap.values());
+
+    // Identifica o tópico mais frágil para recomendar a próxima sessão
+    const weakestTopic = topicBreakdown.sort(
+      (a, b) => a.correct / a.total - b.correct / b.total
+    )[0];
+
+    return (
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 max-w-2xl mx-auto shadow-xl">
+        <div className="text-center space-y-2">
+          <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mx-auto">
+            <Award className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-white">Treino Concluído</h2>
+          <p className="text-xs sm:text-sm text-slate-400">
+            Seu progresso foi registrado e o motor adaptativo recalculou os parâmetros pedagógicos.
+          </p>
+        </div>
+
+        {/* MÉTRICAS PRINCIPAIS DA SESSÃO */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-800/80 p-4 rounded-xl border border-slate-700/60 text-center">
+          <div>
+            <p className="text-[11px] text-slate-400">Respondidas</p>
+            <p className="text-xl font-bold text-white">{total}</p>
+          </div>
+          <div>
+            <p className="text-[11px] text-slate-400">Acertos</p>
+            <p className="text-xl font-bold text-emerald-400">{correctCount}</p>
+          </div>
+          <div>
+            <p className="text-[11px] text-slate-400">Erros</p>
+            <p className="text-xl font-bold text-rose-400">{errorCount}</p>
+          </div>
+          <div>
+            <p className="text-[11px] text-slate-400">Aproveitamento</p>
+            <p className="text-xl font-bold text-sky-400">{accuracy}%</p>
+            <span className="text-[10px] text-slate-500">{timeFormatted}</span>
+          </div>
+        </div>
+
+        {/* DESEMPENHO POR DIFICULDADE */}
+        <div className="bg-slate-850 p-4 rounded-xl border border-slate-800 space-y-2">
+          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <TrendingUp className="w-3.5 h-3.5 text-sky-400" /> Rendimento por Dificuldade
+          </span>
+          <div className="grid grid-cols-3 gap-2 pt-1">
+            {diffBreakdown.map((d) => (
+              <div key={d.difficulty} className="bg-slate-800 p-2.5 rounded-lg border border-slate-700 text-center">
+                <span className="text-[10px] text-slate-400 uppercase font-semibold">{d.difficulty}</span>
+                <p className="text-sm font-bold text-white mt-0.5">
+                  {d.correct}/{d.total} ({d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0}%)
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* DESEMPENHO POR NÍVEL COGNITIVO */}
+        {cogBreakdown.length > 0 && (
+          <div className="bg-slate-850 p-4 rounded-xl border border-slate-800 space-y-2">
+            <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-fuchsia-400" /> Rendimento por Nível Cognitivo
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+              {cogBreakdown.map((c) => (
+                <div key={c.level} className="bg-slate-800 p-2 rounded-lg border border-slate-700 text-center">
+                  <span className="text-[10px] text-slate-400 uppercase font-semibold">{c.level}</span>
+                  <p className="text-xs font-bold text-slate-200 mt-0.5">
+                    {c.correct}/{c.total} ({c.total > 0 ? Math.round((c.correct / c.total) * 100) : 0}%)
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* DESEMPENHO POR TÓPICO */}
+        <div className="bg-slate-850 p-4 rounded-xl border border-slate-800 space-y-2">
+          <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+            Rendimento por Tópico Estudado
+          </span>
+          <div className="space-y-1.5 pt-1">
+            {topicBreakdown.map((t) => (
+              <div
+                key={t.title}
+                className="flex items-center justify-between text-xs p-2 bg-slate-800 rounded-lg border border-slate-750"
+              >
+                <div className="min-w-0 pr-2">
+                  <span className="text-slate-200 font-medium truncate block">{t.title}</span>
+                  {t.subjectName && <span className="text-[10px] text-slate-500">{t.subjectName}</span>}
+                </div>
+                <span
+                  className={`font-bold shrink-0 ${
+                    t.correct === t.total ? "text-emerald-400" : t.correct === 0 ? "text-rose-400" : "text-amber-400"
+                  }`}
+                >
+                  {t.correct}/{t.total} ({t.total > 0 ? Math.round((t.correct / t.total) * 100) : 0}%)
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* QUESTÕES QUE PRECISAM DE REVISÃO */}
+        {questionsToReview.length > 0 && (
+          <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl space-y-2">
+            <span className="text-xs font-bold text-rose-300 uppercase tracking-wider flex items-center gap-1.5">
+              <XCircle className="w-4 h-4 text-rose-400" /> Questões para Revisão ({questionsToReview.length} item(ns))
+            </span>
+            <p className="text-xs text-rose-200/80">
+              Esses itens foram integrados à sua fila de repetição espaçada para consolidação duradoura.
+            </p>
+            <div className="space-y-1.5 pt-1">
+              {questionsToReview.map((item, idx) => (
+                <div key={item.questionId} className="bg-slate-900/80 p-2.5 rounded-lg border border-rose-500/20 text-xs">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-rose-300">Item #{idx + 1}</span>
+                    <span className="text-[10px] text-slate-400">{item.question.topic?.title}</span>
+                  </div>
+                  <p className="text-slate-300 line-clamp-1 mt-0.5">{item.question.statement}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* RECOMENDAÇÃO DA PRÓXIMA SESSÃO */}
+        {weakestTopic && (
+          <div className="bg-sky-500/10 border border-sky-500/30 p-4 rounded-xl space-y-1">
+            <span className="text-xs font-bold text-sky-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-sky-400" /> Próximo Passo Recomendado
+            </span>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              O tópico com maior demanda de atenção nesta rodada foi <strong>{weakestTopic.title}</strong> (
+              {weakestTopic.correct}/{weakestTopic.total} acertos). Recomendamos fazer um treino específico deste
+              conteúdo ou acionar a mentoria com o Professor IA.
+            </p>
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          {questionsToReview.length > 0 && (
+            <Link
+              href="/questoes?modo=erros"
+              className="px-4 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-bold text-xs transition-colors"
+            >
+              Revisar Meus Erros ({questionsToReview.length})
+            </Link>
+          )}
+          <Link
+            href="/questoes?modo=estudar_agora"
+            className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors shadow-md"
+          >
+            Nova Bateria Inteligente
+          </Link>
+          <Link
+            href="/"
+            className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition-colors"
+          >
+            Voltar ao Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentQuestion) {
+    return (
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center">
+        <p className="text-sm text-slate-300">Nenhuma questão encontrada para este filtro.</p>
+        <Link
+          href="/questoes"
+          className="mt-3 px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold inline-block"
+        >
+          Ver Outros Temas
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5 max-w-3xl mx-auto pb-24 sm:pb-12">
+      {/* BANNER DE PRÉVIA DA SESSÃO */}
+      {sessionPreview && currentIndex === 0 && (
+        <div className="bg-slate-900 border border-emerald-500/30 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" /> Sessão Adaptativa Configurada
+            </span>
+            <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-medium">
+              {sessionPreview.totalQuestions} questões
+            </span>
+          </div>
+          <p className="text-xs text-slate-300 leading-relaxed">{sessionPreview.explanation}</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1 text-center">
+            <div className="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60">
+              <span className="text-[10px] text-slate-400">Itens Novos</span>
+              <p className="text-sm font-bold text-emerald-400">{sessionPreview.newQuestionsCount ?? 0}</p>
+            </div>
+            <div className="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60">
+              <span className="text-[10px] text-slate-400">Revisões / SRS</span>
+              <p className="text-sm font-bold text-sky-400">{sessionPreview.reviewQuestionsCount ?? 0}</p>
+            </div>
+            <div className="bg-slate-800/80 p-2 rounded-lg border border-slate-700/60 col-span-2 sm:col-span-1">
+              <span className="text-[10px] text-slate-400">Dificuldade Esperada</span>
+              <p className="text-sm font-bold text-amber-300 uppercase">{sessionPreview.expectedDifficulty || "Média"}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CABEÇALHO DO TREINO */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between shadow-sm">
+        <div>
+          <span className="text-xs font-bold text-emerald-400">{title}</span>
+          <p className="text-xs text-slate-400">
+            Questão <span className="text-white font-bold">{currentIndex + 1}</span> de{" "}
+            <span className="text-slate-200">{questions.length}</span>
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 bg-slate-800 px-3 py-1.5 rounded-full text-xs text-slate-300 border border-slate-700">
+            <Clock className="w-3.5 h-3.5 text-amber-400" />
+            <span>
+              {Math.floor(timerSeconds / 60)}:{String(timerSeconds % 60).padStart(2, "0")}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* CARD DA QUESTÃO */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-7 space-y-5 shadow-md">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2 flex-wrap">
+            {currentQuestion.topic?.subject?.name && (
+              <span className="text-xs font-medium text-slate-400">{currentQuestion.topic.subject.name}</span>
+            )}
+            {currentQuestion.topic?.title && (
+              <span className="px-2 py-0.5 text-[11px] bg-slate-800 text-slate-300 rounded border border-slate-700 truncate max-w-xs">
+                {currentQuestion.topic.title}
+              </span>
+            )}
+            <span className="px-2 py-0.5 text-[10px] uppercase font-bold bg-slate-800 text-slate-400 rounded border border-slate-700">
+              {currentQuestion.difficulty}
+            </span>
+            {currentQuestion.questionType && (
+              <span className="px-2 py-0.5 text-[10px] uppercase font-bold bg-sky-500/10 text-sky-300 rounded border border-sky-500/20">
+                {currentQuestion.questionType}
+              </span>
+            )}
+            {currentQuestion.cognitiveLevel && (
+              <span className="px-2 py-0.5 text-[10px] uppercase font-bold bg-fuchsia-500/10 text-fuchsia-300 rounded border border-fuchsia-500/20">
+                {currentQuestion.cognitiveLevel}
+              </span>
+            )}
+          </div>
+          <span
+            className={`text-[10px] px-2 py-0.5 rounded border ${
+              currentQuestion.origin?.startsWith("OFICIAL_")
+                ? "bg-sky-500/10 text-sky-300 border-sky-500/30"
+                : "bg-violet-500/10 text-violet-300 border-violet-500/30"
+            }`}
+          >
+            {currentQuestion.origin.startsWith("OFICIAL_")
+              ? "Prova oficial"
+              : currentQuestion.origin === "INEDITA_IA" || currentQuestion.origin === "AI_GENERATED"
+              ? "Questão inédita"
+              : "Adaptada"}
+          </span>
+        </div>
+
+        <p className="text-sm sm:text-base text-slate-100 font-medium leading-relaxed whitespace-pre-line">
+          {currentQuestion.statement}
+        </p>
+
+        {/* OPÇÕES DE RESPOSTA */}
+        <div className="space-y-2 pt-2">
+          {["A", "B", "C", "D", "E"].map((opt) => {
+            const optText = currentQuestion[`option${opt}` as keyof Question] as string;
+            if (!optText) return null;
+            const isSelected = selectedOption === opt;
+            const isCorrectAnswer = currentQuestion.correctOption === opt;
+            let btnClass =
+              "w-full text-left p-3 sm:p-3.5 rounded-xl text-xs sm:text-sm font-medium border transition-all flex items-start gap-3 ";
+            if (isAnswered) {
+              if (isCorrectAnswer) btnClass += "bg-emerald-500/20 border-emerald-500 text-emerald-300";
+              else if (isSelected) btnClass += "bg-rose-500/20 border-rose-500 text-rose-300";
+              else btnClass += "bg-slate-800/50 border-slate-800 text-slate-500 opacity-60";
+            } else if (isSelected) {
+              btnClass += "bg-emerald-500/15 border-emerald-500 text-emerald-200 shadow-sm";
+            } else {
+              btnClass += "bg-slate-800/70 hover:bg-slate-800 border-slate-700/80 text-slate-200 hover:border-slate-600";
+            }
+            return (
+              <button
+                key={opt}
+                onClick={() => !isAnswered && !isSubmitting && setSelectedOption(opt)}
+                disabled={isAnswered || isSubmitting}
+                className={btnClass}
+              >
+                <span
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                    isSelected ? "bg-emerald-500 text-slate-950" : "bg-slate-700 text-slate-300"
+                  }`}
+                >
+                  {opt}
+                </span>
+                <span className="leading-snug pt-0.5">{optText}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* AÇÕES */}
+        <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+          <Link
+            href={`/professor?pergunta=${encodeURIComponent(
+              `Explique a questão: ${currentQuestion.statement.slice(0, 150)}`
+            )}`}
+            className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1.5"
+          >
+            <Bot className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Pedir explicação ao Professor IA</span>
+          </Link>
+          {!isAnswered ? (
+            <button
+              onClick={handleSubmitAnswer}
+              disabled={!selectedOption || isSubmitting}
+              className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs sm:text-sm shadow-md flex items-center gap-1.5"
+            >
+              <span>{isSubmitting ? "Enviando..." : "Responder"}</span>
+              <CheckCircle2 className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              onClick={handleNextQuestion}
+              className="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs sm:text-sm shadow-md flex items-center gap-1.5"
+            >
+              <span>{currentIndex + 1 < questions.length ? "Próxima Questão" : "Concluir Bateria"}</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {/* VARIAÇÕES PEDAGÓGICAS */}
+        {isAnswered && (
+          <div className="mt-3 flex items-center justify-end gap-2">
+            <button
+              onClick={handleGenerateSiblings}
+              disabled={siblingLoading}
+              className="px-3 py-2 rounded-xl bg-violet-500/10 border border-violet-500/30 text-violet-300 text-[11px] font-bold hover:bg-violet-500/20 disabled:opacity-50"
+            >
+              {siblingLoading ? "Gerando..." : "Gerar questões semelhantes"}
+            </button>
+            {siblingCreated > 0 && (
+              <span className="text-[10px] text-emerald-400">{siblingCreated} adicionada(s)</span>
+            )}
+          </div>
+        )}
+
+        {/* FEEDBACK IMEDIATO */}
+        {isAnswered && lastResult && (
+          <div className="mt-4 p-4 rounded-xl bg-slate-850 border border-slate-700/80 space-y-2">
+            <div>
+              {lastResult.isCorrect ? (
+                <span className="text-emerald-400 font-bold text-xs flex items-center gap-1">
+                  <CheckCircle2 className="w-4 h-4" /> Resposta certa!
+                </span>
+              ) : (
+                <span className="text-rose-400 font-bold text-xs flex items-center gap-1">
+                  <XCircle className="w-4 h-4" /> Gabarito: Alternativa {lastResult.correctOption}
+                </span>
+              )}
+            </div>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+              {lastResult.explanation}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };

@@ -2,6 +2,30 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.35] - 2026-10-01
+
+### Hardening do Motor Adaptativo, Histórico Estrito e Evolução do Treino
+- **Histórico Estrito e Sem Destruição de Memória de Erros (`src/lib/adaptive-engine.ts`):**
+  - Implementada função determinística `evaluateQuestionHistory()` que analisa todo o histórico de tentativas de cada questão sem apagar erros passados após um único acerto fortuito.
+  - Mapeamento de status estritos de estudo por questão: `NUNCA_VISTA`, `PENDENTE` (erro recente ativo), `REVISAO_DEVIDA` (intervalo SRS vencido), `EM_CONSOLIDACAO` (questão com histórico de erro, mas em acerto recente ainda não consolidado) e `CONSOLIDADA` (três ou mais acertos consecutivos com espaçamento temporal adequado).
+  - A fila de revisão de erros prioriza com rigor questões `PENDENTE` e `REVISAO_DEVIDA`, excluindo completamente itens consolidados.
+- **Seleção Pseudoaleatória Determinística (PRNG Mulberry32):**
+  - Adicionado gerador determinístico `createSeededRng(seed)` baseado em Mulberry32 e `seededShuffle()`, eliminando o uso imprevisível de `Math.random()` na composição de blocos de estudo.
+  - Garantia de 100% de reproducibilidade em testes automatizados e emparelhamento determinístico de desempate por `statementHash` e `questionId`.
+  - Suporte ao parâmetro `seed` nos endpoints `/api/questions/batch` e rotas do motor adaptativo.
+- **Cadência Alinhada de Repetição Espaçada (SRS 1, 3, 7, 14, 30 Dias):**
+  - Alinhamento da progressão em `/api/questions/submit` para os patamares de 1 dia, 3 dias, 7 dias, 14 dias e 30 dias de intervalo na persistência do banco de dados Neon.
+- **Tela Pós-Sessão Enriquecida e Banner Pré-Treino (`QuestionSession.tsx`):**
+  - Introduzido banner contextual antes do início do treino informando: tipo da sessão (adaptativa, erro ou padrão), contagem de questões novas vs de revisão e dificuldade esperada.
+  - Implementado relatório pós-sessão completo exibindo: total respondido, acertos, erros, percentual de acerto, tempo decorrido formatado (`Xm Ys`), discriminação de acertos/erros por nível de dificuldade, nível cognitivo e tópico, listagem explícita dos itens que necessitam revisão e recomendação automatizada acionável para o próximo passo de estudo.
+- **Painel de Desempenho Refinado (`/desempenho`):**
+  - Distinção nítida entre "Questões Únicas Vistas" (IDs únicos do acervo de 940) e "Tentativas Totais Registradas", prevenindo inflação estatística e separando acurácia bruta de domínio bayesiano.
+- **Validação e Homologação Integral:**
+  - 87/87 testes unitários Bun aprovados (incluindo 19 testes em `adaptive-engine.test.ts` cobrindo cenários de 1 erro, 3 erros, erro seguido de acerto, ordenação cronológica e consolidação).
+  - 100% de conformidade de integridade no banco Neon com 940 questões ativas (0 órfãos, 0 duplicidades).
+  - TypeScript typecheck e Next.js build de produção finalizados com 0 erros.
+  - 22/22 testes E2E Playwright aprovados em Desktop Chrome e Mobile Chrome.
+
 ## [0.1.34] - 2026-10-01
 
 ### Motor Adaptativo de Estudo sobre o Acervo de 940 Questões

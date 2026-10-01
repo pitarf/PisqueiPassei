@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
         const correct = (progress?.correctAnswers || 0) + (isCorrect ? 1 : 0);
         const mastery = calculateAdaptiveMasteryScore(correct, total, getDifficultyWeight(question.difficulty));
 
-        // Repetição espaçada adaptativa
+        // Repetição espaçada adaptativa (cadência de referência 1, 3, 7, 14 e 30 dias)
         let nextIntervalDays = 1;
         if (!isCorrect) {
           nextIntervalDays = 1;
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
           if (currentInterval <= 1) nextIntervalDays = 3;
           else if (currentInterval <= 3) nextIntervalDays = 7;
           else if (currentInterval <= 7) nextIntervalDays = 14;
-          else nextIntervalDays = Math.min(30, currentInterval + 14);
+          else nextIntervalDays = 30;
         }
         const nextReviewDate = new Date();
         nextReviewDate.setDate(nextReviewDate.getDate() + nextIntervalDays);

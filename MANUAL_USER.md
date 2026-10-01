@@ -29,9 +29,10 @@ Bem-vindo à sua plataforma dedicada de estudos para o concurso da **TRANSPETRO 
 
 4. **Questões, Treino Adaptativo e Simulados:**
    - **Botão "ESTUDAR AGORA" (10 Questões):** recomendação instantânea que seleciona os tópicos mais urgentes para você no momento (com base em menor domínio, erros recentes, matérias nunca vistas e revisões pendentes) calibrando a dificuldade de acordo com seu desempenho.
+   - **Banner Informativo Pré-Treino:** antes de iniciar, você confere a meta da sessão, quantas questões são inéditas, quantas são de revisão espaçada e o nível de dificuldade esperado.
    - **Acervo Pedagógico Mestre com 940 Questões:** acervo robusto e 100% curado com 940 questões ativas cobrindo todos os 47 tópicos oficiais da Ênfase 18 (exatamente 20 questões em cada tópico), com enunciados aprofundados, gabaritos organicamente balanceados (A-E) e sem repetições artificiais.
-   - Treinos de 10, 20 ou baterias personalizadas por tópico ou disciplina.
-   - Modo **"Rever O Que Errei" (com Repetição Espaçada):** seus erros não desaparecem com um único acerto por sorte; a plataforma cria um ciclo de consolidação em 1, 3, 7, 14 e 30 dias para garantir retenção definitiva.
+   - **Modo "Rever O Que Errei" com Consolidação Estrita:** questões erradas não são esquecidas após um único acerto por sorte; elas passam pelos status *Pendente*, *Em consolidação* e só atingem o status *Consolidada* após uma sequência de acertos com espaçamento temporal (1, 3, 7, 14 e 30 dias).
+   - **Relatório Pós-Treino Detalhado:** ao concluir uma bateria de questões, você visualiza um raio-x completo do seu treino: tempo total gasto, taxa de acertos e erros, distribuição por dificuldade (Fácil, Média, Difícil), nível cognitivo e tópicos, lista de questões que demandam revisão e uma recomendação direta para seu próximo passo.
    - **Questões Irmãs (Siblings):** crie variações pedagógicas a partir de qualquer questão do acervo (modo Fácil, Equivalente, Difícil, Novo Cenário ou Distratores Cesgranrio).
    - **Simulado completo Cesgranrio** com exatamente 60 questões (40 específicas + 10 de Português + 10 de Matemática), balanceadas por dispersão estratificada entre tópicos, e cronômetro de 4 horas.
    - **Diagnóstico Pós-Simulado Enriquecido:** além de verificar eliminação oficial Cesgranrio e a meta 47/60, exibe o percentual de acertos por nível de dificuldade (Fácil, Média, Difícil), nível cognitivo, itens não respondidos e monta o plano imediato **"Seu Próximo Estudo"** com botões diretos de treino dos seus 3 tópicos mais frágeis.

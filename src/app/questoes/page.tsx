@@ -23,6 +23,7 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
   const isTrainingActive = Boolean(modo || topicId || subjectId || difficulty || origin);
   const subjects = await prisma.subject.findMany({ include: { topics: { select: { id: true, title: true, code: true } } }, orderBy: { order: "asc" } });
   let questions: any[] = [];
+  let sessionPreview: any = undefined;
 
   if (isTrainingActive) {
     if (modo === "estudar_agora") {
@@ -97,6 +98,7 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
           userAttempts,
           targetCount: countNum,
         });
+        sessionPreview = session.preview;
         questions = session.questions.map((q) => fullQuestionMap.get(q.id)).filter(Boolean);
       }
     } else if (modo === "erros") {
@@ -142,6 +144,7 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
           userAttempts,
           targetCount: countNum,
         });
+        sessionPreview = session.preview;
         questions = session.questions.map((q) => qMap.get(q.id)).filter(Boolean);
       }
       if (questions.length === 0) {
@@ -249,6 +252,7 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
       <QuestionSession 
         initialQuestions={questions} 
         title={modo === "estudar_agora" ? "Sessão Adaptativa Inteligente (Estudar Agora)" : modo === "erros" ? "Revisão dos Meus Erros" : `Treino de Questões (${questions.length} itens)`} 
+        sessionPreview={sessionPreview}
       />
     </div>}
   </div>;

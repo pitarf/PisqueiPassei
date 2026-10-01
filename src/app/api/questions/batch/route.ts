@@ -12,21 +12,14 @@ import {
   evaluateTopicDiagnostic,
   buildStudyNowSession,
   buildErrorReviewSession,
+  createSeededRng,
+  seededShuffle,
   type AttemptRecord,
   type QuestionSummary,
 } from "@/lib/adaptive-engine";
 import { VALID_DIFFICULTIES } from "@/lib/question-validator";
 
 const VALID_MODES = new Set(["normal", "erros", "adaptativo", "estudar_agora"]);
-
-function shuffle<T>(items: T[]): T[] {
-  const result = [...items];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,11 +29,14 @@ export async function POST(req: NextRequest) {
       mode = "normal",
       count = 10,
       difficulty,
+      seed,
     } = await req.json();
 
     if (typeof mode !== "string" || !VALID_MODES.has(mode)) {
       return NextResponse.json({ error: "Modo de questões inválido." }, { status: 400 });
     }
+
+    const rng = seed !== undefined ? createSeededRng(seed) : Math.random;
 
     const requestedDifficulty = difficulty ? String(difficulty).toUpperCase() : null;
     const safeDifficulty = requestedDifficulty && VALID_DIFFICULTIES.has(requestedDifficulty) ? requestedDifficulty : null;
@@ -142,6 +138,7 @@ export async function POST(req: NextRequest) {
         questionsByTopic,
         userAttempts,
         targetCount: safeCount,
+        seed,
       });
 
       const hydratedQuestions = session.questions.map((q) => fullQuestionMap.get(q.id)).filter(Boolean);
@@ -174,6 +171,7 @@ export async function POST(req: NextRequest) {
         allQuestions: questionSummaries,
         userAttempts,
         targetCount: safeCount,
+        seed,
       });
 
       // Se o aluno ainda não possui erros suficientes, complementa com itens de menor domínio
@@ -181,7 +179,7 @@ export async function POST(req: NextRequest) {
       if (finalQuestions.length < safeCount) {
         const existingIds = new Set(finalQuestions.map((q) => q.id));
         const remainingNeeded = safeCount - finalQuestions.length;
-        const fallbackPool = shuffle(questionSummaries.filter((q) => !existingIds.has(q.id)));
+        const fallbackPool = seededShuffle(questionSummaries.filter((q) => !existingIds.has(q.id)), rng);
         finalQuestions = [...finalQuestions, ...fallbackPool.slice(0, remainingNeeded)];
       }
 
@@ -221,8 +219,8 @@ export async function POST(req: NextRequest) {
     const unseenQuestions = candidateQuestions.filter((q) => !answeredIds.has(q.id));
     const seenQuestions = candidateQuestions.filter((q) => answeredIds.has(q.id));
 
-    // Ordena: primeiro as inéditas para o aluno, depois as já vistas embaralhadas
-    const prioritizedPool = [...shuffle(unseenQuestions), ...shuffle(seenQuestions)];
+    // Ordena: primeiro as inéditas para o aluno, depois as já vistas embaralhadas de forma determinística
+    const prioritizedPool = [...seededShuffle(unseenQuestions, rng), ...seededShuffle(seenQuestions, rng)];
     const selectedBatch = prioritizedPool.slice(0, safeCount);
 
     return NextResponse.json({

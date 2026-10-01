@@ -45,10 +45,12 @@ npm run dev
 ## 🔁 Progresso, SRS e Motor Adaptativo
 
 - `src/lib/adaptive-engine.ts`: motor adaptativo de estudo e diagnóstico construído sobre o acervo mestre de 940 questões.
-  - Domínio bayesiano por tópico com amortecimento empírico ($\frac{C + 4}{N + 8} \times 100 \times \text{diffMultiplier}$), impedindo scores distorcidos em amostras pequenas.
-  - Fila "ESTUDAR AGORA": monta bateria de 10 questões equilibrada entre tópicos críticos (menor domínio, erros recentes, tópicos nunca vistos e revisões vencidas) com progressão adaptativa de dificuldade.
-  - Fila "Revisar Meus Erros": fila de repetição espaçada (SRS) progressiva (1 -> 3 -> 7 -> 14 -> 30 dias) impedindo que acertos pontuais descartem erros prematuramente.
-  - Diagnóstico pós-simulado oficial enriquecido com breakdown por dificuldade, nível cognitivo, não respondidas e plano de ação pedagógica "Seu próximo estudo".
+  - **Histórico Estrito (`evaluateQuestionHistory`):** Rastreia todas as tentativas históricas por questão. Questões com histórico de erro entram em `EM_CONSOLIDACAO` após um acerto recente e só se tornam `CONSOLIDADA` após 3 ou mais acertos consecutivos com espaçamento adequado, prevenindo que a memória de erro seja apagada indevidamente. Status avaliados: `NUNCA_VISTA`, `PENDENTE`, `REVISAO_DEVIDA`, `EM_CONSOLIDACAO` e `CONSOLIDADA`.
+  - **PRNG Determinístico (Mulberry32):** `createSeededRng(seed)` e `seededShuffle()` substituem sorteios arbitrários por reprodução determinística de sessões de treino, com desempate por hash de enunciado e ID.
+  - **Domínio bayesiano por tópico:** amortecimento empírico ($\frac{C + 4}{N + 8} \times 100 \times \text{diffMultiplier}$), impedindo scores distorcidos em amostras pequenas.
+  - **Fila "ESTUDAR AGORA":** monta bateria de 10 questões equilibrada entre tópicos críticos (menor domínio, erros recentes, tópicos nunca vistos e revisões vencidas) com progressão adaptativa de dificuldade.
+  - **Fila "Revisar Meus Erros":** repetição espaçada (SRS) progressiva (1 -> 3 -> 7 -> 14 -> 30 dias) focando exclusivamente em itens `PENDENTE` e `REVISAO_DEVIDA`.
+  - **Diagnóstico e Relatório Pós-Treino:** breakdown analítico por dificuldade, nível cognitivo, tópico, relação de itens para revisão e recomendação de próximo estudo.
 - `src/lib/srs.ts` contém a regra própria de repetição espaçada da plataforma. Não descrevê-la como SM-2.
 - `src/lib/streak.ts` calcula a sequência diária usando `America/Sao_Paulo`.
 - Questões, flashcards, simulados e feedback de aula atualizam a sequência quando a atividade é efetivamente registrada.
@@ -57,7 +59,7 @@ npm run dev
 ## 🧪 Testes, Auditoria e Qualidade
 
 - **Expansão Mestre para 940 Questões:** `node -r dotenv/config scripts/expand-bank-to-940.js --subject="Nome"` (orquestrador com verificação semântica em tempo real, balanceamento ativo de gabarito A-E e blindagem jurídica/planilhas).
-- **Testes Unitários & Integração:** `npm test` (`bun test src/lib` executando 68 testes cobrindo limites oficiais, taxonomia, SRS, streak, RAG, idempotência P2002, simulado estratificado, motor de auditoria semântica e QA Risk Score calibrado).
+- **Testes Unitários & Integração:** `npm test` (`bun test src/lib` executando 87 testes cobrindo limites oficiais, taxonomia, SRS, streak, RAG, idempotência P2002, simulado estratificado, motor de auditoria semântica e 19 testes do motor adaptativo).
 - **Auditoria Estrutural de Banco:** `npm run db:check` (`node -r ts-node/register scripts/check-db.js`, fail-fast se houver qualquer anomalia de hash, órfãos ou taxonomia divergente).
 - **Auditoria Pedagógica e Semântica:** `npm run audit:quality` (`node scripts/audit-question-quality.js`, avalia cobertura de 940 questões, viés de gabarito A-E, pares de similaridade semântica, conformidade normativa em legislação, funções Excel PT-BR e QA Risk Score com penalização estrita).
 - **Relatório Executivo de Qualidade:** `npm run report:quality` (`node scripts/question-bank-quality-report.js`, exporta `question-bank-quality-report.json`).

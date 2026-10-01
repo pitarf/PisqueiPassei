@@ -22,6 +22,12 @@
 
 ## ⏳ Em evolução
 
+- [x] Hardening e histórico estrito de erros do motor adaptativo (`evaluateQuestionHistory` com status PENDENTE, REVISAO_DEVIDA, EM_CONSOLIDACAO e CONSOLIDADA)
+- [x] Seleção determinística pseudoaleatória com PRNG Mulberry32 (`createSeededRng`, `seededShuffle`) e desempate por hash
+- [x] Alinhamento da cadência SRS de repetição espaçada (1, 3, 7, 14, 30 dias)
+- [x] Banner pré-sessão e tela pós-treino com breakdown por dificuldade, nível cognitivo, tópico, lista de revisão e próximo passo
+- [x] Distinção estrita no dashboard entre Questões Únicas Vistas e Total de Tentativas
+- [x] Expansão da suíte unitária do motor adaptativo para 19 testes (totalizando 87/87 testes unitários Bun aprovados)
 - [x] Motor adaptativo de estudo inteligente sobre o acervo mestre de 940 questões ativas (`src/lib/adaptive-engine.ts`)
 - [x] Diagnóstico granular de domínio bayesiano por tópico com amortecimento empírico ($\frac{C + 4}{N + 8}$) eliminando distorção de amostras pequenas
 - [x] Sessão "ESTUDAR AGORA" (10 questões adaptativas) com seleção automática de tópicos prioritários e calibração de dificuldade

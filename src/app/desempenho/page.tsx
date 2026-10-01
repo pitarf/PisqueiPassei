@@ -34,6 +34,10 @@ export default async function DesempenhoPage() {
   const studied = user?.progress.filter((p) => p.status !== "NAO_INICIADO").length ?? 0;
   const weak = [...(user?.progress ?? [])].filter((p) => p.status !== "NAO_INICIADO" && p.masteryScore < 70).sort((a, b) => a.masteryScore - b.masteryScore).slice(0, 6);
 
+  const uniqueQuestionsAnswered = new Set(attempts.map(a => a.questionId)).size;
+  const totalBankCount = 940;
+  const unseenCount = Math.max(0, totalBankCount - uniqueQuestionsAnswered);
+
   return <div className="space-y-6">
     <header className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-md">
       <span className="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-md">Seu progresso</span>
@@ -42,10 +46,10 @@ export default async function DesempenhoPage() {
     </header>
 
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <Metric icon={<CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />} label="Questões de treino" value={`${training.filter(a => a.isCorrect).length}/${training.length}`} detail={`${globalAccuracy}% de acerto`} />
+      <Metric icon={<CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />} label="Questões Únicas Vistas" value={`${uniqueQuestionsAnswered}/${totalBankCount}`} detail={`${training.length} tentativas (${globalAccuracy}% de acerto)`} />
       <Metric icon={<Award className="w-3.5 h-3.5 text-amber-400" />} label="Simulados" value={`${simulationAttempts.filter(a => a.isCorrect).length}/${simulationAttempts.length}`} detail={`${simAccuracy}% de acerto nos simulados`} />
-      <Metric icon={<TrendingUp className="w-3.5 h-3.5 text-sky-400" />} label="Domínio do edital" value={`${allProgress.length ? Math.round(allProgress.reduce((s, p) => s + p, 0) / allProgress.length) : 0}%`} detail={`${mastered} tópicos dominados`} />
-      <Metric icon={<Clock className="w-3.5 h-3.5 text-amber-400" />} label="Tempo estudado" value={`${(totalMinutes/60).toFixed(1)}h`} detail={`${studied} tópicos já vistos`} />
+      <Metric icon={<TrendingUp className="w-3.5 h-3.5 text-sky-400" />} label="Domínio Médio (Edital)" value={`${allProgress.length ? Math.round(allProgress.reduce((s, p) => s + p, 0) / allProgress.length) : 0}%`} detail={`${mastered} tópicos dominados (≥85%)`} />
+      <Metric icon={<Clock className="w-3.5 h-3.5 text-amber-400" />} label="Tempo de Estudo" value={`${(totalMinutes/60).toFixed(1)}h`} detail={`${unseenCount} questões inéditas`} />
     </div>
 
     <section className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm">
