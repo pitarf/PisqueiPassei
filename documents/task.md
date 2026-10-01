@@ -22,6 +22,11 @@
 
 ## ⏳ Em evolução
 
+- [x] Expansão mestre do banco de questões ativas de 470 para 940 questões ativas (exatamente 20 questões em cada um dos 47 tópicos oficiais)
+- [x] Cobertura de 100% dos tópicos da Ênfase 18 no nível de excelência BOA (20+ questões por tópico)
+- [x] Equilíbrio cirúrgico de gabarito A-E global (A: 20,5%, B: 20,9%, C: 20,0%, D: 20,3%, E: 18,3%) e nas 6 disciplinas
+- [x] Validação jurídica automatizada com bloqueio de artigos inexistentes e catálogo de leis reais
+- [x] Validação técnica de planilhas eletrônicas com catálogo oficial de fórmulas do Excel PT-BR e Office 365
 - [x] Curadoria do acervo de 470 itens: reescrita integral de 62 questões legadas de seed (40 em Administração, 10 em Português, 10 em Matemática)
 - [x] Reequilíbrio homogêneo de gabarito em Noções de Administração (A: 24%, B: 28%, C: 14%, D: 22%, E: 12%)
 - [x] Erradicação de 100% dos boilerplates e prefixos de seed no banco pedagógico ativo

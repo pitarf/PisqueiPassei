@@ -28,7 +28,7 @@ Bem-vindo à sua plataforma dedicada de estudos para o concurso da **TRANSPETRO 
    - As questões de fixação geradas pela IA são inéditas e identificadas como geradas por IA, nunca afirmando terem sido aplicadas pela Cesgranrio.
 
 4. **Questões e Simulados:**
-   - **Acervo Pedagógico Curado:** mais de 470 questões inéditas distribuídas em 100% dos 47 tópicos oficiais da Ênfase 18 (mínimo de 10 questões por tópico), com enunciados aprofundados, gabaritos equilibrados e sem repetições conceituais artificiais.
+   - **Acervo Pedagógico Mestre com 940 Questões:** acervo robusto e 100% curado com 940 questões ativas cobrindo todos os 47 tópicos oficiais da Ênfase 18 (exatamente 20 questões em cada tópico), com enunciados aprofundados, gabaritos organicamente balanceados (A-E) e sem repetições artificiais.
    - Treinos de 10, 20 ou baterias personalizadas por tópico ou disciplina.
    - Modo **"Rever O Que Errei"** para atacar prioritariamente os pontos fracos.
    - **Questões Irmãs (Siblings):** crie variações pedagógicas a partir de qualquer questão do acervo (modo Fácil, Equivalente, Difícil, Novo Cenário ou Distratores Cesgranrio).

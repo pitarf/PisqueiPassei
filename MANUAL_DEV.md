@@ -51,9 +51,10 @@ npm run dev
 
 ## 🧪 Testes, Auditoria e Qualidade
 
+- **Expansão Mestre para 940 Questões:** `node -r dotenv/config scripts/expand-bank-to-940.js --subject="Nome"` (orquestrador com verificação semântica em tempo real, balanceamento ativo de gabarito A-E e blindagem jurídica/planilhas).
 - **Testes Unitários & Integração:** `npm test` (`bun test src/lib` executando 68 testes cobrindo limites oficiais, taxonomia, SRS, streak, RAG, idempotência P2002, simulado estratificado, motor de auditoria semântica e QA Risk Score calibrado).
 - **Auditoria Estrutural de Banco:** `npm run db:check` (`node -r ts-node/register scripts/check-db.js`, fail-fast se houver qualquer anomalia de hash, órfãos ou taxonomia divergente).
-- **Auditoria Pedagógica e Semântica:** `npm run audit:quality` (`node scripts/audit-question-quality.js`, avalia cobertura, viés de gabarito A-E, pares de similaridade semântica, conformidade normativa em legislação, funções Excel PT-BR e QA Risk Score com penalização estrita).
+- **Auditoria Pedagógica e Semântica:** `npm run audit:quality` (`node scripts/audit-question-quality.js`, avalia cobertura de 940 questões, viés de gabarito A-E, pares de similaridade semântica, conformidade normativa em legislação, funções Excel PT-BR e QA Risk Score com penalização estrita).
 - **Relatório Executivo de Qualidade:** `npm run report:quality` (`node scripts/question-bank-quality-report.js`, exporta `question-bank-quality-report.json`).
 - **Classificação Semântica:** `node scripts/classify-semantic-pairs.js` (classifica pares suspeitos e exporta `question-bank-semantic-review.json`).
 - **Curadoria e Reescrita:** `node scripts/curate-seed-questions.js` (curadoria cirúrgica de itens legados e eliminação de boilerplates).

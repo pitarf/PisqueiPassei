@@ -3,6 +3,7 @@
  * TRANSPETRO STUDY 2026.3 • Ênfase 18: Suprimento de Bens e Serviços
  */
 
+require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const { PrismaClient } = require("@prisma/client");

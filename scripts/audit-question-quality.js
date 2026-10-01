@@ -11,6 +11,7 @@
  * - Questões Históricas vs Inéditas e potenciais alucinações de proveniência
  */
 
+require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
 
 function normalizeText(text) {

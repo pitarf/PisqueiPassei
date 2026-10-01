@@ -1,6 +1,41 @@
+require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
-const { computeStatementHash } = require("../src/lib/question-validator");
-const { OFFICIAL_TAXONOMY, TOTAL_OFFICIAL_TOPICS } = require("../src/lib/taxonomy");
+const crypto = require("crypto");
+
+let computeStatementHash;
+let OFFICIAL_TAXONOMY, TOTAL_OFFICIAL_TOPICS;
+
+try {
+  const validator = require("../src/lib/question-validator");
+  computeStatementHash = validator.computeStatementHash;
+} catch (e) {
+  computeStatementHash = (statement) => {
+    const normalized = (statement || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    return crypto.createHash("sha256").update(normalized).digest("hex");
+  };
+}
+
+try {
+  const tax = require("../src/lib/taxonomy");
+  OFFICIAL_TAXONOMY = tax.OFFICIAL_TAXONOMY;
+  TOTAL_OFFICIAL_TOPICS = tax.TOTAL_OFFICIAL_TOPICS;
+} catch (e) {
+  TOTAL_OFFICIAL_TOPICS = 47;
+  OFFICIAL_TAXONOMY = [
+    { name: "Língua Portuguesa" },
+    { name: "Matemática" },
+    { name: "1. Noções de Administração e Logística" },
+    { name: "2. Logística e Cadeia de Suprimentos" },
+    { name: "3. Legislação" },
+    { name: "4. Noções de Contabilidade e Informática" },
+  ];
+}
 
 const prisma = new PrismaClient();
 

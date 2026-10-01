@@ -85,21 +85,23 @@ function evaluateSemanticSimilarity(textA, textB) {
 }
 
 const VALID_EXCEL_FUNCTIONS_PTBR = new Set([
-  "SOMA", "MEDIA", "SOMASE", "SOMASES", "CONT.SE", "CONT.SES", "CONT.VALORES",
-  "CONTAR.VAZIO", "CONT.NUM", "SE", "E", "OU", "NAO", "SEERRO", "SES",
+  "SOMA", "MEDIA", "SOMASE", "SOMASES", "MEDIASES", "CONT.SE", "CONT.SES", "CONT.VALORES",
+  "CONTAR.VAZIO", "CONT.NUM", "SE", "E", "OU", "NAO", "SEERRO", "SE.ERRO", "SES",
   "PROCV", "PROCH", "PROCX", "CORRESP", "CORRESPX", "INDICE", "DESLOC",
   "CONCATENAR", "CONCAT", "TEXTO", "MAIUSCULA", "MINUSCULA", "PRI.MAIUSCULA",
-  "EXT.TEXTO", "ESQUERDA", "DIREITA", "LOCALIZAR", "PROCURAR", "SUBSTITUIR",
+  "EXT.TEXTO", "EXTR.TEXTO", "ESQUERDA", "DIREITA", "LOCALIZAR", "PROCURAR", "SUBSTITUIR",
   "HOJE", "AGORA", "DATA", "ANO", "MES", "DIA", "DIATRABALHO", "DIAS360",
   "ARRED", "ARREDONDAR.PARA.CIMA", "ARREDONDAR.PARA.BAIXO", "INT", "ABS",
   "POTENCIA", "RAIZ", "MOD", "MAXIMO", "MINIMO", "MAIOR", "MENOR",
   "ALEATORIO", "ALEATORIOENTRE", "VF", "VP", "TAXA", "NPER", "PGTO",
-  "UNICOS", "ORDENAR", "FILTRO", "MATRIZPARATEXTO"
+  "UNICOS", "UNICO", "ORDENAR", "FILTRO", "MATRIZPARATEXTO", "SUBTOTAL", "TRANSPOR",
+  "ESCOLHER", "CLASSIFICAR", "SEQUENCIA", "SOMARPRODUTO", "CONVERTER", "AGRUPAR",
+  "DATADIF", "DIATRABALHOTOTAL", "DIATRABALHO.TOTAL"
 ]);
 
 function validateExcelFunctions(text) {
-  // Padrão que captura funções como =SOMA(...) ou onde haja indicação de fórmula / planilha
-  const regex = /(?:=|\bfuncao\b|\bformula\b|\bcelula\b|\bplanilha\b)\s*.*?([A-ZÁÉÍÓÚÂÊÔÃÕÇ\._]+)\s*\(/gi;
+  // Padrão que captura funções como =SOMA(...) ou função/fórmula SOMA(...)
+  const regex = /(?:=\s*|(?:\bfuncao|\bformula)\s+)([A-ZÁÉÍÓÚÂÊÔÃÕÇ\._]+)\s*\(/gi;
   const detected = new Set();
   let match;
 

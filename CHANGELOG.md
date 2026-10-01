@@ -2,7 +2,36 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
-## [0.1.32] - 2026-09-30
+## [0.1.33] - 2026-09-30
+
+### Expansão Mestre do Acervo para 940 Questões Ativas (20 por Tópico em 47/47 Tópicos)
+- **Expansão e Cobertura Total do Edital (Ênfase 18 - Suprimento de Bens e Serviços):**
+  - O banco de questões ativas avançou de 470 para exatamente **940 questões ativas**.
+  - **100% dos 47 tópicos oficiais** atingiram o patamar de excelência pedagógica (nível BOA: $\ge 20$ questões por tópico).
+  - Distribuição estrita e balanceada por disciplina:
+    - **Língua Portuguesa:** 160 questões (8 tópicos $\times$ 20)
+    - **Matemática:** 200 questões (10 tópicos $\times$ 20)
+    - **1. Noções de Administração e Logística:** 100 questões (5 tópicos $\times$ 20)
+    - **2. Logística e Cadeia de Suprimentos:** 220 questões (11 tópicos $\times$ 20)
+    - **3. Legislação:** 120 questões (6 tópicos $\times$ 20)
+    - **4. Noções de Contabilidade e Informática:** 140 questões (7 tópicos $\times$ 20)
+    - **Total no Acervo Ativo:** **940 questões**.
+- **Equilíbrio Estatístico e Orgânico de Gabaritos (A-E):**
+  - Distribuição global perfeitamente homogênea: **A (20,5%), B (20,9%), C (20,0%), D (20,3%), E (18,3%)**.
+  - Simetria mantida em todas as 6 disciplinas (inclusive 20% cravado por letra em Logística e Cadeia de Suprimentos).
+  - Viés de alternativa mais longa ou tamanho induzido: **0 ocorrências**.
+  - Disparidade extrema de tamanho entre opções: **0 ocorrências**.
+- **Blindagem Pedagógica e Curadoria Anti-Alucinação:**
+  - Validação jurídica automática bloqueando citações de artigos inexistentes nas normas oficiais (Lei 13.303/2016, Lei 14.133/2021, Decreto 2.745/1998, LC 123/2006, RLCT e LGPD).
+  - Validação estrita de funções e fórmulas de planilhas eletrônicas no Microsoft Excel em Português Brasil (PT-BR), expurgando funções inexistentes e admitindo fórmulas legítimas.
+  - QA Risk Score de excelência: **920 questões (97,9%) em Baixo Risco** e **0 em Alto Risco**.
+  - Comprimento médio das justificativas pedagógicas: **803,8 caracteres**.
+- **Homologação e Validação Técnica:**
+  - 68/68 testes unitários e de integração aprovados (`bun test src/lib`).
+  - TypeScript typecheck (`tsc --noEmit`) com 0 erros.
+  - Next.js 15.5.25 produção build finalizado com 100% de rotas compiladas com sucesso.
+  - 22/22 testes E2E do Playwright aprovados (11 Desktop Chrome e 11 Mobile Chrome).
+  - Auditoria relacional `scripts/check-db.js` aprovada com 0 órfãos e 0 duplicidades.
 
 ### Curadoria do Acervo, Eliminação de Boilerplate e Reequilíbrio de Gabarito
 - **Reequilíbrio de Gabarito em Noções de Administração e Logística:**

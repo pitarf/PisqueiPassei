@@ -1,17 +1,8 @@
 /**
- * Script de Geração e Abastecimento do Banco Pedagógico
+ * Orquestrador Mestre de Expansão do Acervo Pedagógico para 940 Questões
  * TRANSPETRO STUDY 2026.3 • Ênfase 18: Suprimento de Bens e Serviços
  *
- * Uso:
- *   node -r dotenv/config scripts/generate-question-bank.js [opções]
- *
- * Opções:
- *   --all                 Abastece todos os 47 tópicos oficiais
- *   --subject=<nome/idx>  Filtra por disciplina (ex: "Logística", "Legislação", "Contabilidade", "Portuguesa", "Matemática")
- *   --topic=<codigo>      Filtra por código de tópico (ex: "2.1", "3.2", "1")
- *   --target=<numero>     Meta de questões por tópico (padrão: 10)
- *   --batch=<numero>      Tamanho do lote por chamada à IA (padrão: 5, máx: 10)
- *   --force               Gera mesmo se já atingiu o target
+ * Expande o acervo de 470 para 940 questões ativas (20 por tópico em 47/47 tópicos).
  */
 
 const { PrismaClient } = require("@prisma/client");
@@ -20,8 +11,13 @@ const { createHash } = require("crypto");
 const fs = require("fs");
 const path = require("path");
 
-const prisma = new PrismaClient();
+const {
+  evaluateSemanticSimilarity,
+  validateExcelFunctions,
+  validateLegislationCitations,
+} = require("./pedagogical-audit-engine");
 
+const prisma = new PrismaClient();
 const apiKey = process.env.GEMINI_API_KEY || "";
 if (!apiKey) {
   console.error("❌ ERRO: GEMINI_API_KEY não configurada no ambiente (.env)");
@@ -44,7 +40,6 @@ function computeStatementHash(statement) {
   return createHash("sha256").update(normalizeText(statement)).digest("hex");
 }
 
-// Carregamento de contexto local (RAG)
 function getRagContext(query) {
   try {
     const docsDir = path.join(__dirname, "..", "documents");
@@ -71,37 +66,29 @@ function getRagContext(query) {
       const relative = path.relative(path.join(__dirname, ".."), file).replace(/\\/g, "/");
 
       let score = 0;
-      // Term matches
       for (const term of terms) {
         const count = normContent.split(term).length - 1;
-        if (count > 0) {
-          score += Math.min(count, 8) * 5;
-        }
+        if (count > 0) score += Math.min(count, 8) * 5;
       }
 
-      // Prioridade para documentos oficiais do edital e legislação
       if (relative.includes("documents/legislacao")) score += 20;
       if (relative.includes("edital-retificacao")) score += 15;
       if (relative.includes("edital-oficial")) score += 10;
 
-      if (score > 0) {
-        scoredDocs.push({ file, relative, content, score });
-      }
+      if (score > 0) scoredDocs.push({ file, relative, content, score });
     }
 
     scoredDocs.sort((a, b) => b.score - a.score);
     const topDocs = scoredDocs.slice(0, 4);
-
     if (topDocs.length === 0) return "";
 
     let context = "";
     for (const doc of topDocs) {
-      const excerpt = doc.content.length > 3500 ? doc.content.slice(0, 3500) + "\n[...trecho focado...]" : doc.content;
+      const excerpt = doc.content.length > 1500 ? doc.content.slice(0, 1500) + "\n[...trecho focado...]" : doc.content;
       const block = `### FONTE LOCAL: ${doc.relative}\n### RELEVÂNCIA RAG: ${doc.score} pts\n${excerpt}\n\n---\n\n`;
-      if (context.length + block.length > 12000) break;
+      if (context.length + block.length > 6000) break;
       context += block;
     }
-
     return context;
   } catch {
     return "";
@@ -119,8 +106,10 @@ DIRETRIZES DE QUALIDADE PEDAGÓGICA:
 5. RIGOR NORMATIVO: Em legislação e normas (Lei 13.303, Lei 14.133, Decreto 2.745, RLCT, LGPD, LC 123), cite artigos e incisos reais na justificativa. NUNCA invente leis ou artigos inexistentes.
 6. EM INFORMÁTICA (Office 365, Excel, Word, PowerPoint): Use comandos, atalhos, fórmulas e funções reais em português (ex: PROCV, SOMA, SE, CONT.SE, guia Inserir, Layout). NUNCA invente funções.
 7. EM LOGÍSTICA: Explore situações operacionais reais (gestão de almoxarifados, curva ABC, ponto de pedido, lote econômico de compra, modais rodoviário/dutoviário/marítimo, conferência de carga, fiscalização de contratos, acordos de nível de serviço).
-8. PROVENIÊNCIA: As questões são estritamente INÉDITAS (origin: "INEDITA_IA", banca: "IA (perfil Cesgranrio)"). NUNCA afirme que a questão foi aplicada em prova oficial real.
-9. EXPLICAÇÃO COMPLETA: A explicação deve justificar por que o gabarito está certo E indicar por que as outras opções estão incorretas.
+8. EM MATEMÁTICA: O cálculo deve ser deterministicamente verificável com números redondos e somente uma alternativa correta. Diversifique os contextos práticos.
+9. INÉDITISMO ABSOLUTO (ANTI-RECITATION): Crie situações e cenários 100% originais com nomes fictícios de empresas e terminais (ex: Terminal Portuário Atlântico Sul, AlfaLog Transportes, Cargas Marítimas Delta). NUNCA copie literalmente enunciados ou textos de fontes externas.
+10. PROVENIÊNCIA: As questões são estritamente INÉDITAS (origin: "INEDITA_IA", banca: "IA (perfil Cesgranrio)"). NUNCA afirme que a questão foi aplicada em prova oficial real.
+11. EXPLICAÇÃO COMPLETA: A explicação deve justificar por que o gabarito está certo E indicar por que as outras opções estão incorretas.
 
 Retorne EXCLUSIVAMENTE um array de questões no formato JSON:
 {
@@ -152,19 +141,96 @@ function cleanJsonResponse(rawText) {
     .trim();
 
   const firstBrace = clean.indexOf("{");
-  const lastBrace = clean.lastIndexOf("}");
-  if (firstBrace !== -1 && lastBrace > firstBrace) {
-    clean = clean.slice(firstBrace, lastBrace + 1);
+  const firstBracket = clean.indexOf("[");
+  let startIdx = 0;
+  let endIdx = clean.length;
+
+  if (firstBracket !== -1 && (firstBrace === -1 || firstBracket < firstBrace)) {
+    startIdx = firstBracket;
+    endIdx = clean.lastIndexOf("]") + 1;
+  } else if (firstBrace !== -1) {
+    startIdx = firstBrace;
+    endIdx = clean.lastIndexOf("}") + 1;
+  }
+
+  if (startIdx !== -1 && endIdx > startIdx) {
+    clean = clean.slice(startIdx, endIdx);
   }
   return JSON.parse(clean);
 }
 
-const {
-  evaluateSemanticSimilarity,
-  validateExcelFunctions,
-  validateLegislationCitations,
-  computeQaRiskScore,
-} = require("./pedagogical-audit-engine");
+function extractQuestionsArray(parsed) {
+  if (Array.isArray(parsed)) return parsed;
+  if (Array.isArray(parsed?.questions)) return parsed.questions;
+  if (Array.isArray(parsed?.questoes)) return parsed.questoes;
+  if (Array.isArray(parsed?.itens)) return parsed.itens;
+  return [];
+}
+
+function findCorrectLetter(raw) {
+  const direct = String(
+    raw.correctOption ||
+    raw.correct_option ||
+    raw.correctAnswer ||
+    raw.correct_answer ||
+    raw.answer ||
+    raw.gabarito ||
+    raw.resposta ||
+    raw.resposta_correta ||
+    raw.correta ||
+    ""
+  ).trim().toUpperCase();
+
+  if (VALID_LETTERS.has(direct)) return direct;
+
+  const letterMatch = direct.match(/\b([A-E])\b/);
+  if (letterMatch && VALID_LETTERS.has(letterMatch[1])) return letterMatch[1];
+
+  if (direct.length >= 3) {
+    const opts = [raw.optionA, raw.optionB, raw.optionC, raw.optionD, raw.optionE];
+    for (let i = 0; i < 5; i++) {
+      if (opts[i] && (opts[i].includes(direct) || direct.includes(opts[i]))) {
+        return String.fromCharCode(65 + i);
+      }
+    }
+  }
+  return "";
+}
+
+function normalizeRawQuestion(raw) {
+  if (!raw || typeof raw !== "object") return {};
+  const opts = raw.options && Array.isArray(raw.options) ? raw.options : null;
+  const optA = String(raw.optionA || raw.opcaoA || raw.a || (opts && opts[0]) || "").trim();
+  const optB = String(raw.optionB || raw.opcaoB || raw.b || (opts && opts[1]) || "").trim();
+  const optC = String(raw.optionC || raw.opcaoC || raw.c || (opts && opts[2]) || "").trim();
+  const optD = String(raw.optionD || raw.opcaoD || raw.d || (opts && opts[3]) || "").trim();
+  const optE = String(raw.optionE || raw.opcaoE || raw.e || (opts && opts[4]) || "").trim();
+
+  const correctLetter = findCorrectLetter({
+    ...raw,
+    optionA: optA,
+    optionB: optB,
+    optionC: optC,
+    optionD: optD,
+    optionE: optE,
+  });
+
+  return {
+    statement: String(raw.statement || raw.enunciado || raw.texto || "").trim(),
+    optionA: optA,
+    optionB: optB,
+    optionC: optC,
+    optionD: optD,
+    optionE: optE,
+    correctOption: correctLetter,
+    explanation: String(raw.explanation || raw.justificativa || raw.comentario || "").trim(),
+    difficulty: raw.difficulty || raw.dificuldade || "MEDIA",
+    questionType: raw.questionType || raw.tipo || "APLICACAO",
+    cognitiveLevel: raw.cognitiveLevel || raw.nivelCognitivo || "APLICAR",
+    subtopic: raw.subtopic || raw.subtopico || null,
+    sourceRef: raw.sourceRef || "Questão inédita em estilo compatível com o perfil da banca. Baseada no edital."
+  };
+}
 
 const VALID_LETTERS = new Set(["A", "B", "C", "D", "E"]);
 const VALID_DIFFS = new Set(["FACIL", "MEDIA", "DIFICIL"]);
@@ -183,7 +249,6 @@ function validateGeneratedQuestion(q, subjectName) {
     }
   }
 
-  // Verificar se há opções duplicadas
   const optSet = new Set(options.map((o) => normalizeText(o)));
   if (optSet.size !== 5) {
     return { valid: false, reason: "Opções idênticas detectadas" };
@@ -197,7 +262,6 @@ function validateGeneratedQuestion(q, subjectName) {
     return { valid: false, reason: "Explicação ausente ou muito curta (<40 chars)" };
   }
 
-  // Verificar outlier de tamanho
   const lengths = options.map((o) => o.trim().length);
   const correctIdx = q.correctOption.charCodeAt(0) - 65;
   const correctLen = lengths[correctIdx];
@@ -209,19 +273,23 @@ function validateGeneratedQuestion(q, subjectName) {
     return { valid: false, reason: "Alternativa correta com disparidade métrica extrema (outlier de tamanho)" };
   }
 
-  // Checagem de legislação
   if (subjectName && subjectName.toLowerCase().includes("legislação")) {
-    const legCheck = validateLegislationCitations(q.statement, q.explanation);
-    if (!legCheck.isValid) {
-      return { valid: false, reason: `Citação jurídica inconsistente: ${legCheck.details.join("; ")}` };
+    const fullText = `${q.statement} ${q.explanation} ${options.join(" ")}`;
+    const legCheck = validateLegislationCitations(fullText);
+    if (legCheck && legCheck.hasInvalidArticles) {
+      const invalidList = legCheck.citedArticles
+        .filter((a) => !a.isValid)
+        .map((a) => `${a.law} Art. ${a.article}`)
+        .join(", ");
+      return { valid: false, reason: `Citação jurídica inconsistente com artigo fora do limite oficial: ${invalidList}` };
     }
   }
 
-  // Checagem de informática (funções de planilha)
   if (subjectName && (subjectName.toLowerCase().includes("informática") || subjectName.toLowerCase().includes("contabilidade"))) {
-    const itCheck = validateExcelFunctions(q.statement, q.explanation, options);
-    if (!itCheck.isValid) {
-      return { valid: false, reason: `Função de planilha eletrônica inválida: ${itCheck.details.join("; ")}` };
+    const fullText = `${q.statement} ${q.explanation} ${options.join(" ")}`;
+    const itCheck = validateExcelFunctions(fullText);
+    if (itCheck && !itCheck.isValid) {
+      return { valid: false, reason: `Função de planilha eletrônica inválida: ${itCheck.invalidFunctions.join(", ")}` };
     }
   }
 
@@ -269,36 +337,20 @@ GERE QUESTÕES COM ABORDAGENS, SITUAÇÕES PRÁTICAS, ARTIGOS, REGRAS OU CONCEIT
   const result = await model.generateContent(prompt);
   const text = result.response.text();
   const parsed = cleanJsonResponse(text);
-  return Array.isArray(parsed?.questions) ? parsed.questions : [];
+  const rawArray = extractQuestionsArray(parsed);
+  return rawArray.map(normalizeRawQuestion);
 }
 
-async function main() {
-  const args = process.argv.slice(2);
-  const allFlag = args.includes("--all");
-  const forceFlag = args.includes("--force");
-  
-  let targetQuestions = 10;
-  let batchSize = 5;
-  let subjectFilter = null;
-  let topicFilter = null;
-
-  for (const arg of args) {
-    if (arg.startsWith("--target=")) targetQuestions = parseInt(arg.split("=")[1], 10) || 10;
-    if (arg.startsWith("--batch=")) batchSize = parseInt(arg.split("=")[1], 10) || 5;
-    if (arg.startsWith("--subject=")) subjectFilter = arg.split("=")[1].toLowerCase();
-    if (arg.startsWith("--topic=")) topicFilter = arg.split("=")[1];
-  }
-
-  console.log("================================================================================");
-  console.log("🚀 ABASTECEDOR PEDAGÓGICO DE QUESTÕES - TRANSPETRO 2026.3 (ÊNFASE 18)");
-  console.log("================================================================================");
-  console.log(`🎯 Meta por tópico: ${targetQuestions} questões`);
-  console.log(`📦 Tamanho do lote: ${batchSize} por chamada`);
-  if (subjectFilter) console.log(`🔍 Filtro de Disciplina: "${subjectFilter}"`);
-  if (topicFilter) console.log(`🔍 Filtro de Tópico: "${topicFilter}"`);
-  console.log("--------------------------------------------------------------------------------\n");
-
+async function expandSubject(subjectFilter, targetPerTopic = 20, batchSize = 5) {
   const topics = await prisma.topic.findMany({
+    where: {
+      subject: {
+        OR: [
+          { name: { contains: subjectFilter, mode: "insensitive" } },
+          { category: { contains: subjectFilter, mode: "insensitive" } },
+        ],
+      },
+    },
     include: {
       subject: true,
       questions: {
@@ -308,54 +360,40 @@ async function main() {
     orderBy: [{ subject: { order: "asc" } }, { order: "asc" }],
   });
 
-  // Filtragem
-  let selectedTopics = topics;
-  if (topicFilter) {
-    selectedTopics = selectedTopics.filter((t) => t.code === topicFilter || t.id === topicFilter);
-  }
-  if (subjectFilter) {
-    selectedTopics = selectedTopics.filter(
-      (t) => t.subject.name.toLowerCase().includes(subjectFilter) || t.subject.category.toLowerCase().includes(subjectFilter)
-    );
-  }
+  console.log(`\n================================================================================`);
+  console.log(`🚀 EXPANSÃO: "${subjectFilter}" (${topics.length} tópicos encontrados)`);
+  console.log(`🎯 Meta: ${targetPerTopic} questões por tópico`);
+  console.log(`================================================================================\n`);
 
-  console.log(`📚 Tópicos selecionados para processamento: ${selectedTopics.length}\n`);
+  let addedInSubject = 0;
+  let rejectedInSubject = 0;
+  let duplicatesInSubject = 0;
 
-  let totalGenerated = 0;
-  let totalSaved = 0;
-  let totalRejected = 0;
-  let totalDuplicates = 0;
-
-  for (let idx = 0; idx < selectedTopics.length; idx++) {
-    const topic = selectedTopics[idx];
+  for (let idx = 0; idx < topics.length; idx++) {
+    const topic = topics[idx];
     const currentCount = topic.questions.length;
-    const deficit = targetQuestions - currentCount;
+    let deficit = targetPerTopic - currentCount;
 
-    console.log(
-      `[${idx + 1}/${selectedTopics.length}] [${topic.subject.name}] (${topic.code}) ${topic.title.slice(0, 45)}...`
-    );
-    console.log(`   Atual: ${currentCount} questões | Meta: ${targetQuestions} | Déficit: ${Math.max(0, deficit)}`);
+    console.log(`[${idx + 1}/${topics.length}] (${topic.code}) ${topic.title.slice(0, 50)}...`);
+    console.log(`   Atual: ${currentCount} | Meta: ${targetPerTopic} | A gerar: ${Math.max(0, deficit)}`);
 
-    if (deficit <= 0 && !forceFlag) {
-      console.log(`   ⏭️  Meta já atingida. Pulando tópico.\n`);
+    if (deficit <= 0) {
+      console.log(`   ⏭️  Tópico já com meta atingida.\n`);
       continue;
     }
 
-    let needed = forceFlag ? batchSize : deficit;
-    let topicSaved = 0;
-    let attempts = 0;
     const existingHashes = new Set(topic.questions.map((q) => q.statementHash));
     const existingStatements = topic.questions.map((q) => q.statement);
-
     const letterCounts = { A: 0, B: 0, C: 0, D: 0, E: 0 };
     for (const q of topic.questions) {
       if (letterCounts[q.correctOption] !== undefined) letterCounts[q.correctOption]++;
     }
 
-    while (needed > 0 && attempts < 5) {
+    let attempts = 0;
+    while (deficit > 0 && attempts < 6) {
       attempts++;
-      const requestCount = Math.min(needed, batchSize);
-      const diffHint = needed > 5 ? "FACIL, MEDIA e DIFICIL" : needed <= 2 ? "MEDIA e DIFICIL" : "FACIL e MEDIA";
+      const requestCount = Math.min(deficit, batchSize);
+      const diffHint = deficit > 5 ? "FACIL, MEDIA e DIFICIL" : deficit <= 2 ? "MEDIA e DIFICIL" : "FACIL e MEDIA";
 
       const neededLetters = Object.entries(letterCounts)
         .sort((a, b) => a[1] - b[1])
@@ -363,7 +401,7 @@ async function main() {
         .map(([l]) => l);
 
       try {
-        process.stdout.write(`   ⏳ Chamando IA para gerar ${requestCount} questões (tentativa ${attempts})... `);
+        process.stdout.write(`   ⏳ Gerando lote com ${requestCount} itens (tentativa ${attempts})... `);
         const rawBatch = await generateBatchFromGemini(
           topic,
           topic.subject,
@@ -375,22 +413,20 @@ async function main() {
         console.log(`Recebidas: ${rawBatch.length}`);
 
         for (const raw of rawBatch) {
-          totalGenerated++;
           const val = validateGeneratedQuestion(raw, topic.subject.name);
           if (!val.valid) {
-            totalRejected++;
-            console.log(`      ⚠️ Questão rejeitada: ${val.reason}`);
+            rejectedInSubject++;
+            console.log(`      ⚠️ Rejeitada: ${val.reason}`);
             continue;
           }
 
           const hash = computeStatementHash(raw.statement);
           if (existingHashes.has(hash)) {
-            totalDuplicates++;
-            console.log(`      🔁 Duplicidade textual detectada por statementHash.`);
+            duplicatesInSubject++;
+            console.log(`      🔁 Duplicidade por statementHash evitada.`);
             continue;
           }
 
-          // Verificação de similaridade semântica contra todas as questões existentes do tópico
           let isSemanticDuplicate = false;
           let maxSim = 0;
           for (const existingStmt of existingStatements) {
@@ -403,12 +439,11 @@ async function main() {
           }
 
           if (isSemanticDuplicate) {
-            totalDuplicates++;
-            console.log(`      🔁 Rejeitada: similaridade semântica excessiva (${maxSim.toFixed(3)}) com questão pré-existente no tópico.`);
+            duplicatesInSubject++;
+            console.log(`      🔁 Rejeitada por similaridade semântica (${maxSim.toFixed(3)}).`);
             continue;
           }
 
-          // Inserção no banco
           try {
             await prisma.question.create({
               data: {
@@ -436,37 +471,79 @@ async function main() {
             existingHashes.add(hash);
             existingStatements.push(raw.statement.trim());
             letterCounts[raw.correctOption] = (letterCounts[raw.correctOption] || 0) + 1;
-            topicSaved++;
-            totalSaved++;
-            needed--;
+            addedInSubject++;
+            deficit--;
             console.log(`      ✅ Salva [${raw.correctOption}] (${raw.difficulty} / ${raw.questionType || "APL"} / ${raw.cognitiveLevel || "APL"})`);
-            if (needed <= 0) break;
+            if (deficit <= 0) break;
           } catch (dbErr) {
             if (dbErr.code === "P2002") {
-              totalDuplicates++;
-              console.log(`      🔁 Colisão P2002 no banco para este hash.`);
+              duplicatesInSubject++;
+              console.log(`      🔁 Colisão P2002 no banco.`);
             } else {
-              console.error(`      ❌ Erro ao salvar no banco:`, dbErr.message);
+              console.error(`      ❌ Erro no DB:`, dbErr.message);
             }
           }
         }
       } catch (genErr) {
-        console.error(`\n   ❌ Falha na geração com IA:`, genErr.message);
-        // Aguarda 2 segundos antes de tentar novamente para evitar rate limit
-        await new Promise((res) => setTimeout(res, 2000));
+        console.error(`\n   ❌ Erro na chamada IA:`, genErr.message);
+        await new Promise((r) => setTimeout(r, 2500));
       }
     }
+    console.log(`   ✨ Tópico concluído! Atual: ${existingStatements.length} questões.\n`);
+  }
 
-    console.log(`   ✨ Concluído no tópico: +${topicSaved} adicionadas (Total agora: ${currentCount + topicSaved})\n`);
+  return { addedInSubject, rejectedInSubject, duplicatesInSubject };
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  const targetPerTopic = 20; // 47 x 20 = 940 questões
+  const batchSize = 5;
+
+  let singleSubject = null;
+  for (const arg of args) {
+    if (arg.startsWith("--subject=")) singleSubject = arg.split("=")[1];
   }
 
   console.log("================================================================================");
-  console.log("🎉 ABASTECIMENTO FINALIZADO");
+  console.log("🌟 PLANO DE EXPANSÃO DO ACERVO DE QUESTÕES: 470 ➔ 940 QUESTÕES ATIVAS");
+  console.log("TRANSPETRO 2026.3 • ÊNFASE 18: SUPRIMENTO DE BENS E SERVIÇOS");
+  console.log("================================================================================\n");
+
+  const initialCount = await prisma.question.count();
+  console.log(`📊 Total de Questões Inicial no Banco: ${initialCount}`);
+
+  const subjectsToRun = singleSubject
+    ? [singleSubject]
+    : [
+        "Língua Portuguesa",
+        "Matemática",
+        "1. Noções de Administração e Logística",
+        "2. Logística e Cadeia de Suprimentos",
+        "3. Legislação",
+        "4. Noções de Contabilidade e Informática",
+      ];
+
+  let totalAdded = 0;
+  let totalRejected = 0;
+  let totalDuplicates = 0;
+
+  for (const subj of subjectsToRun) {
+    const res = await expandSubject(subj, targetPerTopic, batchSize);
+    totalAdded += res.addedInSubject;
+    totalRejected += res.rejectedInSubject;
+    totalDuplicates += res.duplicatesInSubject;
+  }
+
+  const finalCount = await prisma.question.count();
+  console.log("\n================================================================================");
+  console.log("🏁 EXPANSÃO CONCLUÍDA COM SUCESSO");
   console.log("================================================================================");
-  console.log(`Total gerado pela IA: ${totalGenerated}`);
-  console.log(`Total salvo com sucesso: ${totalSaved}`);
-  console.log(`Total rejeitado pelo validador: ${totalRejected}`);
-  console.log(`Total de duplicatas evitadas: ${totalDuplicates}`);
+  console.log(`Questões Iniciais: ${initialCount}`);
+  console.log(`Novas Questões Adicionadas: ${totalAdded}`);
+  console.log(`Total Final no Banco: ${finalCount}`);
+  console.log(`Questões Rejeitadas na Validação: ${totalRejected}`);
+  console.log(`Duplicações Semânticas/Hash Evitadas: ${totalDuplicates}`);
   console.log("================================================================================\n");
 }
 
