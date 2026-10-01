@@ -2,6 +2,32 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.34] - 2026-10-01
+
+### Motor Adaptativo de Estudo sobre o Acervo de 940 Questões
+- **Mecanismo de Domínio Bayesiano e Calibração Amostral (`src/lib/adaptive-engine.ts`):**
+  - Implementado cálculo de domínio por tópico com encolhimento bayesiano empírico ($\frac{C + 4}{N + 8} \times 100 \times \text{diffMultiplier}$), eliminando distorções de amostras pequenas (ex: 2/2 não infla falsamente para 100%, estabilizando em ~60%, enquanto 22/30 atinge ~70%).
+  - Mapeamento detalhado por tópico: questões respondidas, acertos, erros, sequências (streaks), dificuldade média ponderada (1 a 3), performance por nível cognitivo, tipo de questão e status de revisão SRS.
+- **Fila Inteligente "ESTUDAR AGORA" (10 Questões):**
+  - Montagem dinâmica com seleção de até 3 tópicos prioritários (priorizando menor domínio, erros recentes, tópicos nunca vistos e revisões vencidas).
+  - Progressão adaptativa de dificuldade: $< 50\%$ direciona para FÁCIL; $50\% - 70\%$ para MÉDIA; $70\% - 85\%$ para MÉDIA/DIFÍCIL; $> 85\%$ para DIFÍCIL.
+  - Prevenção determinística de questões repetidas imediatas por `statementHash` e priorização de questões inéditas dentro do acervo de 940 itens.
+- **Fila "Revisar Meus Erros" com Repetição Espaçada (SRS):**
+  - Questões erradas não são descartadas após um único acerto; passam por consolidação em intervalos espaçados (1 -> 3 -> 7 -> 14 -> 30 dias).
+  - Re-erro em questão reinicia a cadência com penalização e priorização imediata na fila de revisão.
+- **Enriquecimento Diagnóstico Pós-Simulado Oficial Cesgranrio (60 Questões):**
+  - Preservação estrita do contrato do simulado de 60 questões (10 Português, 10 Matemática, 40 Específicas, 4 horas, eliminatórias oficiais e meta 47/60).
+  - Diagnóstico detalhado: taxa de acerto por nível de dificuldade, nível cognitivo, questões não respondidas, tópicos com pior desempenho e geração de plano automatizado "Seu próximo estudo" com cartões e links de ação direta.
+- **Integração de Interface e API:**
+  - Novo endpoint `/api/study/adaptive` para diagnóstico global e prévia de sessão.
+  - Endpoints `/api/questions/batch` e `/api/questions/submit` operando 100% sobre o banco mestre de 940 questões (zero geração IA redundante).
+  - Painel da página inicial (`/`) e página de questões (`/questoes`) adaptadas para acionar o fluxo "ESTUDAR AGORA" e "Revisar Meus Erros".
+- **Homologação e Testes:**
+  - 74/74 testes unitários e de integração aprovados (`bun test src/lib`).
+  - TypeScript typecheck (`tsc --noEmit`) 100% aprovado.
+  - Next.js build de produção finalizado com sucesso.
+  - 22/22 testes E2E do Playwright aprovados (11 Desktop Chrome e 11 Mobile Chrome).
+
 ## [0.1.33] - 2026-09-30
 
 ### Expansão Mestre do Acervo para 940 Questões Ativas (20 por Tópico em 47/47 Tópicos)

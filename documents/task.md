@@ -22,6 +22,13 @@
 
 ## ⏳ Em evolução
 
+- [x] Motor adaptativo de estudo inteligente sobre o acervo mestre de 940 questões ativas (`src/lib/adaptive-engine.ts`)
+- [x] Diagnóstico granular de domínio bayesiano por tópico com amortecimento empírico ($\frac{C + 4}{N + 8}$) eliminando distorção de amostras pequenas
+- [x] Sessão "ESTUDAR AGORA" (10 questões adaptativas) com seleção automática de tópicos prioritários e calibração de dificuldade
+- [x] Fila de revisão de erros com repetição espaçada (SRS) progressiva (1 -> 3 -> 7 -> 14 -> 30 dias) e proteção contra remoção por sorte
+- [x] Enriquecimento do diagnóstico pós-simulado Cesgranrio: gráficos por dificuldade, nível cognitivo, não respondidas e plano "Seu próximo estudo" com cartões acionáveis
+- [x] Suíte de testes unitários do motor adaptativo (`src/lib/adaptive-engine.test.ts`, 6/6 testes, totalizando 74/74 testes)
+- [x] Integração da API `/api/study/adaptive` e desacoplamento de chamadas de geração em tempo real (operação 100% sobre as 940 questões)
 - [x] Expansão mestre do banco de questões ativas de 470 para 940 questões ativas (exatamente 20 questões em cada um dos 47 tópicos oficiais)
 - [x] Cobertura de 100% dos tópicos da Ênfase 18 no nível de excelência BOA (20+ questões por tópico)
 - [x] Equilíbrio cirúrgico de gabarito A-E global (A: 20,5%, B: 20,9%, C: 20,0%, D: 20,3%, E: 18,3%) e nas 6 disciplinas

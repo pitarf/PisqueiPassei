@@ -1,13 +1,25 @@
+/**
+ * Rota de Carregamento em Lote de Questões com Seleção Adaptativa
+ * TRANSPETRO STUDY 2026.3 • Ênfase 18: Suprimento de Bens e Serviços
+ *
+ * Utiliza o acervo mestre de 940 questões ativas (20 por tópico em 47/47 tópicos).
+ * Não gera novas questões via IA; aplica seleção adaptativa e repetição espaçada.
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
-import { generateQuestionBatch, summarizeHistoricalPatterns } from "@/lib/gemini";
-import { validateAiQuestion, normalizeText, computeStatementHash, VALID_DIFFICULTIES } from "@/lib/question-validator";
+import {
+  evaluateTopicDiagnostic,
+  buildStudyNowSession,
+  buildErrorReviewSession,
+  type AttemptRecord,
+  type QuestionSummary,
+} from "@/lib/adaptive-engine";
+import { VALID_DIFFICULTIES } from "@/lib/question-validator";
 
-const MODES = new Set(["normal", "erros"]);
-const MAX_GENERATION_RETRIES = 3;
+const VALID_MODES = new Set(["normal", "erros", "adaptativo", "estudar_agora"]);
 
-function shuffle<T>(items: T[]) {
+function shuffle<T>(items: T[]): T[] {
   const result = [...items];
   for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -18,160 +30,208 @@ function shuffle<T>(items: T[]) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { subjectId, topicId, mode = "normal", count = 10, difficulty = "MEDIA" } = await req.json();
-    if (typeof mode !== "string" || !MODES.has(mode)) {
+    const {
+      subjectId,
+      topicId,
+      mode = "normal",
+      count = 10,
+      difficulty,
+    } = await req.json();
+
+    if (typeof mode !== "string" || !VALID_MODES.has(mode)) {
       return NextResponse.json({ error: "Modo de questões inválido." }, { status: 400 });
     }
 
-    const requestedDifficulty = String(difficulty).toUpperCase();
-    const safeDifficulty = VALID_DIFFICULTIES.has(requestedDifficulty) ? requestedDifficulty : "MEDIA";
+    const requestedDifficulty = difficulty ? String(difficulty).toUpperCase() : null;
+    const safeDifficulty = requestedDifficulty && VALID_DIFFICULTIES.has(requestedDifficulty) ? requestedDifficulty : null;
     const parsedCount = Number(count);
     const safeCount = Number.isFinite(parsedCount) ? Math.min(Math.max(Math.floor(parsedCount), 1), 60) : 10;
 
-    const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
-    if (!user) return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
+    const user = await prisma.user.findFirst({
+      where: { email: "rafael@estudos.transpetro" },
+      include: {
+        attempts: {
+          include: {
+            question: {
+              select: {
+                topicId: true,
+                difficulty: true,
+                questionType: true,
+                cognitiveLevel: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "asc" },
+        },
+        progress: true,
+      },
+    });
 
-    let targetTopicIds: string[] = [];
-    let errorQuestionIds: string[] = [];
+    if (!user) {
+      return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 });
+    }
 
-    if (mode === "erros") {
-      const wrongAttempts = await prisma.questionAttempt.findMany({
-        where: { userId: user.id, isCorrect: false },
-        orderBy: { createdAt: "desc" },
-        select: { questionId: true, question: { select: { topicId: true } } },
-        take: 100,
+    // Mapeia tentativas do usuário
+    const userAttempts: AttemptRecord[] = user.attempts.map((att) => ({
+      id: att.id,
+      questionId: att.questionId,
+      topicId: att.question.topicId,
+      isCorrect: att.isCorrect,
+      chosenOption: att.chosenOption,
+      timeSpentSeconds: att.timeSpentSeconds,
+      createdAt: att.createdAt,
+      difficulty: (att.question.difficulty as any) || "MEDIA",
+      questionType: att.question.questionType,
+      cognitiveLevel: att.question.cognitiveLevel,
+    }));
+
+    // 1. MODO: ESTUDAR AGORA / ADAPTATIVO
+    if (mode === "adaptativo" || mode === "estudar_agora") {
+      const allTopics = await prisma.topic.findMany({
+        include: {
+          subject: true,
+          questions: true,
+        },
+        orderBy: [{ subject: { order: "asc" } }, { order: "asc" }],
       });
-      errorQuestionIds = [...new Set(wrongAttempts.map((attempt) => attempt.questionId))];
-      targetTopicIds = [...new Set(wrongAttempts.map((attempt) => attempt.question.topicId))].slice(0, 5);
 
-      if (!targetTopicIds.length) {
-        const weak = await prisma.userTopicProgress.findMany({
-          where: { userId: user.id, masteryScore: { lt: 70 } },
-          orderBy: { masteryScore: "asc" },
-          take: 5,
-          select: { topicId: true },
+      const attemptsByTopic = new Map<string, AttemptRecord[]>();
+      for (const a of userAttempts) {
+        const list = attemptsByTopic.get(a.topicId) || [];
+        list.push(a);
+        attemptsByTopic.set(a.topicId, list);
+      }
+
+      const progressByTopic = new Map(user.progress.map((p) => [p.topicId, p]));
+      const questionsByTopic = new Map<string, QuestionSummary[]>();
+      const fullQuestionMap = new Map<string, any>();
+
+      for (const t of allTopics) {
+        const qSummaries: QuestionSummary[] = t.questions.map((q) => {
+          fullQuestionMap.set(q.id, { ...q, topic: { id: t.id, title: t.title, code: t.code, subject: t.subject } });
+          return {
+            id: q.id,
+            topicId: q.topicId,
+            statement: q.statement,
+            statementHash: q.statementHash,
+            difficulty: (q.difficulty as any) || "MEDIA",
+            questionType: q.questionType,
+            cognitiveLevel: q.cognitiveLevel,
+            topicTitle: t.title,
+            subjectName: t.subject.name,
+          };
         });
-        targetTopicIds = weak.map((p) => p.topicId);
+        questionsByTopic.set(t.id, qSummaries);
       }
-      if (!targetTopicIds.length) {
-        const fallback = await prisma.topic.findMany({ take: 5, orderBy: { order: "asc" }, select: { id: true } });
-        targetTopicIds = fallback.map((t) => t.id);
+
+      const diagnostics = allTopics.map((t) => {
+        const progress = progressByTopic.get(t.id);
+        return evaluateTopicDiagnostic({
+          topicId: t.id,
+          topicTitle: t.title,
+          topicCode: t.code,
+          subjectName: t.subject.name,
+          attempts: attemptsByTopic.get(t.id) || [],
+          nextReviewDate: progress?.nextReviewDate,
+          lastStudiedAt: progress?.lastStudiedAt,
+        });
+      });
+
+      const session = buildStudyNowSession({
+        diagnostics,
+        questionsByTopic,
+        userAttempts,
+        targetCount: safeCount,
+      });
+
+      const hydratedQuestions = session.questions.map((q) => fullQuestionMap.get(q.id)).filter(Boolean);
+      return NextResponse.json({
+        questions: hydratedQuestions,
+        preview: session.preview,
+        total: hydratedQuestions.length,
+      });
+    }
+
+    // 2. MODO: REVISAR ERROS
+    if (mode === "erros") {
+      const allQuestionsRaw = await prisma.question.findMany({
+        include: { topic: { include: { subject: true } } },
+      });
+
+      const questionSummaries: QuestionSummary[] = allQuestionsRaw.map((q) => ({
+        id: q.id,
+        topicId: q.topicId,
+        statement: q.statement,
+        statementHash: q.statementHash,
+        difficulty: (q.difficulty as any) || "MEDIA",
+        questionType: q.questionType,
+        cognitiveLevel: q.cognitiveLevel,
+        topicTitle: q.topic.title,
+        subjectName: q.topic.subject.name,
+      }));
+
+      const errorSession = buildErrorReviewSession({
+        allQuestions: questionSummaries,
+        userAttempts,
+        targetCount: safeCount,
+      });
+
+      // Se o aluno ainda não possui erros suficientes, complementa com itens de menor domínio
+      let finalQuestions = errorSession.questions;
+      if (finalQuestions.length < safeCount) {
+        const existingIds = new Set(finalQuestions.map((q) => q.id));
+        const remainingNeeded = safeCount - finalQuestions.length;
+        const fallbackPool = shuffle(questionSummaries.filter((q) => !existingIds.has(q.id)));
+        finalQuestions = [...finalQuestions, ...fallbackPool.slice(0, remainingNeeded)];
       }
-    } else if (topicId) {
-      targetTopicIds = [topicId];
+
+      const qMap = new Map(allQuestionsRaw.map((q) => [q.id, q]));
+      const hydrated = finalQuestions.map((q) => qMap.get(q.id)).filter(Boolean);
+
+      return NextResponse.json({
+        questions: hydrated,
+        preview: errorSession.preview,
+        total: hydrated.length,
+      });
+    }
+
+    // 3. MODO: TREINO POR TÓPICO OU DISCIPLINA
+    let whereClause: any = {};
+    if (topicId) {
+      whereClause = { topicId };
     } else if (subjectId) {
-      const topics = await prisma.topic.findMany({ where: { subjectId }, select: { id: true } });
-      targetTopicIds = topics.map((t) => t.id);
+      whereClause = { topic: { subjectId } };
     }
 
-    const where = targetTopicIds.length ? { topicId: { in: targetTopicIds } } : {};
-    const allExisting = await prisma.question.findMany({ where, include: { topic: { include: { subject: true } } } });
-    const compatibleExisting = allExisting.filter((q) => q.difficulty === safeDifficulty);
-    const errorPool = mode === "erros" ? compatibleExisting.filter((q) => errorQuestionIds.includes(q.id)) : [];
-    const pool = mode === "erros" ? errorPool : compatibleExisting;
-
-    if (pool.length >= safeCount) {
-      return NextResponse.json({ questions: shuffle(pool).slice(0, safeCount), generated: 0, requestedDifficulty: safeDifficulty });
+    if (safeDifficulty) {
+      whereClause.difficulty = safeDifficulty;
     }
 
-    const selected = shuffle(pool);
-    const existingStatements = new Set(allExisting.map((q) => normalizeText(q.statement)));
-    const topics = targetTopicIds.length
-      ? await prisma.topic.findMany({ where: { id: { in: targetTopicIds } }, include: { subject: true }, orderBy: { order: "asc" } })
-      : await prisma.topic.findMany({ include: { subject: true }, orderBy: { order: "asc" }, take: 1 });
+    const candidateQuestions = await prisma.question.findMany({
+      where: whereClause,
+      include: { topic: { include: { subject: true } } },
+    });
 
-    const historicalRows = topics.length ? await prisma.historicalQuestion.findMany({
-      where: { topicId: { in: topics.map((topic) => topic.id) } },
-      include: { topic: { select: { title: true } } },
-      take: 200,
-    }) : [];
-    const historicalPatterns = summarizeHistoricalPatterns(
-      historicalRows
-        .filter((row) => row.topic)
-        .map((row) => ({
-          topicTitle: row.topic!.title,
-          difficulty: row.difficulty,
-          questionType: row.questionType,
-          cognitiveLevel: row.cognitiveLevel,
-        }))
-    );
-    const historicalContext = historicalPatterns.total ? JSON.stringify(historicalPatterns) : null;
-
-    if (!topics.length) return NextResponse.json({ questions: selected, generated: 0, requestedDifficulty: safeDifficulty });
-
-    let remaining = safeCount - selected.length;
-    const created: any[] = [];
-    let retryAttempt = 0;
-
-    while (remaining > 0 && retryAttempt < MAX_GENERATION_RETRIES) {
-      retryAttempt++;
-      const shuffledTopics = shuffle(topics);
-
-      for (const topic of shuffledTopics) {
-        if (remaining <= 0) break;
-        const requestCount = Math.min(remaining + 2, 10);
-        try {
-          const generated = await generateQuestionBatch(topic.title, topic.subject.name, requestCount, safeDifficulty, topic.officialSource, historicalContext);
-          const rawList = Array.isArray(generated?.questions) ? generated.questions : [];
-
-          for (const rawQ of rawList) {
-            if (remaining <= 0) break;
-            const validation = validateAiQuestion(rawQ, safeDifficulty);
-            if (!validation.valid) continue;
-
-            const q = validation.question;
-            const key = normalizeText(q.statement);
-            const hash = computeStatementHash(q.statement);
-
-            try {
-              const item = await prisma.question.create({
-                data: {
-                  topicId: topic.id,
-                  statement: q.statement,
-                  statementHash: hash,
-                  optionA: q.optionA,
-                  optionB: q.optionB,
-                  optionC: q.optionC,
-                  optionD: q.optionD,
-                  optionE: q.optionE,
-                  correctOption: q.correctOption,
-                  explanation: q.explanation,
-                  difficulty: q.difficulty,
-                  origin: q.origin,
-                  banca: q.banca,
-                  sourceRef: q.sourceRef,
-                  questionType: q.questionType,
-                  cognitiveLevel: q.cognitiveLevel,
-                  subtopic: q.subtopic || null,
-                  verificationStatus: "PENDENTE",
-                },
-                include: { topic: { include: { subject: true } } },
-              });
-
-              created.push(item);
-              existingStatements.add(key);
-              remaining--;
-            } catch (createErr) {
-              if (createErr instanceof Prisma.PrismaClientKnownRequestError && createErr.code === "P2002") {
-                existingStatements.add(key);
-                continue;
-              }
-              throw createErr;
-            }
-          }
-        } catch (err) {
-          console.warn(`[Retry ${retryAttempt}] Falha temporária ao gerar questões para "${topic.title}":`, (err as Error).message);
-        }
-      }
+    if (candidateQuestions.length === 0) {
+      return NextResponse.json({ questions: [], total: 0 });
     }
+
+    // Identifica quais questões o aluno já respondeu para dar prioridade às NÃO respondidas
+    const answeredIds = new Set(userAttempts.map((a) => a.questionId));
+    const unseenQuestions = candidateQuestions.filter((q) => !answeredIds.has(q.id));
+    const seenQuestions = candidateQuestions.filter((q) => answeredIds.has(q.id));
+
+    // Ordena: primeiro as inéditas para o aluno, depois as já vistas embaralhadas
+    const prioritizedPool = [...shuffle(unseenQuestions), ...shuffle(seenQuestions)];
+    const selectedBatch = prioritizedPool.slice(0, safeCount);
 
     return NextResponse.json({
-      questions: shuffle([...selected, ...created]).slice(0, safeCount),
-      generated: created.length,
-      requestedDifficulty: safeDifficulty,
+      questions: selectedBatch,
+      total: selectedBatch.length,
+      unseenCount: unseenQuestions.length,
     });
   } catch (error) {
-    console.error("Erro ao gerar/carregar bateria de questões:", error);
-    return NextResponse.json({ error: "Não foi possível carregar as questões. Tente novamente." }, { status: 500 });
+    console.error("Erro na rota de lote de questões adaptativas:", error);
+    return NextResponse.json({ error: "Falha interna ao processar lote de questões." }, { status: 500 });
   }
 }

@@ -56,18 +56,74 @@ export async function POST(req: NextRequest) {
     if (distribution.portuguese !== PORT_TOTAL || distribution.math !== MATH_TOTAL || distribution.specific !== SPECIFIC_TOTAL) return NextResponse.json({ error: "A distribuição do simulado deve ser 10 Português, 10 Matemática e 40 Específicas." }, { status: 400 });
 
     let portCorrect = 0, mathCorrect = 0, specificCorrect = 0;
-    const topicCounts = new Map<string, { total: number; correct: number }>();
+    const topicCounts = new Map<string, { total: number; correct: number; title: string; code?: string | null; subject: string }>();
+    const diffMap: Record<string, { total: number; correct: number }> = { FACIL: { total: 0, correct: 0 }, MEDIA: { total: 0, correct: 0 }, DIFICIL: { total: 0, correct: 0 } };
+    const cogMap: Record<string, { total: number; correct: number }> = {};
+    let unansweredCount = 0;
+
     const attemptsToCreate = orderedQuestions.map((q) => {
       const raw = answers[q.id];
       const chosen = typeof raw === "string" && /^[A-Ea-e]$/.test(raw.trim()) ? raw.trim().toUpperCase() : "";
+      if (!chosen) unansweredCount++;
       const isCorrect = chosen !== "" && chosen === q.correctOption;
-      if (isCorrect) { if (q.topic.subject.name === "Língua Portuguesa") portCorrect++; else if (q.topic.subject.name === "Matemática") mathCorrect++; else specificCorrect++; }
-      const current = topicCounts.get(q.topicId) || { total: 0, correct: 0 }; current.total++; if (isCorrect) current.correct++; topicCounts.set(q.topicId, current);
+
+      if (isCorrect) {
+        if (q.topic.subject.name === "Língua Portuguesa") portCorrect++;
+        else if (q.topic.subject.name === "Matemática") mathCorrect++;
+        else specificCorrect++;
+      }
+
+      // Dificuldade
+      const diffKey = (q.difficulty || "MEDIA").toUpperCase();
+      if (diffMap[diffKey]) {
+        diffMap[diffKey].total++;
+        if (isCorrect) diffMap[diffKey].correct++;
+      }
+
+      // Nível cognitivo
+      if (q.cognitiveLevel) {
+        const cKey = q.cognitiveLevel.toUpperCase();
+        cogMap[cKey] = cogMap[cKey] || { total: 0, correct: 0 };
+        cogMap[cKey].total++;
+        if (isCorrect) cogMap[cKey].correct++;
+      }
+
+      // Tópico
+      const current = topicCounts.get(q.topicId) || {
+        total: 0,
+        correct: 0,
+        title: q.topic.title,
+        code: q.topic.code,
+        subject: q.topic.subject.name,
+      };
+      current.total++;
+      if (isCorrect) current.correct++;
+      topicCounts.set(q.topicId, current);
+
       const rawTime = questionTimes?.[q.id];
       const timeSpentSeconds = typeof rawTime === "number" && Number.isFinite(rawTime) ? Math.max(0, Math.min(EXAM_SECONDS, Math.floor(rawTime))) : 0;
       return { userId: user.id, questionId: q.id, chosenOption: chosen, isCorrect, timeSpentSeconds };
     });
-    const diagnostic = evaluateSimulation({ portugueseCorrect: portCorrect, mathCorrect, specificCorrect, targetScore: user.targetScore || 47 });
+
+    const topicStats = Array.from(topicCounts.entries()).map(([topicId, item]) => ({
+      topicId,
+      title: item.title,
+      code: item.code,
+      subject: item.subject,
+      total: item.total,
+      correct: item.correct,
+    }));
+
+    const diagnostic = evaluateSimulation({
+      portugueseCorrect: portCorrect,
+      mathCorrect,
+      specificCorrect,
+      targetScore: user.targetScore || 47,
+      unansweredCount,
+      difficultyStats: diffMap,
+      cognitiveStats: cogMap,
+      topicStats,
+    });
     const normalizedQuestionIds = [...questionIds].sort();
 
     try {

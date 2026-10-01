@@ -42,8 +42,13 @@ npm run dev
 - Questões da IA são inéditas e ficam identificadas como `origin: AI_GENERATED`, com banca `IA (perfil Cesgranrio)` e `sourceRef` descritivo. Nunca apresentá-las como questões oficiais aplicadas pela Cesgranrio.
 - Aulas e questões passam pelo validador estrutural central `src/lib/question-validator.ts` antes da persistência.
 
-## 🔁 Progresso, SRS e sequência diária
+## 🔁 Progresso, SRS e Motor Adaptativo
 
+- `src/lib/adaptive-engine.ts`: motor adaptativo de estudo e diagnóstico construído sobre o acervo mestre de 940 questões.
+  - Domínio bayesiano por tópico com amortecimento empírico ($\frac{C + 4}{N + 8} \times 100 \times \text{diffMultiplier}$), impedindo scores distorcidos em amostras pequenas.
+  - Fila "ESTUDAR AGORA": monta bateria de 10 questões equilibrada entre tópicos críticos (menor domínio, erros recentes, tópicos nunca vistos e revisões vencidas) com progressão adaptativa de dificuldade.
+  - Fila "Revisar Meus Erros": fila de repetição espaçada (SRS) progressiva (1 -> 3 -> 7 -> 14 -> 30 dias) impedindo que acertos pontuais descartem erros prematuramente.
+  - Diagnóstico pós-simulado oficial enriquecido com breakdown por dificuldade, nível cognitivo, não respondidas e plano de ação pedagógica "Seu próximo estudo".
 - `src/lib/srs.ts` contém a regra própria de repetição espaçada da plataforma. Não descrevê-la como SM-2.
 - `src/lib/streak.ts` calcula a sequência diária usando `America/Sao_Paulo`.
 - Questões, flashcards, simulados e feedback de aula atualizam a sequência quando a atividade é efetivamente registrada.

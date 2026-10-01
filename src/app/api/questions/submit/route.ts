@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { updateStudyStreak } from "@/lib/streak";
+import { calculateAdaptiveMasteryScore, getDifficultyWeight } from "@/lib/adaptive-engine";
 
 const USER_EMAIL = "rafael@estudos.transpetro";
 const MAX_TIME_SECONDS = 86400;
@@ -44,11 +45,46 @@ export async function POST(req: NextRequest) {
         const progress = await tx.userTopicProgress.findUnique({ where: { userId_topicId: { userId: user.id, topicId: question.topicId } } });
         const total = (progress?.totalQuestions || 0) + 1;
         const correct = (progress?.correctAnswers || 0) + (isCorrect ? 1 : 0);
-        const mastery = Math.round((correct / total) * 100);
+        const mastery = calculateAdaptiveMasteryScore(correct, total, getDifficultyWeight(question.difficulty));
+
+        // Repetição espaçada adaptativa
+        let nextIntervalDays = 1;
+        if (!isCorrect) {
+          nextIntervalDays = 1;
+        } else {
+          const currentInterval = progress?.reviewIntervalDays || 1;
+          if (currentInterval <= 1) nextIntervalDays = 3;
+          else if (currentInterval <= 3) nextIntervalDays = 7;
+          else if (currentInterval <= 7) nextIntervalDays = 14;
+          else nextIntervalDays = Math.min(30, currentInterval + 14);
+        }
+        const nextReviewDate = new Date();
+        nextReviewDate.setDate(nextReviewDate.getDate() + nextIntervalDays);
+
         await tx.userTopicProgress.upsert({
           where: { userId_topicId: { userId: user.id, topicId: question.topicId } },
-          update: { totalQuestions: total, correctAnswers: correct, masteryScore: mastery, status: mastery >= 85 ? "DOMINADO" : "EM_ESTUDO", lastStudiedAt: new Date(), ...(studyMinutes > 0 ? { totalTimeMinutes: { increment: studyMinutes } } : {}) },
-          create: { userId: user.id, topicId: question.topicId, totalQuestions: 1, correctAnswers: isCorrect ? 1 : 0, masteryScore: isCorrect ? 100 : 0, status: "EM_ESTUDO", lastStudiedAt: new Date(), totalTimeMinutes: studyMinutes },
+          update: {
+            totalQuestions: total,
+            correctAnswers: correct,
+            masteryScore: mastery,
+            status: mastery >= 85 ? "DOMINADO" : "EM_ESTUDO",
+            lastStudiedAt: new Date(),
+            nextReviewDate,
+            reviewIntervalDays: nextIntervalDays,
+            ...(studyMinutes > 0 ? { totalTimeMinutes: { increment: studyMinutes } } : {}),
+          },
+          create: {
+            userId: user.id,
+            topicId: question.topicId,
+            totalQuestions: 1,
+            correctAnswers: isCorrect ? 1 : 0,
+            masteryScore: mastery,
+            status: "EM_ESTUDO",
+            lastStudiedAt: new Date(),
+            nextReviewDate,
+            reviewIntervalDays: nextIntervalDays,
+            totalTimeMinutes: studyMinutes,
+          },
         });
         await updateStudyStreak(tx, user.id, new Date());
         await tx.user.update({ where: { id: user.id }, data: { xp: { increment: isCorrect ? 10 : 2 }, lastStudyDate: new Date() } });

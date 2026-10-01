@@ -27,13 +27,14 @@ Bem-vindo à sua plataforma dedicada de estudos para o concurso da **TRANSPETRO 
    - Armazenadas no banco para você consultar quantas vezes quiser sem gastar tokens.
    - As questões de fixação geradas pela IA são inéditas e identificadas como geradas por IA, nunca afirmando terem sido aplicadas pela Cesgranrio.
 
-4. **Questões e Simulados:**
+4. **Questões, Treino Adaptativo e Simulados:**
+   - **Botão "ESTUDAR AGORA" (10 Questões):** recomendação instantânea que seleciona os tópicos mais urgentes para você no momento (com base em menor domínio, erros recentes, matérias nunca vistas e revisões pendentes) calibrando a dificuldade de acordo com seu desempenho.
    - **Acervo Pedagógico Mestre com 940 Questões:** acervo robusto e 100% curado com 940 questões ativas cobrindo todos os 47 tópicos oficiais da Ênfase 18 (exatamente 20 questões em cada tópico), com enunciados aprofundados, gabaritos organicamente balanceados (A-E) e sem repetições artificiais.
    - Treinos de 10, 20 ou baterias personalizadas por tópico ou disciplina.
-   - Modo **"Rever O Que Errei"** para atacar prioritariamente os pontos fracos.
+   - Modo **"Rever O Que Errei" (com Repetição Espaçada):** seus erros não desaparecem com um único acerto por sorte; a plataforma cria um ciclo de consolidação em 1, 3, 7, 14 e 30 dias para garantir retenção definitiva.
    - **Questões Irmãs (Siblings):** crie variações pedagógicas a partir de qualquer questão do acervo (modo Fácil, Equivalente, Difícil, Novo Cenário ou Distratores Cesgranrio).
    - **Simulado completo Cesgranrio** com exatamente 60 questões (40 específicas + 10 de Português + 10 de Matemática), balanceadas por dispersão estratificada entre tópicos, e cronômetro de 4 horas.
-   - Diagnóstico pós-simulado com checagem estrita dos critérios oficiais de eliminação (mínimo de 50% em gerais, 50% em específicas e não zerar Português nem Matemática) e distância até a meta de estudo (47/60).
+   - **Diagnóstico Pós-Simulado Enriquecido:** além de verificar eliminação oficial Cesgranrio e a meta 47/60, exibe o percentual de acertos por nível de dificuldade (Fácil, Média, Difícil), nível cognitivo, itens não respondidos e monta o plano imediato **"Seu Próximo Estudo"** com botões diretos de treino dos seus 3 tópicos mais frágeis.
 
 5. **Flashcards (SRS):**
    - Revisão diária com repetição espaçada.

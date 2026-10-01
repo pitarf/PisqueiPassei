@@ -25,17 +25,129 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
   let questions: any[] = [];
 
   if (isTrainingActive) {
-    if (modo === "erros") {
-      const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" }, select: { id: true } });
-      const wrongAttempts = user ? await prisma.questionAttempt.findMany({ where: { userId: user.id, isCorrect: false }, orderBy: { createdAt: "desc" }, select: { questionId: true }, take: 100 }) : [];
-      const wrongIds = [...new Set(wrongAttempts.map((attempt) => attempt.questionId))];
-      if (wrongIds.length > 0) {
-        const wrongPool = await prisma.question.findMany({ where: { id: { in: wrongIds }, ...(difficulty ? { difficulty } : {}), ...(origin ? { origin } : {}) }, include: { topic: { include: { subject: true } } } });
-        const order = new Map(wrongIds.map((id, index) => [id, index]));
-        wrongPool.sort((a, b) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999));
-        questions = wrongPool.slice(0, countNum);
-      } else if (user) {
-        const weakTopics = await prisma.userTopicProgress.findMany({ where: { userId: user.id, masteryScore: { lt: 70 } }, orderBy: { masteryScore: "asc" }, take: 10, select: { topicId: true } });
+    if (modo === "estudar_agora") {
+      const user = await prisma.user.findFirst({
+        where: { email: "rafael@estudos.transpetro" },
+        include: {
+          progress: true,
+          attempts: {
+            include: { question: { select: { topicId: true, difficulty: true, questionType: true, cognitiveLevel: true } } },
+          },
+        },
+      });
+      if (user) {
+        const allTopics = await prisma.topic.findMany({
+          include: { subject: true, questions: { include: { topic: { include: { subject: true } } } } },
+          orderBy: [{ subject: { order: "asc" } }, { order: "asc" }],
+        });
+        const { buildStudyNowSession, evaluateTopicDiagnostic } = await import("@/lib/adaptive-engine");
+        const userAttempts = user.attempts.map((att) => ({
+          id: att.id,
+          questionId: att.questionId,
+          topicId: att.question.topicId,
+          isCorrect: att.isCorrect,
+          chosenOption: att.chosenOption,
+          timeSpentSeconds: att.timeSpentSeconds,
+          createdAt: att.createdAt,
+          difficulty: (att.question.difficulty as any) || "MEDIA",
+          questionType: att.question.questionType,
+          cognitiveLevel: att.question.cognitiveLevel,
+        }));
+        const attemptsByTopic = new Map<string, typeof userAttempts>();
+        for (const a of userAttempts) {
+          const list = attemptsByTopic.get(a.topicId) || [];
+          list.push(a);
+          attemptsByTopic.set(a.topicId, list);
+        }
+        const progressByTopic = new Map(user.progress.map((p) => [p.topicId, p]));
+        const questionsByTopic = new Map<string, any[]>();
+        const fullQuestionMap = new Map<string, any>();
+        for (const t of allTopics) {
+          const qSummaries = t.questions.map((q) => {
+            fullQuestionMap.set(q.id, q);
+            return {
+              id: q.id,
+              topicId: q.topicId,
+              statement: q.statement,
+              statementHash: q.statementHash,
+              difficulty: (q.difficulty as any) || "MEDIA",
+              questionType: q.questionType,
+              cognitiveLevel: q.cognitiveLevel,
+              topicTitle: t.title,
+              subjectName: t.subject.name,
+            };
+          });
+          questionsByTopic.set(t.id, qSummaries);
+        }
+        const diagnostics = allTopics.map((t) => {
+          const progress = progressByTopic.get(t.id);
+          return evaluateTopicDiagnostic({
+            topicId: t.id,
+            topicTitle: t.title,
+            topicCode: t.code,
+            subjectName: t.subject.name,
+            attempts: attemptsByTopic.get(t.id) || [],
+            nextReviewDate: progress?.nextReviewDate,
+            lastStudiedAt: progress?.lastStudiedAt,
+          });
+        });
+        const session = buildStudyNowSession({
+          diagnostics,
+          questionsByTopic,
+          userAttempts,
+          targetCount: countNum,
+        });
+        questions = session.questions.map((q) => fullQuestionMap.get(q.id)).filter(Boolean);
+      }
+    } else if (modo === "erros") {
+      const user = await prisma.user.findFirst({
+        where: { email: "rafael@estudos.transpetro" },
+        include: {
+          attempts: {
+            include: { question: { select: { topicId: true, difficulty: true, questionType: true, cognitiveLevel: true } } },
+          },
+        },
+      });
+      if (user) {
+        const allQuestionsRaw = await prisma.question.findMany({
+          include: { topic: { include: { subject: true } } },
+        });
+        const { buildErrorReviewSession } = await import("@/lib/adaptive-engine");
+        const userAttempts = user.attempts.map((att) => ({
+          id: att.id,
+          questionId: att.questionId,
+          topicId: att.question.topicId,
+          isCorrect: att.isCorrect,
+          chosenOption: att.chosenOption,
+          timeSpentSeconds: att.timeSpentSeconds,
+          createdAt: att.createdAt,
+          difficulty: (att.question.difficulty as any) || "MEDIA",
+          questionType: att.question.questionType,
+          cognitiveLevel: att.question.cognitiveLevel,
+        }));
+        const allSummaries = allQuestionsRaw.map((q) => ({
+          id: q.id,
+          topicId: q.topicId,
+          statement: q.statement,
+          statementHash: q.statementHash,
+          difficulty: (q.difficulty as any) || "MEDIA",
+          questionType: q.questionType,
+          cognitiveLevel: q.cognitiveLevel,
+          topicTitle: q.topic.title,
+          subjectName: q.topic.subject.name,
+        }));
+        const qMap = new Map(allQuestionsRaw.map((q) => [q.id, q]));
+        const session = buildErrorReviewSession({
+          allQuestions: allSummaries,
+          userAttempts,
+          targetCount: countNum,
+        });
+        questions = session.questions.map((q) => qMap.get(q.id)).filter(Boolean);
+      }
+      if (questions.length === 0) {
+        // Fallback se não houver erros na fila SRS
+        const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" }, select: { id: true } });
+        const weakTopics = user ? await prisma.userTopicProgress.findMany({ where: { userId: user.id, masteryScore: { lt: 70 } }, orderBy: { masteryScore: "asc" }, take: 10, select: { topicId: true } }) : [];
         const topicIds = weakTopics.map((item) => item.topicId);
         if (topicIds.length > 0) {
           const weakPool = await prisma.question.findMany({ where: { topicId: { in: topicIds }, ...(difficulty ? { difficulty } : {}), ...(origin ? { origin } : {}) }, include: { topic: { include: { subject: true } } } });
@@ -134,7 +246,10 @@ export default async function QuestoesPage({ searchParams }: QuestoesPageProps) 
         <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
         <p className="text-xs text-amber-200">Você pediu <strong>{countNum}</strong> questões, mas encontramos <strong>{questions.length}</strong> cadastradas para esse filtro. Você pode resolver essas agora sem perder o ritmo.</p>
       </div>}
-      <QuestionSession initialQuestions={questions} title={modo === "erros" ? "Revisão dos Meus Erros" : `Treino de Questões (${questions.length} itens)`} />
+      <QuestionSession 
+        initialQuestions={questions} 
+        title={modo === "estudar_agora" ? "Sessão Adaptativa Inteligente (Estudar Agora)" : modo === "erros" ? "Revisão dos Meus Erros" : `Treino de Questões (${questions.length} itens)`} 
+      />
     </div>}
   </div>;
 }
