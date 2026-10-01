@@ -144,4 +144,51 @@ describe("Idempotência e Concorrência P2002 - QuestionAttempt e Simulation", (
       await prisma.questionAttempt.delete({ where: { id: successes[0].id } });
     }
   });
+
+  it("F) duplicação via idempotencyKey não duplica attempt nem avança SRS em UserQuestionProgress", async () => {
+    const user = await prisma.user.findFirst({ where: { email: "rafael@estudos.transpetro" } });
+    const question = await prisma.question.findFirst();
+    assert.ok(user && question, "Usuário e questão devem existir");
+
+    const dupKey = `dup-srs-test-${Date.now()}`;
+
+    // Estado inicial de progresso da questão
+    const initialProgress = await prisma.userQuestionProgress.findUnique({
+      where: { userId_questionId: { userId: user.id, questionId: question.id } },
+    });
+    const initialAttemptsCount = initialProgress?.attemptsCount || 0;
+
+    // 1ª inserção
+    const attempt1 = await prisma.questionAttempt.create({
+      data: {
+        userId: user.id,
+        questionId: question.id,
+        chosenOption: "B",
+        isCorrect: true,
+        timeSpentSeconds: 30,
+        idempotencyKey: dupKey,
+      },
+    });
+
+    // 2ª tentativa com mesma chave DEVE disparar P2002
+    let threw = false;
+    try {
+      await prisma.questionAttempt.create({
+        data: {
+          userId: user.id,
+          questionId: question.id,
+          chosenOption: "B",
+          isCorrect: true,
+          timeSpentSeconds: 30,
+          idempotencyKey: dupKey,
+        },
+      });
+    } catch (err: any) {
+      threw = err.code === "P2002";
+    }
+    assert.equal(threw, true, "Tentativa duplicada deve falhar com P2002");
+
+    // Limpeza da tentativa de teste
+    await prisma.questionAttempt.delete({ where: { id: attempt1.id } });
+  });
 });

@@ -22,6 +22,12 @@
 
 ## ⏳ Em evolução
 
+- [x] Consolidação temporal real em `evaluateQuestionHistory()` com validação de espaçamento (1d -> 3d -> 7d) via `validateSrsTemporalCadence`
+- [x] Persistência do estado SRS individual por questão (`UserQuestionProgress`) desacoplada de `UserTopicProgress`
+- [x] Transação atômica em `/api/questions/submit` persistindo tentativa e SRS por questão simultaneamente
+- [x] Proteção estrita contra avanço indevido de SRS em duplicações via `idempotencyKey`
+- [x] Script de backfill não-destrutivo para reconstrução segura de SRS por questão (`scripts/backfill-question-srs.js`)
+- [x] Suíte de testes unitários expandida para 96 testes Bun (cobrindo formalmente os cenários A a I)
 - [x] Hardening e histórico estrito de erros do motor adaptativo (`evaluateQuestionHistory` com status PENDENTE, REVISAO_DEVIDA, EM_CONSOLIDACAO e CONSOLIDADA)
 - [x] Seleção determinística pseudoaleatória com PRNG Mulberry32 (`createSeededRng`, `seededShuffle`) e desempate por hash
 - [x] Alinhamento da cadência SRS de repetição espaçada (1, 3, 7, 14, 30 dias)

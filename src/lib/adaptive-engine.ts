@@ -371,9 +371,71 @@ export function determineAdaptiveDifficulty(
   return "DIFICIL";
 }
 
+export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+export const TOLERANCE_MS = 60 * 60 * 1000; // 1 hora de tolerância operacional (fuso horário e pequenas variações)
+
+/**
+ * Avalia se a sequência de acertos respeitou a cadência mínima de espaçamento temporal para consolidação.
+ * Regras estritas:
+ * - Se houve erro prévio: exige pelo menos 3 acertos consecutivos após o último erro.
+ *   - 1º acerto: >= 1 dia após o último erro;
+ *   - 2º acerto: >= 3 dias após o 1º acerto;
+ *   - 3º acerto: >= 7 dias após o 2º acerto;
+ * - Se nunca houve erro (todas corretas): exige pelo menos 3 acertos espaçados (>= 1d entre 1º e 2º, >= 3d entre 2º e 3º).
+ * Qualquer novo erro reinicia completamente o ciclo.
+ */
+export function validateSrsTemporalCadence(sortedAttempts: AttemptRecord[]): boolean {
+  if (sortedAttempts.length < 3) return false;
+
+  // Localiza o índice do último erro no histórico
+  let lastErrorIndex = -1;
+  for (let i = sortedAttempts.length - 1; i >= 0; i--) {
+    if (!sortedAttempts[i].isCorrect) {
+      lastErrorIndex = i;
+      break;
+    }
+  }
+
+  // Caso haja histórico prévio de erro
+  if (lastErrorIndex !== -1) {
+    const correctAfterError = sortedAttempts.slice(lastErrorIndex + 1);
+    if (correctAfterError.length < 3) return false;
+
+    const errorAttempt = sortedAttempts[lastErrorIndex];
+    const a1 = correctAfterError[0];
+    const a2 = correctAfterError[1];
+    const a3 = correctAfterError[2];
+
+    const d1 = a1.createdAt.getTime() - errorAttempt.createdAt.getTime();
+    const d2 = a2.createdAt.getTime() - a1.createdAt.getTime();
+    const d3 = a3.createdAt.getTime() - a2.createdAt.getTime();
+
+    const minD1 = 1 * ONE_DAY_MS - TOLERANCE_MS;
+    const minD2 = 3 * ONE_DAY_MS - TOLERANCE_MS;
+    const minD3 = 7 * ONE_DAY_MS - TOLERANCE_MS;
+
+    return d1 >= minD1 && d2 >= minD2 && d3 >= minD3;
+  }
+
+  // Caso não haja histórico de erro (100% de acertos desde o início)
+  const a1 = sortedAttempts[0];
+  const a2 = sortedAttempts[1];
+  const a3 = sortedAttempts[2];
+
+  const d1 = a2.createdAt.getTime() - a1.createdAt.getTime();
+  const d2 = a3.createdAt.getTime() - a2.createdAt.getTime();
+
+  return d1 >= (1 * ONE_DAY_MS - TOLERANCE_MS) && d2 >= (3 * ONE_DAY_MS - TOLERANCE_MS);
+}
+
 /**
  * Avalia o histórico acumulado detalhado de uma questão específica a partir de todas as suas tentativas.
- * Garante que múltiplas tentativas não percam contagem de erros, acertos ou progresso SRS.
+ * Aplica consolidação temporal real (1d -> 3d -> 7d) e gerencia os estados:
+ * - NUNCA_VISTA: nenhuma tentativa registrada
+ * - PENDENTE: último resultado foi erro recente (< 1 dia)
+ * - REVISAO_DEVIDA: agendamento de revisão SRS vencido (nextReviewDate <= now)
+ * - EM_CONSOLIDACAO: questão acertada, mas ainda sem cumprir a cadência temporal completa de consolidação
+ * - CONSOLIDADA: cadência temporal e sequência de acertos estritamente cumpridas
  */
 export function evaluateQuestionHistory(
   questionId: string,
@@ -411,36 +473,39 @@ export function evaluateQuestionHistory(
       totalCorrect++;
       consecutiveErrors = 0;
       consecutiveCorrect++;
-      // Progressão de SRS para acertos sucessivos
+      // Progressão formal de SRS: 1 -> 3 -> 7 -> 14 -> 30 dias
       if (consecutiveCorrect === 1) currentIntervalDays = 1;
       else if (consecutiveCorrect === 2) currentIntervalDays = 3;
       else if (consecutiveCorrect === 3) currentIntervalDays = 7;
       else if (consecutiveCorrect === 4) currentIntervalDays = 14;
-      else currentIntervalDays = Math.min(30, 14 + (consecutiveCorrect - 4) * 7);
+      else currentIntervalDays = 30;
     } else {
       totalErrors++;
       consecutiveCorrect = 0;
       consecutiveErrors++;
-      currentIntervalDays = 1; // Novo erro reinicia o ciclo
+      currentIntervalDays = 1; // Qualquer novo erro reinicia o ciclo
     }
   }
 
   const lastAttempt = sorted[sorted.length - 1];
   const lastCorrect = lastAttempt.isCorrect;
-  const nextReviewDate = new Date(lastAttempt.createdAt);
-  nextReviewDate.setDate(nextReviewDate.getDate() + currentIntervalDays);
+  const nextReviewDate = new Date(lastAttempt.createdAt.getTime() + currentIntervalDays * ONE_DAY_MS);
   const isReviewDue = nextReviewDate.getTime() <= now.getTime();
 
   let status: QuestionStudyStatus;
   if (!lastCorrect) {
+    // Erro na última tentativa: se a janela de 1 dia já venceu, vira REVISAO_DEVIDA, senão PENDENTE
     status = isReviewDue ? "REVISAO_DEVIDA" : "PENDENTE";
-  } else if (consecutiveCorrect >= 3 && totalErrors > 0) {
-    status = "CONSOLIDADA";
-  } else if (totalErrors > 0) {
-    status = isReviewDue ? "REVISAO_DEVIDA" : "EM_CONSOLIDACAO";
   } else {
-    // Acertada sem erros anteriores
-    status = consecutiveCorrect >= 2 ? "CONSOLIDADA" : "EM_CONSOLIDACAO";
+    // Acerto na última tentativa: verifica se cumpriu efetivamente a cadência de consolidação temporal
+    const isConsolidated = validateSrsTemporalCadence(sorted);
+    if (isConsolidated) {
+      status = "CONSOLIDADA";
+    } else if (isReviewDue) {
+      status = "REVISAO_DEVIDA";
+    } else {
+      status = "EM_CONSOLIDACAO";
+    }
   }
 
   return {

@@ -278,12 +278,16 @@ async function main() {
   const allProgress = await prisma.userTopicProgress.findMany({ select: { id: true, topicId: true } });
   const orphanProgress = allProgress.filter((p) => !topicIdSet.has(p.topicId)).length;
 
+  const allQuestionProgress = await prisma.userQuestionProgress.findMany({ select: { id: true, questionId: true } });
+  const orphanQuestionProgress = allQuestionProgress.filter((qp) => !questionIdSet.has(qp.questionId)).length;
+
   console.log("\n--- Integridade Relacional de Conteúdo ---");
   console.log(`- Aulas órfãs: ${orphanLessons}`);
   console.log(`- Flashcards órfãos: ${orphanFlashcards}`);
   console.log(`- Progresso de tópico órfão: ${orphanProgress}`);
+  console.log(`- Progresso de questão (SRS) órfão: ${orphanQuestionProgress}`);
 
-  if (orphanLessons > 0 || orphanFlashcards > 0 || orphanProgress > 0) {
+  if (orphanLessons > 0 || orphanFlashcards > 0 || orphanProgress > 0 || orphanQuestionProgress > 0) {
     console.error("❌ ERRO: Inconsistências relacionais detectadas em aulas, flashcards ou progresso!");
     hasErrors = true;
   }

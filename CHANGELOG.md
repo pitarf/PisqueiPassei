@@ -2,6 +2,31 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
+## [0.1.36] - 2026-10-01
+
+### Fechamento Definitivo do SRS por Questão e Consolidação Temporal Real (Fase 2.1)
+- **Consolidação Temporal Real (`validateSrsTemporalCadence` em `src/lib/adaptive-engine.ts`):**
+  - O status `CONSOLIDADA` agora exige validação rigorosa dos intervalos temporais entre tentativas, e não apenas contagem de acertos.
+  - Regra estrita: após o último erro, são exigidos pelo menos 3 acertos consecutivos que cumpram a cadência mínima:
+    - 1º acerto: $\ge 1$ dia após o erro;
+    - 2º acerto: $\ge 3$ dias após o 1º acerto;
+    - 3º acerto: $\ge 7$ dias após o 2º acerto;
+  - Tentativas repetidas em minutos ou horas no mesmo dia mantêm a questão em `EM_CONSOLIDACAO` (ou `REVISAO_DEVIDA`), sem atingir consolidação prematura.
+  - Qualquer novo erro posterior reinicia integralmente o ciclo para 1 dia.
+- **SRS Persistido por Questão (`UserQuestionProgress` no Prisma):**
+  - Criado o modelo `UserQuestionProgress` no PostgreSQL Neon, desvinculando o estado SRS individual da agregação por tópico (`UserTopicProgress`).
+  - Cada registro mantém: `userId`, `questionId`, `attemptsCount`, `correctCount`, `errorCount`, `consecutiveCorrect`, `consecutiveErrors`, `intervalDays`, `nextReviewAt`, `status`, `lastIsCorrect`, `lastAttemptAt`.
+  - Migration versionada `20261001_add_user_question_progress/migration.sql` aplicada sem perda de dados.
+- **Atomicidade e Idempotência em `/api/questions/submit`:**
+  - O registro da tentativa (`QuestionAttempt`) e a atualização do SRS por questão (`UserQuestionProgress`) ocorrem de forma atômica dentro do mesmo bloco `prisma.$transaction`.
+  - Tentativas duplicadas bloqueadas por `idempotencyKey` não duplicam registros nem avançam o estado SRS do aluno.
+- **Script de Backfill Seguro (`scripts/backfill-question-srs.js`):**
+  - Implementado script automatizado de backfill (`npm run backfill:srs`) que reconcilia o histórico preexistente de tentativas sem deletar nenhum dado.
+- **Auditoria e Homologação Estrita:**
+  - 96/96 testes unitários Bun aprovados (incluindo testes formais A a I em `adaptive-engine.test.ts` e `idempotency.test.ts`).
+  - `node scripts/check-db.js` aprovado com 0 órfãos no modelo `UserQuestionProgress`.
+  - Build de produção Next.js e 22/22 testes E2E Playwright (Desktop + Mobile) 100% aprovados.
+
 ## [0.1.35] - 2026-10-01
 
 ### Hardening do Motor Adaptativo, Histórico Estrito e Evolução do Treino

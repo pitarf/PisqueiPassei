@@ -21,6 +21,7 @@
     "report:questions": "node scripts/question-bank-report.js",
     "audit:historical": "node scripts/audit-historical-bank.js",
     "db:check": "node -r ts-node/register scripts/check-db.js",
+    "backfill:srs": "node -r ts-node/register scripts/backfill-question-srs.js",
     "audit:quality": "node scripts/audit-question-quality.js",
     "report:quality": "node scripts/question-bank-quality-report.js",
     "generate:questions": "node -r dotenv/config scripts/generate-question-bank.js",

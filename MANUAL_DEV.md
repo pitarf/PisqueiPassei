@@ -45,11 +45,14 @@ npm run dev
 ## 🔁 Progresso, SRS e Motor Adaptativo
 
 - `src/lib/adaptive-engine.ts`: motor adaptativo de estudo e diagnóstico construído sobre o acervo mestre de 940 questões.
-  - **Histórico Estrito (`evaluateQuestionHistory`):** Rastreia todas as tentativas históricas por questão. Questões com histórico de erro entram em `EM_CONSOLIDACAO` após um acerto recente e só se tornam `CONSOLIDADA` após 3 ou mais acertos consecutivos com espaçamento adequado, prevenindo que a memória de erro seja apagada indevidamente. Status avaliados: `NUNCA_VISTA`, `PENDENTE`, `REVISAO_DEVIDA`, `EM_CONSOLIDACAO` e `CONSOLIDADA`.
+  - **Consolidação Temporal Real (`validateSrsTemporalCadence`):** Consolidação (`CONSOLIDADA`) exige validação dos carimbos de data/hora entre acertos consecutivos pós-erro: 1º acerto $\ge 1$ dia após o erro; 2º acerto $\ge 3$ dias após o 1º acerto; 3º acerto $\ge 7$ dias após o 2º acerto. Tentativas imediatas em minutos/horas não consolidam e mantêm a questão em `EM_CONSOLIDACAO`. Novos erros reiniciam integralmente o ciclo para 1 dia.
+  - **SRS Persistido por Questão (`UserQuestionProgress`):** O modelo `UserQuestionProgress` persiste no PostgreSQL Neon o estado individual de cada questão (`attemptsCount`, `correctCount`, `errorCount`, `consecutiveCorrect`, `consecutiveErrors`, `intervalDays`, `nextReviewAt`, `status`, `lastIsCorrect`, `lastAttemptAt`). A tabela agregada `UserTopicProgress` não é mais a única fonte de verdade do SRS individual.
+  - **Atomicidade e Idempotência:** A rota `/api/questions/submit` executa em transação única (`prisma.$transaction`) a criação de `QuestionAttempt` e o upsert de `UserQuestionProgress`, sincronizando os dois estados de modo indivisível. Idempotência por `idempotencyKey` barra novas tentativas e não avança o SRS.
+  - **Backfill Não-Destrutivo:** `npm run backfill:srs` (`scripts/backfill-question-srs.js`) reconcilia e reconstrói o estado SRS de questões a partir das tentativas persistidas sem perda de histórico.
   - **PRNG Determinístico (Mulberry32):** `createSeededRng(seed)` e `seededShuffle()` substituem sorteios arbitrários por reprodução determinística de sessões de treino, com desempate por hash de enunciado e ID.
   - **Domínio bayesiano por tópico:** amortecimento empírico ($\frac{C + 4}{N + 8} \times 100 \times \text{diffMultiplier}$), impedindo scores distorcidos em amostras pequenas.
-  - **Fila "ESTUDAR AGORA":** monta bateria de 10 questões equilibrada entre tópicos críticos (menor domínio, erros recentes, tópicos nunca vistos e revisões vencidas) com progressão adaptativa de dificuldade.
-  - **Fila "Revisar Meus Erros":** repetição espaçada (SRS) progressiva (1 -> 3 -> 7 -> 14 -> 30 dias) focando exclusivamente em itens `PENDENTE` e `REVISAO_DEVIDA`.
+  - **Fila "ESTUDAR AGORA":** monta bateria de 10 questões equilibrada entre tópicos críticos com progressão adaptativa de dificuldade.
+  - **Fila "Revisar Meus Erros":** repetição espaçada focando exclusivamente em itens `PENDENTE` e `REVISAO_DEVIDA`, excluindo completamente itens consolidados.
   - **Diagnóstico e Relatório Pós-Treino:** breakdown analítico por dificuldade, nível cognitivo, tópico, relação de itens para revisão e recomendação de próximo estudo.
 - `src/lib/srs.ts` contém a regra própria de repetição espaçada da plataforma. Não descrevê-la como SM-2.
 - `src/lib/streak.ts` calcula a sequência diária usando `America/Sao_Paulo`.

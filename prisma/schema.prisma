@@ -27,6 +27,7 @@ model User {
   updatedAt        DateTime          @updatedAt
   progress         UserTopicProgress[]
   attempts         QuestionAttempt[]
+  questionProgress UserQuestionProgress[]
   simulations      Simulation[]
   flashcardReviews FlashcardReview[]
   studySessions    StudySession[]
@@ -97,6 +98,7 @@ model Question {
   statementHash    String    @default("")
   createdAt        DateTime  @default(now())
   attempts         QuestionAttempt[]
+  userProgress     UserQuestionProgress[]
 
   @@unique([topicId, statementHash])
 }
@@ -168,6 +170,30 @@ model UserTopicProgress {
   notes               String?   @db.Text
   updatedAt           DateTime  @updatedAt
   @@unique([userId, topicId])
+}
+
+model UserQuestionProgress {
+  id                 String    @id @default(uuid())
+  userId             String
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId         String
+  question           Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attemptsCount      Int       @default(0)
+  correctCount       Int       @default(0)
+  errorCount         Int       @default(0)
+  consecutiveCorrect Int       @default(0)
+  consecutiveErrors  Int       @default(0)
+  intervalDays       Int       @default(1)
+  nextReviewAt       DateTime?
+  status             String    @default("NUNCA_VISTA")
+  lastIsCorrect      Boolean?
+  lastAttemptAt      DateTime?
+  updatedAt          DateTime  @updatedAt
+  createdAt          DateTime  @default(now())
+
+  @@unique([userId, questionId])
+  @@index([userId, status])
+  @@index([userId, nextReviewAt])
 }
 
 model Simulation {
