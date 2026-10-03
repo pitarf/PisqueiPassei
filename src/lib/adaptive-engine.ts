@@ -108,6 +108,7 @@ export interface QuestionHistoryDetail {
   currentIntervalDays: number;
   nextReviewDate: Date | null;
   isReviewDue: boolean;
+  isMaintenanceDue: boolean;
 }
 
 /**
@@ -459,6 +460,7 @@ export function evaluateQuestionHistory(
       currentIntervalDays: 0,
       nextReviewDate: null,
       isReviewDue: false,
+      isMaintenanceDue: false,
     };
   }
 
@@ -508,6 +510,8 @@ export function evaluateQuestionHistory(
     }
   }
 
+  const isMaintenanceDue = status === "CONSOLIDADA" && isReviewDue;
+
   return {
     questionId,
     totalAttempts,
@@ -521,6 +525,7 @@ export function evaluateQuestionHistory(
     currentIntervalDays,
     nextReviewDate,
     isReviewDue,
+    isMaintenanceDue,
   };
 }
 

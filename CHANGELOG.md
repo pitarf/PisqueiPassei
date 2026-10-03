@@ -2,7 +2,31 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
-## [0.1.36] - 2026-10-01
+## [0.1.37] - 2026-10-02
+
+### Hardening Final da Idempotência, Transações e Integridade do Progresso (Fase 2.2)
+- **Blindagem e Idempotência Real em `/api/questions/submit`:**
+  - Todas as respostas de submissão duplicada (por pré-checagem de `idempotencyKey`, detecção de tentativa recente idêntica ou captura de erro Prisma `P2002`) agora retornam a estrutura canônica completa incluindo `questionStatus` e `nextReviewAt` extraídos diretamente de `UserQuestionProgress`.
+  - Rejeição estrita com status HTTP 409 quando uma mesma chave de idempotência é reutilizada com `userId` ou `questionId` distintos.
+  - Eliminação de duplicação indevida de XP (+10/+2), sequências diárias (*streak*) ou contadores de tentativa em chamadas repetidas ou simultâneas.
+- **Atomicidade e Prevenção de Lost Updates em `UserTopicProgress`:**
+  - Migração da atualização de `UserTopicProgress` para incremento atômico nativo do PostgreSQL via `upsert` com `{ increment: 1 }` para `totalQuestions` e `{ increment: isCorrect ? 1 : 0 }` para `correctAnswers`.
+  - Eliminação de condições de corrida (*race conditions*) em requisições paralelas concorrentes para diferentes questões do mesmo tópico.
+  - O cálculo do domínio bayesiano (*masteryScore*) e cadência SRS é executado com base nos valores atômicos pós-incremento retornados pelo banco.
+- **Diferenciação Estrita de SRS: Consolidação Pedagógica vs Revisão de Manutenção:**
+  - A consolidação pedagógica exige cumprimento estrito dos intervalos de 1d, 3d e 7d após erro ou acertos espaçados.
+  - Implementado o campo `isMaintenanceDue: boolean` em `QuestionHistoryDetail` e `evaluateQuestionHistory()`: questões consolidadas mantêm permanentemente o status `CONSOLIDADA`, mas sinalizam `isMaintenanceDue: true` quando o intervalo espaçado subsequente (14d ou 30d) é atingido (`nextReviewDate <= now`).
+  - Questões consolidadas saem da fila ativa de erros (`buildErrorReviewSession`) e são priorizadas para manutenção preventiva na sessão adaptativa geral (`buildStudyNowSession`).
+- **Endurecimento e Idempotência Estrita do Backfill (`scripts/backfill-question-srs.js`):**
+  - O script foi aprimorado para rastrear e reportar detalhadamente: `processed`, `created`, `updated`, `unchanged` e `inconsistent`.
+  - Reexecuções subsequentes comprovadas com zero alterações (`updated: 0`, `created: 0`, `unchanged: N`, `inconsistent: 0`).
+- **Nova Suíte de Testes de Concorrência e Transação (`src/lib/submission-concurrency.test.ts`):**
+  - Implementados 10 testes dedicados cobrindo os cenários A a L: submissão sequencial duplicada, submissões concorrentes simultâneas com `Promise.all`, rejeição de chave adulterada (409), incrementos atômicos no mesmo tópico, idempotência do backfill, preservação de SRS em duplicatas, métricas de questões únicas no overview, cadência de 1d/3d/7d, agendamento de manutenção em 14d/30d e validação de payloads inválidos.
+- **Auditoria e Homologação Estrita:**
+  - 106/106 testes unitários/integração Bun aprovados.
+  - `node scripts/check-db.js` e `node scripts/audit-question-quality.js` 100% aprovados com 940 questões ativas em 47 tópicos.
+  - Typecheck `tsc --noEmit` e build Next.js com 0 erros.
+  - 22/22 testes E2E Playwright (Desktop + Mobile) aprovados.
 
 ### Fechamento Definitivo do SRS por Questão e Consolidação Temporal Real (Fase 2.1)
 - **Consolidação Temporal Real (`validateSrsTemporalCadence` em `src/lib/adaptive-engine.ts`):**

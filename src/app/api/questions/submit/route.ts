@@ -27,7 +27,18 @@ export async function POST(req: NextRequest) {
       const existing = await prisma.questionAttempt.findUnique({ where: { idempotencyKey: key } });
       if (existing) {
         if (existing.userId !== user.id || existing.questionId !== questionId) return NextResponse.json({ error: "Chave de idempotência já utilizada em outra resposta." }, { status: 409 });
-        return NextResponse.json({ success: true, duplicate: true, isCorrect: existing.isCorrect, correctOption: question.correctOption, explanation: question.explanation });
+        const uqp = await prisma.userQuestionProgress.findUnique({
+          where: { userId_questionId: { userId: user.id, questionId } },
+        });
+        return NextResponse.json({
+          success: true,
+          duplicate: true,
+          isCorrect: existing.isCorrect,
+          correctOption: question.correctOption,
+          explanation: question.explanation,
+          questionStatus: uqp?.status || "EM_CONSOLIDACAO",
+          nextReviewAt: uqp?.nextReviewAt || null,
+        });
       }
     }
 
@@ -39,7 +50,17 @@ export async function POST(req: NextRequest) {
       const result = await prisma.$transaction(async (tx) => {
         if (!key) {
           const recentAttempt = await tx.questionAttempt.findFirst({ where: { userId: user.id, questionId }, orderBy: { createdAt: "desc" }, take: 1 });
-          if (recentAttempt && Date.now() - recentAttempt.createdAt.getTime() < 10000 && recentAttempt.chosenOption === normalizedOption) return { duplicate: true, isCorrect: recentAttempt.isCorrect };
+          if (recentAttempt && Date.now() - recentAttempt.createdAt.getTime() < 10000 && recentAttempt.chosenOption === normalizedOption) {
+            const uqp = await tx.userQuestionProgress.findUnique({
+              where: { userId_questionId: { userId: user.id, questionId } },
+            });
+            return {
+              duplicate: true,
+              isCorrect: recentAttempt.isCorrect,
+              questionStatus: uqp?.status || "EM_CONSOLIDACAO",
+              nextReviewAt: uqp?.nextReviewAt || null,
+            };
+          }
         }
         await tx.questionAttempt.create({ data: { userId: user.id, questionId, chosenOption: normalizedOption, isCorrect, timeSpentSeconds: roundedTime, ...(key ? { idempotencyKey: key } : {}) } });
 
@@ -96,9 +117,25 @@ export async function POST(req: NextRequest) {
           },
         });
 
-        const progress = await tx.userTopicProgress.findUnique({ where: { userId_topicId: { userId: user.id, topicId: question.topicId } } });
-        const total = (progress?.totalQuestions || 0) + 1;
-        const correct = (progress?.correctAnswers || 0) + (isCorrect ? 1 : 0);
+        // Atualização atômica concorrente de UserTopicProgress via atomic increment
+        const progressRecord = await tx.userTopicProgress.upsert({
+          where: { userId_topicId: { userId: user.id, topicId: question.topicId } },
+          update: {
+            totalQuestions: { increment: 1 },
+            correctAnswers: { increment: isCorrect ? 1 : 0 },
+            ...(studyMinutes > 0 ? { totalTimeMinutes: { increment: studyMinutes } } : {}),
+          },
+          create: {
+            userId: user.id,
+            topicId: question.topicId,
+            totalQuestions: 1,
+            correctAnswers: isCorrect ? 1 : 0,
+            totalTimeMinutes: studyMinutes,
+          },
+        });
+
+        const total = progressRecord.totalQuestions;
+        const correct = progressRecord.correctAnswers;
         const mastery = calculateAdaptiveMasteryScore(correct, total, getDifficultyWeight(question.difficulty));
 
         // Repetição espaçada adaptativa (cadência de referência 1, 3, 7, 14 e 30 dias)
@@ -106,7 +143,7 @@ export async function POST(req: NextRequest) {
         if (!isCorrect) {
           nextIntervalDays = 1;
         } else {
-          const currentInterval = progress?.reviewIntervalDays || 1;
+          const currentInterval = progressRecord.reviewIntervalDays || 1;
           if (currentInterval <= 1) nextIntervalDays = 3;
           else if (currentInterval <= 3) nextIntervalDays = 7;
           else if (currentInterval <= 7) nextIntervalDays = 14;
@@ -115,29 +152,14 @@ export async function POST(req: NextRequest) {
         const nextReviewDate = new Date();
         nextReviewDate.setDate(nextReviewDate.getDate() + nextIntervalDays);
 
-        await tx.userTopicProgress.upsert({
-          where: { userId_topicId: { userId: user.id, topicId: question.topicId } },
-          update: {
-            totalQuestions: total,
-            correctAnswers: correct,
+        await tx.userTopicProgress.update({
+          where: { id: progressRecord.id },
+          data: {
             masteryScore: mastery,
             status: mastery >= 85 ? "DOMINADO" : "EM_ESTUDO",
             lastStudiedAt: new Date(),
             nextReviewDate,
             reviewIntervalDays: nextIntervalDays,
-            ...(studyMinutes > 0 ? { totalTimeMinutes: { increment: studyMinutes } } : {}),
-          },
-          create: {
-            userId: user.id,
-            topicId: question.topicId,
-            totalQuestions: 1,
-            correctAnswers: isCorrect ? 1 : 0,
-            masteryScore: mastery,
-            status: "EM_ESTUDO",
-            lastStudiedAt: new Date(),
-            nextReviewDate,
-            reviewIntervalDays: nextIntervalDays,
-            totalTimeMinutes: studyMinutes,
           },
         });
         await updateStudyStreak(tx, user.id, new Date());
@@ -157,7 +179,20 @@ export async function POST(req: NextRequest) {
       const code = typeof error === "object" && error !== null && "code" in error ? String((error as { code?: unknown }).code) : "";
       if (key && code === "P2002") {
         const existing = await prisma.questionAttempt.findUnique({ where: { idempotencyKey: key } });
-        if (existing && existing.userId === user.id && existing.questionId === questionId) return NextResponse.json({ success: true, duplicate: true, isCorrect: existing.isCorrect, correctOption: question.correctOption, explanation: question.explanation });
+        if (existing && existing.userId === user.id && existing.questionId === questionId) {
+          const uqp = await prisma.userQuestionProgress.findUnique({
+            where: { userId_questionId: { userId: user.id, questionId } },
+          });
+          return NextResponse.json({
+            success: true,
+            duplicate: true,
+            isCorrect: existing.isCorrect,
+            correctOption: question.correctOption,
+            explanation: question.explanation,
+            questionStatus: uqp?.status || "EM_CONSOLIDACAO",
+            nextReviewAt: uqp?.nextReviewAt || null,
+          });
+        }
       }
       throw error;
     }

@@ -3,13 +3,13 @@ const { evaluateQuestionHistory } = require("../src/lib/adaptive-engine");
 
 const prisma = new PrismaClient();
 
-async function main() {
+async function runBackfill(db = prisma) {
   console.log("==================================================");
   console.log("🔄 INICIANDO BACKFILL DE SRS POR QUESTÃO (UserQuestionProgress)");
   console.log("==================================================");
 
   // Busca todas as tentativas de questões agrupadas por usuário e questão
-  const attempts = await prisma.questionAttempt.findMany({
+  const attempts = await db.questionAttempt.findMany({
     orderBy: { createdAt: "asc" },
     include: {
       question: {
@@ -48,13 +48,45 @@ async function main() {
 
   console.log(`Pares únicos (usuário x questão) a processar: ${userQuestionMap.size}`);
   let processed = 0;
+  let created = 0;
+  let updated = 0;
+  let unchanged = 0;
+  let inconsistent = 0;
+
   const now = new Date();
 
   for (const [key, qAttempts] of userQuestionMap.entries()) {
     const [userId, questionId] = key.split(":::");
     const hist = evaluateQuestionHistory(questionId, qAttempts, now);
 
-    await prisma.userQuestionProgress.upsert({
+    const existing = await db.userQuestionProgress.findUnique({
+      where: { userId_questionId: { userId, questionId } },
+    });
+
+    if (!existing) {
+      created++;
+    } else {
+      const isConsistent =
+        existing.attemptsCount === hist.totalAttempts &&
+        existing.correctCount === hist.totalCorrect &&
+        existing.errorCount === hist.totalErrors &&
+        existing.status === hist.status &&
+        existing.intervalDays === hist.currentIntervalDays;
+
+      if (isConsistent) {
+        unchanged++;
+      } else {
+        updated++;
+        if (
+          existing.attemptsCount < 0 ||
+          existing.correctCount + existing.errorCount !== existing.attemptsCount
+        ) {
+          inconsistent++;
+        }
+      }
+    }
+
+    await db.userQuestionProgress.upsert({
       where: { userId_questionId: { userId, questionId } },
       update: {
         attemptsCount: hist.totalAttempts,
@@ -87,14 +119,35 @@ async function main() {
     processed++;
   }
 
-  console.log(`✅ Backfill concluído com sucesso! Processados: ${processed} registros.`);
+  const stats = {
+    totalAttempts: attempts.length,
+    uniquePairs: userQuestionMap.size,
+    processed,
+    created,
+    updated,
+    unchanged,
+    inconsistent,
+  };
+
+  console.log(`✅ Backfill concluído com sucesso!`);
+  console.log(`- Processados: ${stats.processed}`);
+  console.log(`- Criados: ${stats.created}`);
+  console.log(`- Atualizados: ${stats.updated}`);
+  console.log(`- Inalterados: ${stats.unchanged}`);
+  console.log(`- Inconsistências reparadas: ${stats.inconsistent}`);
+
+  return stats;
 }
 
-main()
-  .catch((err) => {
-    console.error("❌ Erro durante o backfill de SRS:", err);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (require.main === module) {
+  runBackfill()
+    .catch((err) => {
+      console.error("❌ Erro durante o backfill de SRS:", err);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}
+
+module.exports = { runBackfill };

@@ -22,6 +22,12 @@
 
 ## ⏳ Em evolução
 
+- [x] Hardening final da idempotência e integridade em `/api/questions/submit` (Fase 2.2)
+- [x] Retorno canônico de metadados (`questionStatus`, `nextReviewAt`) em todos os fluxos de duplicidade e P2002
+- [x] Prevenção de lost updates em concorrência no `UserTopicProgress` via incremento atômico no PostgreSQL
+- [x] Diferenciação estrita de SRS: Consolidação pedagógica (1d, 3d, 7d) vs Revisões de Manutenção (14d, 30d com `isMaintenanceDue`)
+- [x] Endurecimento do script de backfill (`scripts/backfill-question-srs.js`) com rastreamento detalhado de métricas e idempotência estrita
+- [x] Suíte de testes `src/lib/submission-concurrency.test.ts` cobrindo cenários A a L (totalizando 106 testes unitários Bun aprovados)
 - [x] Consolidação temporal real em `evaluateQuestionHistory()` com validação de espaçamento (1d -> 3d -> 7d) via `validateSrsTemporalCadence`
 - [x] Persistência do estado SRS individual por questão (`UserQuestionProgress`) desacoplada de `UserTopicProgress`
 - [x] Transação atômica em `/api/questions/submit` persistindo tentativa e SRS por questão simultaneamente
