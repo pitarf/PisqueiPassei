@@ -2,7 +2,28 @@
 
 Todas as alterações notáveis deste projeto são registradas neste documento.
 
-## [0.1.37] - 2026-10-02
+## [0.1.38] - 2026-10-02
+
+### Expansão Mestre do Acervo para 1.880 Questões e Modo de Estudo Imediato
+- **Expansão do Banco para 1.880 Questões Ativas (40 por Tópico em 47/47 Tópicos):**
+  - O acervo foi ampliado em +940 novas questões inéditas com rigor Cesgranrio, distribuídas uniformemente por subagentes especializados entre os 6 lotes oficiais:
+    1. **Logística e Cadeia de Suprimentos:** +198 questões (total: 440 questões, 40 em cada um dos 11 tópicos).
+    2. **Noções de Administração e Logística:** +90 questões (total: 200 questões, 40 em cada um dos 5 tópicos).
+    3. **Legislação:** +120 questões (total: 240 questões, 40 em cada um dos 6 tópicos).
+    4. **Noções de Contabilidade e Informática:** +140 questões (total: 280 questões, 40 em cada um dos 7 tópicos).
+    5. **Língua Portuguesa:** +160 questões (total: 320 questões, 40 em cada um dos 8 tópicos).
+    6. **Matemática:** +200 questões (total: 400 questões, 40 em cada um dos 10 tópicos).
+  - Preservadas as 940 questões originais sem deleções nem regressões.
+- **Distribuição Estritamente Equilibrada de Gabarito A-E:**
+  - `A: 20.3% | B: 20.3% | C: 20.2% | D: 20.1% | E: 19.2%`.
+  - Zero viés da alternativa correta mais longa.
+- **Modo de Estudo Imediato ("COMEÇAR A ESTUDAR"):**
+  - Botão de destaque principal atualizado no Dashboard para `COMEÇAR A ESTUDAR` acionando bateria de 10 questões inéditas ou prioritárias sem necessidade de parametrização complexa.
+- **Validações e Homologação:**
+  - `npm run db:check` aprovado com 0 órfãos e 0 duplicidades por hash.
+  - `npm run audit:quality` aprovado com 100% dos 47 tópicos no nível BOA (40 questões por tópico).
+  - 106/106 testes unitários Bun aprovados.
+  - Next.js build e 22/22 testes E2E Playwright (Desktop + Mobile) 100% aprovados.
 
 ### Hardening Final da Idempotência, Transações e Integridade do Progresso (Fase 2.2)
 - **Blindagem e Idempotência Real em `/api/questions/submit`:**

@@ -202,13 +202,13 @@ export default async function DashboardPage() {
               </h1>
             </div>
 
-            {/* BOTÃO ESTUDAR AGORA HEROICO */}
+            {/* BOTÃO COMEÇAR A ESTUDAR HEROICO */}
             <Link
               href="/questoes?modo=estudar_agora"
               className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm shadow-xl shadow-emerald-500/25 transition-all active:scale-95"
             >
               <Sparkles className="w-4 h-4 fill-slate-950" />
-              ESTUDAR AGORA (10 QUESTÕES)
+              COMEÇAR A ESTUDAR
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

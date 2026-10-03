@@ -22,6 +22,10 @@
 
 ## ⏳ Em evolução
 
+- [x] Expansão mestre do banco de questões para 1.880 questões ativas (exatamente 40 questões por tópico nos 47 tópicos oficiais)
+- [x] Execução e validação dos 6 lotes oficiais: Logística (440), Administração (200), Legislação (240), Contabilidade/TI (280), Português (320) e Matemática (400)
+- [x] Modo de Estudo Imediato: botão "COMEÇAR A ESTUDAR" no Dashboard com seleção de 10 itens inéditos/prioritários em 1 clique
+- [x] Equilíbrio cirúrgico de gabarito A-E global (A: 20.3%, B: 20.3%, C: 20.2%, D: 20.1%, E: 19.2%)
 - [x] Hardening final da idempotência e integridade em `/api/questions/submit` (Fase 2.2)
 - [x] Retorno canônico de metadados (`questionStatus`, `nextReviewAt`) em todos os fluxos de duplicidade e P2002
 - [x] Prevenção de lost updates em concorrência no `UserTopicProgress` via incremento atômico no PostgreSQL

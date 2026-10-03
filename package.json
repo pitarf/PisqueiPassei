@@ -25,6 +25,7 @@
     "audit:quality": "node scripts/audit-question-quality.js",
     "report:quality": "node scripts/question-bank-quality-report.js",
     "generate:questions": "node -r dotenv/config scripts/generate-question-bank.js",
+    "expand:bank": "node -r dotenv/config scripts/expand-bank.js",
     "test:priority": "bun test src/lib/study-priority.test.ts",
     "test:validator": "bun test src/lib/question-validator.test.ts"
   },
